@@ -96,7 +96,7 @@ inline vec3<T> operator*(const vec3<T>& u, const vec3<T>& v) {
 
 template <typename T, typename U>
 inline vec3<T> operator/(vec3<T> v, U t) {
-    return v * (1/t);
+    return v * (1/static_cast<T>(t));
 }
 
 template <typename T>

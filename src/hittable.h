@@ -3,6 +3,7 @@
 
 #include "ray.h"
 #include "vec3.h"
+#include "interval.h"
 
 struct hit_record;
 
@@ -12,8 +13,7 @@ class hittable {
 
         virtual bool hit(
             const ray& r,
-            double t_min,
-            double t_max,
+            interval_d t,
             hit_record& rec
         ) const = 0;
 

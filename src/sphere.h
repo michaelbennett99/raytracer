@@ -25,8 +25,7 @@ class sphere : public hittable {
 
         bool hit(
             const ray& r,
-            double t_min,
-            double t_max,
+            interval_d t,
             hit_record& rec
         ) const override {
             direction3 oc = r.origin() - center();
@@ -42,9 +41,9 @@ class sphere : public hittable {
             auto sqrtd = std::sqrt(discriminant);
 
             auto root = (-h - sqrtd) / a;
-            if (root < t_min || root > t_max) {
+            if (!t.surrounds(root)) {
                 root = (-h + sqrtd) / a;
-                if (root < t_min || root > t_max) {
+                if (!t.surrounds(root)) {
                     return false;
                 }
             }

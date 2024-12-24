@@ -11,12 +11,8 @@
 
 colour ray_colour(const ray& r, const hittable& world) {
     hit_record rec;
-    if (world.hit(r, 0, infinity_d, rec)) {
-        return 0.5 * colour{
-            rec.normal[0] + 1,
-            rec.normal[1] + 1,
-            rec.normal[2] + 1
-        };
+    if (world.hit(r, interval_d{0, infinity_d}, rec)) {
+        return 0.5 * (rec.normal + colour{1, 1, 1});
     }
 
     direction3 unit_direction = unit_vector(r.direction());

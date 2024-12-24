@@ -1,11 +1,12 @@
 #include <iostream>
 
+#include "color.h"
+
 int main() {
     // Image
     const int width = 256;
     const int height = 256;
     const int max_colour_value = 255;
-    const double colour_multiplier = max_colour_value + 0.999;
 
     // Render
 
@@ -18,15 +19,10 @@ int main() {
         std::clog
             << "\rScanlines remaining: " << (height - j) << " " << std::flush;
         for (int i = 0; i < width; i++) {
-            auto r = double(i) / (width - 1);
-            auto g = double(j) / (height - 1);
-            auto b = 0.25;
-
-            int ir = static_cast<int>(colour_multiplier * r);
-            int ig = static_cast<int>(colour_multiplier * g);
-            int ib = static_cast<int>(colour_multiplier * b);
-
-            std::cout << ir << " " << ig << " " << ib << "\n";
+            auto pixel_colour = colour(
+                double(i) / (width - 1), double(j) / (height - 1), 0.25
+            );
+            write_colour(std::cout, pixel_colour);
         }
     }
     std::clog << "\rDone.                    \n";

@@ -4,8 +4,14 @@
 #include "aspect.h"
 #include "ray.h"
 #include "vec3.h"
+#include "sphere.h"
 
 colour ray_colour(const ray& r) {
+    const sphere s(point3(0, 0, -1), 0.5);
+    if (s.hit(r)) {
+        return colour(1, 0, 0);
+    }
+
     direction3 unit_direction = unit_vector(r.direction());
     auto a = 0.5 * (unit_direction[1] + 1.0);
     return (1.0 - a) * colour(1.0, 1.0, 1.0) + a * colour(0.5, 0.7, 1.0);

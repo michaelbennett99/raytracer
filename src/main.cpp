@@ -1,16 +1,13 @@
-#include <iostream>
+#include "raytracing.h"
 
-#include "color.h"
-#include "aspect.h"
-#include "ray.h"
-#include "vec3.h"
 #include "sphere.h"
+#include "aspect.h"
+#include "hittable.h"
+#include "hittable_list.h"
 
-colour ray_colour(const ray& r) {
-    const sphere s{ point3{ 0, 0, -1 }, 0.5 };
+colour ray_colour(const ray& r, const hittable& world) {
     hit_record rec;
-    const auto t = s.hit(r, 0, std::numeric_limits<double>::infinity(), rec);
-    if (t) {
+    if (world.hit(r, 0, std::numeric_limits<double>::infinity(), rec)) {
         return 0.5 * colour{
             rec.normal[0] + 1,
             rec.normal[1] + 1,
@@ -31,6 +28,12 @@ int main() {
 
     int image_height = height(image_width, ar);
     image_height = (image_height < 1) ? 1 : image_height;
+
+    // World
+    hittable_list world;
+
+    world.add(std::make_shared<sphere>(point3(0, 0, -1), 0.5));
+    world.add(std::make_shared<sphere>(point3(0, -100.5, -1), 100));
 
     // Camera
 
@@ -74,7 +77,7 @@ int main() {
                 + (j * pixel_delta_v);
             auto ray_direction = pixel_centre - camera_center;
             ray r(camera_center, ray_direction);
-            auto pixel_colour = ray_colour(r);
+            auto pixel_colour = ray_colour(r, world);
             write_colour(std::cout, pixel_colour);
         }
     }

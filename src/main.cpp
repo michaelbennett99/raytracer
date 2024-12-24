@@ -8,11 +8,13 @@
 
 colour ray_colour(const ray& r) {
     const sphere s{ point3{ 0, 0, -1 }, 0.5 };
-    const auto t = s.hit(r);
+    const auto t = s.hit(r, 0, std::numeric_limits<double>::infinity());
     if (t) {
-        const auto p = r.at(*t);
-        const auto n = s.normal(p);
-        return 0.5 * colour{ n[0] + 1, n[1] + 1, n[2] + 1 };
+        return 0.5 * colour{
+            t->normal[0] + 1,
+            t->normal[1] + 1,
+            t->normal[2] + 1
+        };
     }
 
     direction3 unit_direction = unit_vector(r.direction());

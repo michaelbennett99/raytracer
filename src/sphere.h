@@ -2,9 +2,9 @@
 #define SPHERE_H
 
 #include "ray.h"
-#include "shape.h"
+#include "hittable.h"
 
-class sphere : public shape {
+class sphere : public hittable {
     private:
         point3 cent;
         double rad;
@@ -22,16 +22,36 @@ class sphere : public shape {
             return unit_vector(p - cent);
         }
 
-        std::optional<double> hit(const ray& r) const override {
+        std::optional<hit_record> hit(
+            const ray& r, double t_min, double t_max
+        ) const override {
             direction3 oc = r.origin() - center();
-            auto a = dot(r.direction(), r.direction());
-            auto b = 2.0 * dot(oc, r.direction());
-            auto c = dot(oc, oc) - radius() * radius();
-            auto discriminant = b * b - 4 * a * c;
+            auto a = r.direction().length_squared();
+            auto h = dot(r.direction(), oc);
+            auto c = oc.length_squared() - radius() * radius();
+
+            auto discriminant = h * h - a * c;
             if (discriminant < 0) {
                 return std::nullopt;
             }
-            return (-b - std::sqrt(discriminant)) / (2.0 * a);
+
+            auto sqrtd = std::sqrt(discriminant);
+
+            auto root = (-h - sqrtd) / a;
+            if (root < t_min || root > t_max) {
+                root = (-h + sqrtd) / a;
+                if (root < t_min || root > t_max) {
+                    return std::nullopt;
+                }
+            }
+
+            const auto p = r.at(root);
+
+            return hit_record{
+                .p = p,
+                .normal = normal(p),
+                .t = root
+            };
         }
 };
 

@@ -1,13 +1,17 @@
-#include "raytracing.h"
+#include <iostream>
+#include <memory>
 
+#include "raytracing.h"
 #include "sphere.h"
 #include "aspect.h"
 #include "hittable.h"
 #include "hittable_list.h"
+#include "colour.h"
+#include "ray.h"
 
 colour ray_colour(const ray& r, const hittable& world) {
     hit_record rec;
-    if (world.hit(r, 0, std::numeric_limits<double>::infinity(), rec)) {
+    if (world.hit(r, 0, infinity_d, rec)) {
         return 0.5 * colour{
             rec.normal[0] + 1,
             rec.normal[1] + 1,

@@ -23,8 +23,11 @@ class sphere : public hittable {
             return unit_vector(p - cent);
         }
 
-        std::optional<hit_record> hit(
-            const ray& r, double t_min, double t_max
+        bool hit(
+            const ray& r,
+            double t_min,
+            double t_max,
+            hit_record& rec
         ) const override {
             direction3 oc = r.origin() - center();
             auto a = r.direction().length_squared();
@@ -33,7 +36,7 @@ class sphere : public hittable {
 
             auto discriminant = h * h - a * c;
             if (discriminant < 0) {
-                return std::nullopt;
+                return false;
             }
 
             auto sqrtd = std::sqrt(discriminant);
@@ -42,13 +45,14 @@ class sphere : public hittable {
             if (root < t_min || root > t_max) {
                 root = (-h + sqrtd) / a;
                 if (root < t_min || root > t_max) {
-                    return std::nullopt;
+                    return false;
                 }
             }
 
-            const auto p = r.at(root);
-
-            return hit_record{ r, p, normal(p), root };
+            rec.t = root;
+            rec.p = r.at(root);
+            rec.set_face_normal(r, normal(rec.p));
+            return true;
         }
 };
 

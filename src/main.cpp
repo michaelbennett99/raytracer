@@ -8,12 +8,13 @@
 
 colour ray_colour(const ray& r) {
     const sphere s{ point3{ 0, 0, -1 }, 0.5 };
-    const auto t = s.hit(r, 0, std::numeric_limits<double>::infinity());
+    hit_record rec;
+    const auto t = s.hit(r, 0, std::numeric_limits<double>::infinity(), rec);
     if (t) {
         return 0.5 * colour{
-            t->normal[0] + 1,
-            t->normal[1] + 1,
-            t->normal[2] + 1
+            rec.normal[0] + 1,
+            rec.normal[1] + 1,
+            rec.normal[2] + 1
         };
     }
 

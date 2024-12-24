@@ -79,13 +79,13 @@ inline vec3<T> operator-(const vec3<T>& u, const vec3<T>& v) {
     return vec3<T>(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
 }
 
-template <typename T>
-inline vec3<T> operator*(const vec3<T>& v, const T t) {
+template <typename T, typename U>
+inline vec3<T> operator*(const vec3<T>& v, U t) {
     return vec3<T>(v[0] * t, v[1] * t, v[2] * t);
 }
 
-template <typename T>
-inline vec3<T> operator*(T t, const vec3<T>& v) {
+template <typename T, typename U>
+inline vec3<T> operator*(U t, const vec3<T>& v) {
     return v * t;
 }
 
@@ -94,8 +94,8 @@ inline vec3<T> operator*(const vec3<T>& u, const vec3<T>& v) {
     return vec3<T>(u[0] * v[0], u[1] * v[1], u[2] * v[2]);
 }
 
-template <typename T>
-inline vec3<T> operator/(vec3<T> v, T t) {
+template <typename T, typename U>
+inline vec3<T> operator/(vec3<T> v, U t) {
     return v * (1/t);
 }
 
@@ -120,5 +120,6 @@ inline vec3<T> unit_vector(const vec3<T>& v) {
 
 // Type aliases
 using point3 = vec3<double>;
+using direction3 = vec3<double>;
 
 #endif

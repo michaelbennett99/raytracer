@@ -48,11 +48,7 @@ class sphere : public hittable {
 
             const auto p = r.at(root);
 
-            return hit_record{
-                .p = p,
-                .normal = normal(p),
-                .t = root
-            };
+            return hit_record{ r, p, normal(p), root };
         }
 };
 

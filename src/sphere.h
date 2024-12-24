@@ -10,7 +10,8 @@ class sphere : public hittable {
         double rad;
 
     public:
-        sphere(point3 center, double radius) : cent(center), rad(radius) {}
+        sphere(point3 center, double radius)
+            : cent(center), rad(std::fmax(radius, 0)) {}
 
         double x() const { return cent[0]; }
         double y() const { return cent[1]; }

@@ -18,13 +18,20 @@ class sphere : public shape {
         const point3& center() const { return cent; }
         double radius() const { return rad; }
 
-        bool hit(const ray& r) const override {
+        direction3 normal(const point3& p) const {
+            return unit_vector(p - cent);
+        }
+
+        std::optional<double> hit(const ray& r) const override {
             direction3 oc = r.origin() - center();
             auto a = dot(r.direction(), r.direction());
             auto b = 2.0 * dot(oc, r.direction());
             auto c = dot(oc, oc) - radius() * radius();
             auto discriminant = b * b - 4 * a * c;
-            return (discriminant >= 0);
+            if (discriminant < 0) {
+                return std::nullopt;
+            }
+            return (-b - std::sqrt(discriminant)) / (2.0 * a);
         }
 };
 

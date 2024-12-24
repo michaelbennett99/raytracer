@@ -7,14 +7,17 @@
 #include "sphere.h"
 
 colour ray_colour(const ray& r) {
-    const sphere s(point3(0, 0, -1), 0.5);
-    if (s.hit(r)) {
-        return colour(1, 0, 0);
+    const sphere s{ point3{ 0, 0, -1 }, 0.5 };
+    const auto t = s.hit(r);
+    if (t) {
+        const auto p = r.at(*t);
+        const auto n = s.normal(p);
+        return 0.5 * colour{ n[0] + 1, n[1] + 1, n[2] + 1 };
     }
 
     direction3 unit_direction = unit_vector(r.direction());
     auto a = 0.5 * (unit_direction[1] + 1.0);
-    return (1.0 - a) * colour(1.0, 1.0, 1.0) + a * colour(0.5, 0.7, 1.0);
+    return (1.0 - a) * colour{ 1.0, 1.0, 1.0 } + a * colour{ 0.5, 0.7, 1.0 };
 }
 
 int main() {

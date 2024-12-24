@@ -5,7 +5,7 @@
 
 class shape {
     public:
-        virtual bool hit(const ray& r) const = 0;
+        virtual std::optional<double> hit(const ray& r) const = 0;
 };
 
 #endif

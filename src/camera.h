@@ -68,7 +68,7 @@ class camera {
             std::cout
                 << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-            for (int j = image_height - 1; j >= 0; --j) {
+            for (int j = 0; j < image_height; ++j) {
                 std::clog
                     << "\rScanlines remaining: " << j << ' ' << std::flush;
 

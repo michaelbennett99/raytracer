@@ -44,9 +44,10 @@ class lambertian : public material {
 class metal : public material {
     private:
         colour albedo;
+        double fuzz;
 
     public:
-        metal(const colour& a) : albedo(a) {}
+        metal(const colour& a, double f) : albedo(a), fuzz(f) {}
 
         bool scatter(
             const ray& r_in,
@@ -58,9 +59,11 @@ class metal : public material {
                 r_in.direction(),
                 rec.normal
             );
-            scattered = ray(rec.p, reflected);
+            const auto fuzzed = unit_vector(reflected)
+                + (fuzz * random_unit_vector());
+            scattered = ray(rec.p, fuzzed);
             attenuation = albedo;
-            return true;
+            return (dot(scattered.direction(), rec.normal) > 0);
         }
 };
 

@@ -28,6 +28,12 @@ class interval {
             return min < x && x < max;
         }
 
+        T clamp(T x) const {
+            if (x < min) return min;
+            if (x > max) return max;
+            return x;
+        }
+
         static const interval empty, universe;
 
 };

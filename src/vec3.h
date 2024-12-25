@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "random.h"
+#include "raytracing.h"
 class vec_index {
     private:
         unsigned char value;
@@ -59,6 +61,22 @@ class vec3 {
 
         T length_squared() const {
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+        }
+
+        static vec3<T> random() {
+            return vec3<T>(
+                gen_rand::gen_rand<T>(),
+                gen_rand::gen_rand<T>(),
+                gen_rand::gen_rand<T>()
+            );
+        }
+
+        static vec3<T> random(T min, T max) {
+            return vec3<T>(
+                gen_rand::gen_rand<T>(min, max),
+                gen_rand::gen_rand<T>(min, max),
+                gen_rand::gen_rand<T>(min, max)
+            );
         }
 };
 
@@ -116,6 +134,22 @@ inline vec3<T> cross(const vec3<T>& u, const vec3<T>& v) {
 template <typename T>
 inline vec3<T> unit_vector(const vec3<T>& v) {
     return v / v.length();
+}
+
+inline vec3<double> random_unit_vector() {
+    const auto theta = gen_rand::random_double(0, pi);
+    const auto phi = gen_rand::random_double(0, 2 * pi);
+    const auto x = std::sin(theta) * std::cos(phi);
+    const auto y = std::sin(theta) * std::sin(phi);
+    const auto z = std::cos(theta);
+    return vec3<double>(x, y, z);
+}
+
+inline vec3<double> random_on_hemisphere(const vec3<double>& normal) {
+    const auto on_unit_sphere = random_unit_vector();
+    return dot(on_unit_sphere, normal) > 0.0
+        ? on_unit_sphere
+        : -on_unit_sphere;
 }
 
 // Type aliases

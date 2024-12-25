@@ -162,6 +162,17 @@ inline vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
     return v - 2 * dot(v, n) * n;
 }
 
+template <typename T>
+inline vec3<T> refract(
+    const vec3<T>& uv, const vec3<T>& n, double etai_over_etat
+) {
+    const auto cos_theta = std::fmin(dot(-uv, n), 1.0);
+    const auto r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    const auto r_out_parallel = -std::sqrt(1.0 - r_out_perp.length_squared())
+        * n;
+    return r_out_perp + r_out_parallel;
+}
+
 // Type aliases
 using point3 = vec3<double>;
 using direction3 = vec3<double>;

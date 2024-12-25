@@ -8,6 +8,9 @@
 #include "aspect.h"
 #include "random.h"
 #include "material.h"
+#include <thread>
+#include <mutex>
+#include <sstream>
 
 class camera {
     private:
@@ -129,25 +132,63 @@ class camera {
         double defocus_angle = 0;
         double focus_dist = 10;
 
-        void render (const hittable& world) {
+        void render(const hittable& world) {
             initialize();
 
             std::cout
                 << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-            for (int j = 0; j < image_height; ++j) {
-                std::clog
-                    << "\rScanlines remaining: " << image_height - j << ' '
-                    << std::flush;
+            const int num_threads = std::thread::hardware_concurrency();
+            std::vector<std::thread> threads;
+            std::mutex cout_mutex;
+            int completed_scanlines = 0;
 
-                for (int i = 0; i < image_width; ++i) {
-                    colour pixel_colour(0, 0, 0);
-                    for (int s = 0; s < samples_per_pixel; ++s) {
-                        auto ray = get_ray(i, j);
-                        pixel_colour += ray_colour(ray, world, max_depth);
+            // Vector to store pixel data for each scanline
+            std::vector<std::string> scanlines(image_height);
+
+            // Lambda to process a chunk of scanlines
+            auto process_chunk = [&](int start_row, int end_row) {
+                for (int j = start_row; j < end_row; ++j) {
+                    std::ostringstream line_stream;
+                    for (int i = 0; i < image_width; ++i) {
+                        colour pixel_colour(0, 0, 0);
+                        for (int s = 0; s < samples_per_pixel; ++s) {
+                            auto ray = get_ray(i, j);
+                            pixel_colour += ray_colour(ray, world, max_depth);
+                        }
+                        write_colour(line_stream, pixel_colour * pixel_samples_scale);
                     }
-                    write_colour(std::cout, pixel_colour * pixel_samples_scale);
+                    scanlines[j] = line_stream.str();
+
+                    // Update progress
+                    {
+                        std::lock_guard<std::mutex> lock(cout_mutex);
+                        completed_scanlines++;
+                        std::clog << "\rScanlines remaining: "
+                            << image_height - completed_scanlines << ' '
+                            << std::flush;
+                    }
                 }
+            };
+
+            // Calculate chunk size and create threads
+            const int chunk_size = (image_height + num_threads - 1) / num_threads;
+            for (int t = 0; t < num_threads; ++t) {
+                int start_row = t * chunk_size;
+                int end_row = std::min(start_row + chunk_size, image_height);
+                if (start_row < image_height) {
+                    threads.emplace_back(process_chunk, start_row, end_row);
+                }
+            }
+
+            // Wait for all threads to complete
+            for (auto& thread : threads) {
+                thread.join();
+            }
+
+            // Output all scanlines in order
+            for (const auto& scanline : scanlines) {
+                std::cout << scanline;
             }
 
             std::clog << "\rDone.                      \n";

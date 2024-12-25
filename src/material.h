@@ -71,6 +71,13 @@ class dielectric : public material {
     private:
         double ir;
 
+        static double reflectance(double cosine, double ref_idx) {
+            // Schlick's approximation
+            auto r0 = (1 - ref_idx) / (1 + ref_idx);
+            r0 = r0 * r0;
+            return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+        }
+
     public:
         dielectric(double index_of_refraction) : ir(index_of_refraction) {}
 
@@ -91,7 +98,9 @@ class dielectric : public material {
             const auto sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
 
             const auto cannot_refract = refraction_ratio * sin_theta > 1.0;
-            const auto direction = cannot_refract
+            const auto wont_refract = reflectance(cos_theta, refraction_ratio)
+                    > gen_rand::random_double();
+            const auto direction = cannot_refract || wont_refract
                 ? reflect(unit_direction, rec.normal)
                 : refract(unit_direction, rec.normal, refraction_ratio);
 

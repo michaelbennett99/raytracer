@@ -157,6 +157,14 @@ inline vec3<double> random_on_hemisphere(const vec3<double>& normal) {
         : -on_unit_sphere;
 }
 
+inline vec3<double> random_in_unit_disk() {
+    const auto angle = gen_rand::random_double(0, 2 * pi);
+    const auto r = gen_rand::random_double(0, 1);
+    const auto x = r * std::cos(angle);
+    const auto y = r * std::sin(angle);
+    return vec3<double>(x, y, 0);
+}
+
 template <typename T>
 inline vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
     return v - 2 * dot(v, n) * n;

@@ -13,11 +13,13 @@ class camera {
     private:
         int image_height;
         double pixel_samples_scale;
-        point3 origin = point3(0, 0, 0);
+        point3 origin;
         point3 pixel00_loc;
         direction3 pixel_delta_u;
         direction3 pixel_delta_v;
         direction3 u, v, w;
+        direction3 defocus_disk_u;
+        direction3 defocus_disk_v;
 
         void initialize() {
             image_height = height(image_width, ar);
@@ -28,10 +30,9 @@ class camera {
             origin = lookfrom;
 
             // Viewport dimensions
-            const auto focal_length = 1.0;
             const auto theta = degrees_to_radians(vfov);
             const auto h = std::tan(theta / 2);
-            const auto viewport_height = 2 * h * focal_length;
+            const auto viewport_height = 2 * h * focus_dist;
             const auto viewport_width = viewport_height
                 * aspect_ratio(image_width, image_height);
 
@@ -50,17 +51,25 @@ class camera {
 
             // Location of upper left pixel
             const auto viewport_ul = origin
-                - (focal_length * w)
+                - (focus_dist * w)
                 - 0.5 * (viewport_u + viewport_v);
             pixel00_loc = viewport_ul + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+            const auto defocus_radius = focus_dist
+                * std::tan(degrees_to_radians(defocus_angle / 2));
+            defocus_disk_u = u * defocus_radius;
+            defocus_disk_v = v * defocus_radius;
         }
 
         ray get_ray(int i, int j) const {
+            // Construct ray from defocus disk to sampled point at (i, j)
             auto offset = sample_square();
             auto pixel_sample = pixel00_loc
                 + ((i + offset.x()) * pixel_delta_u)
                 + ((j + offset.y()) * pixel_delta_v);
-            auto ray_origin = origin;
+            auto ray_origin = (defocus_angle <= 0)
+                ? origin
+                : defocus_disk_sample();
             auto ray_direction = pixel_sample - ray_origin;
             return ray(ray_origin, ray_direction);
         }
@@ -71,6 +80,11 @@ class camera {
                 gen_rand::random_double(-0.5, 0.5),
                 0
             );
+        }
+
+        point3 defocus_disk_sample() const {
+            const auto p = random_in_unit_disk();
+            return origin + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
         }
 
         colour ray_colour(
@@ -104,12 +118,16 @@ class camera {
         int image_width = 400;
         int samples_per_pixel = 100;
         int max_depth = 10;
+
+        // Camera parameters
+        double vfov = 90;
         point3 lookfrom = point3(0, 0, 0);
         point3 lookat = point3(0, 0, -1);
         direction3 vup = direction3(0, 1, 0);
 
-        // Vertical field of view in degrees
-        double vfov = 90;
+        // Lens parameters
+        double defocus_angle = 0;
+        double focus_dist = 10;
 
         void render (const hittable& world) {
             initialize();

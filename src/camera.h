@@ -160,8 +160,6 @@ class camera {
         }
 
         void render(const hittable& world) {
-            initialize();
-
             std::cout
                 << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 

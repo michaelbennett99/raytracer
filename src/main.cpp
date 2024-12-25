@@ -9,7 +9,8 @@ int main() {
 
     auto material_ground = std::make_shared<lambertian>(colour(0.8, 0.8, 0.0));
     auto material_center = std::make_shared<lambertian>(colour(0.1, 0.2, 0.5));
-    auto material_left = std::make_shared<dielectric>(1.0 / 1.33);
+    auto material_left = std::make_shared<dielectric>(1.5);
+    auto material_bubble = std::make_shared<dielectric>(1.0 / 1.5);
     auto material_right = std::make_shared<metal>(colour(0.8, 0.6, 0.2), 1.0);
 
     world.add(std::make_shared<sphere>(
@@ -20,6 +21,9 @@ int main() {
     ));
     world.add(std::make_shared<sphere>(
         point3(-1, 0, -1), 0.5, material_left
+    ));
+    world.add(std::make_shared<sphere>(
+        point3(-1, 0, -1), 0.4, material_bubble
     ));
     world.add(std::make_shared<sphere>(
         point3(1, 0, -1), 0.5, material_right

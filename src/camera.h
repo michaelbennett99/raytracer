@@ -41,12 +41,14 @@ class camera {
         direction3 defocus_disk_u;
         direction3 defocus_disk_v;
 
+        int calc_image_height() const {
+            const auto h = height(image_width, ar);
+            return (h < 1) ? 1 : h;
+        }
+
         void initialize() {
-            image_height = height(image_width, ar);
-            image_height = (image_height < 1) ? 1 : image_height;
-
+            image_height = calc_image_height();
             pixel_samples_scale = 1.0 / samples_per_pixel;
-
             origin = lookfrom;
 
             // Viewport dimensions

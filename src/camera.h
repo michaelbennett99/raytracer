@@ -28,7 +28,9 @@ class camera {
 
             // Viewport dimensions
             const auto focal_length = 1.0;
-            const auto viewport_height = 2.0;
+            const auto theta = degrees_to_radians(vfov);
+            const auto h = std::tan(theta / 2);
+            const auto viewport_height = 2 * h * focal_length;
             const auto viewport_width = viewport_height
                 * aspect_ratio(image_width, image_height);
 
@@ -99,6 +101,9 @@ class camera {
         int image_width = 400;
         int samples_per_pixel = 100;
         int max_depth = 10;
+
+        // Vertical field of view in degrees
+        double vfov = 90;
 
         void render (const hittable& world) {
             initialize();

@@ -56,6 +56,18 @@ struct hit_record {
     // Add default constructor since we'll use it as an outparam
     hit_record() = default;
 
+    void set(
+        double t,
+        const ray& r,
+        const direction3& outward_normal,
+        std::shared_ptr<material> mat
+    ) {
+        this->t = t;
+        this->p = r.at(t);
+        this->set_face_normal(r, outward_normal);
+        this->mat = mat;
+    }
+
     void set_face_normal(const ray& r, const direction3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;

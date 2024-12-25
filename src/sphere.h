@@ -32,18 +32,20 @@ class sphere : public hittable {
             interval_d t,
             hit_record& rec
         ) const override {
+            // Ray-sphere interaction quantities
             direction3 oc = r.origin() - center();
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(), oc);
             auto c = oc.length_squared() - radius() * radius();
 
-            auto discriminant = h * h - a * c;
+            // Quadratic equation to determine if ray intersects sphere
+            const auto discriminant = h * h - a * c;
             if (discriminant < 0) {
                 return false;
             }
+            const auto sqrtd = std::sqrt(discriminant);
 
-            auto sqrtd = std::sqrt(discriminant);
-
+            // Determine which (if any) root is valid by the t-interval
             auto root = (-h - sqrtd) / a;
             if (!t.surrounds(root)) {
                 root = (-h + sqrtd) / a;
@@ -52,10 +54,8 @@ class sphere : public hittable {
                 }
             }
 
-            rec.t = root;
-            rec.p = r.at(root);
-            rec.set_face_normal(r, normal(rec.p));
-            rec.mat = mat;
+            // Set hit record
+            rec.set(root, r, normal(r.at(root)), mat);
             return true;
         }
 };

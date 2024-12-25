@@ -22,9 +22,9 @@ void write_colour(std::ostream& out, const colour& c) {
 
     static const interval intensity(0.000, 0.999);
 
-    int rb = static_cast<int>(256 * intensity.clamp(r));
-    int gb = static_cast<int>(256 * intensity.clamp(g));
-    int bb = static_cast<int>(256 * intensity.clamp(b));
+    int rb = static_cast<int>(colour_multiplier * intensity.clamp(r));
+    int gb = static_cast<int>(colour_multiplier * intensity.clamp(g));
+    int bb = static_cast<int>(colour_multiplier * intensity.clamp(b));
 
     out << rb << ' ' << gb << ' ' << bb << '\n';
 }

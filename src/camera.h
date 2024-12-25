@@ -75,9 +75,10 @@ class camera {
             hit_record rec;
 
             if (world.hit(r, interval_d{0.001, infinity_d}, rec)) {
-                direction3 direction = random_on_hemisphere(rec.normal);
+                const auto direction = rec.normal + random_unit_vector();
+                const auto scattered = ray(rec.p, direction);
                 return 0.5 * ray_colour(
-                    ray(rec.p, direction),
+                    scattered,
                     world,
                     depth - 1
                 );

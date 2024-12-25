@@ -14,10 +14,8 @@ class sphere : public hittable {
         std::shared_ptr<material> mat;
 
     public:
-        sphere(point3 center, double radius)
-            : cent(center), rad(std::fmax(radius, 0)) {
-            mat = std::make_shared<lambertian>(colour(0.5, 0.5, 0.5));
-        }
+        sphere(point3 center, double radius, std::shared_ptr<material> m)
+            : cent(center), rad(std::fmax(radius, 0)), mat(m) {}
 
         double x() const { return cent[0]; }
         double y() const { return cent[1]; }

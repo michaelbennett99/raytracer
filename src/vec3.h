@@ -157,6 +157,11 @@ inline vec3<double> random_on_hemisphere(const vec3<double>& normal) {
         : -on_unit_sphere;
 }
 
+template <typename T>
+inline vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
+    return v - 2 * dot(v, n) * n;
+}
+
 // Type aliases
 using point3 = vec3<double>;
 using direction3 = vec3<double>;

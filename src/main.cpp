@@ -16,7 +16,11 @@ int main() {
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
             auto choose_mat = gen_rand::random_double();
-            point3 center(a + 0.9*gen_rand::random_double(), 0.2, b + 0.9*gen_rand::random_double());
+            point3 center(
+                a + 0.9*gen_rand::random_double(),
+                0.2,
+                b + 0.9*gen_rand::random_double()
+            );
 
             if ((center - point3(4, 0.2, 0)).length() > 0.9) {
                 std::shared_ptr<material> sphere_material;
@@ -50,20 +54,18 @@ int main() {
     auto material3 = std::make_shared<metal>(colour(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
-    camera cam;
-
-    cam.ar = 16.0 / 9.0;
-    cam.image_width = 1200;
-    cam.samples_per_pixel = 500;
-    cam.max_depth = 50;
-
-    cam.vfov = 20;
-    cam.lookfrom = point3(13,2,3);
-    cam.lookat = point3(0,0,0);
-    cam.vup = direction3(0,1,0);
-
-    cam.defocus_angle = 0.6;
-    cam.focus_dist = 10.0;
+    camera cam(
+        16.0 / 9.0,
+        600,
+        100,
+        50,
+        20,
+        point3(13,2,3),
+        point3(0,0,0),
+        direction3(0,1,0),
+        0.6,
+        10.0
+    );
 
     cam.render(world);
 }

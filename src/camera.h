@@ -14,8 +14,25 @@
 
 class camera {
     private:
+        // Basic image properties
+        double ar;
+        int image_width;
         int image_height;
+        int samples_per_pixel;
+        int max_depth;
+
+        // Camera parameters
+        double vfov;
+        point3 lookfrom;
+        point3 lookat;
+        direction3 vup;
+
+        // Lens parameters
+        double defocus_angle;
+        double focus_dist;
         double pixel_samples_scale;
+
+        // Camera parameters
         point3 origin;
         point3 pixel00_loc;
         direction3 pixel_delta_u;
@@ -117,20 +134,30 @@ class camera {
         }
 
     public:
-        double ar = 1.0;
-        int image_width = 400;
-        int samples_per_pixel = 100;
-        int max_depth = 10;
-
-        // Camera parameters
-        double vfov = 90;
-        point3 lookfrom = point3(0, 0, 0);
-        point3 lookat = point3(0, 0, -1);
-        direction3 vup = direction3(0, 1, 0);
-
-        // Lens parameters
-        double defocus_angle = 0;
-        double focus_dist = 10;
+        camera(
+            double ar = 1.0,
+            int image_width = 400,
+            int samples_per_pixel = 100,
+            int max_depth = 10,
+            double vfov = 90,
+            point3 lookfrom = point3(0, 0, 0),
+            point3 lookat = point3(0, 0, -1),
+            direction3 vup = direction3(0, 1, 0),
+            double defocus_angle = 0,
+            double focus_dist = 10
+        ) : ar{ ar },
+            image_width{ image_width },
+            samples_per_pixel{ samples_per_pixel },
+            max_depth{ max_depth },
+            vfov{ vfov },
+            lookfrom{ lookfrom },
+            lookat{ lookat },
+            vup{ vup },
+            defocus_angle{ defocus_angle },
+            focus_dist{ focus_dist }
+        {
+            initialize();
+        }
 
         void render(const hittable& world) {
             initialize();
@@ -172,7 +199,8 @@ class camera {
             };
 
             // Calculate chunk size and create threads
-            const int chunk_size = (image_height + num_threads - 1) / num_threads;
+            const int chunk_size = (image_height + num_threads - 1)
+                / num_threads;
             for (int t = 0; t < num_threads; ++t) {
                 int start_row = t * chunk_size;
                 int end_row = std::min(start_row + chunk_size, image_height);

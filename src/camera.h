@@ -17,6 +17,7 @@ class camera {
         point3 pixel00_loc;
         direction3 pixel_delta_u;
         direction3 pixel_delta_v;
+        direction3 u, v, w;
 
         void initialize() {
             image_height = height(image_width, ar);
@@ -24,7 +25,7 @@ class camera {
 
             pixel_samples_scale = 1.0 / samples_per_pixel;
 
-            origin = point3(0, 0, 0);
+            origin = lookfrom;
 
             // Viewport dimensions
             const auto focal_length = 1.0;
@@ -34,9 +35,14 @@ class camera {
             const auto viewport_width = viewport_height
                 * aspect_ratio(image_width, image_height);
 
+            // Calculate orthonormal basis
+            w = unit_vector(lookfrom - lookat);
+            u = unit_vector(cross(vup, w));
+            v = cross(w, u);
+
             // Edge vectors of viewport
-            const auto viewport_u = direction3(viewport_width, 0, 0);
-            const auto viewport_v = direction3(0, -viewport_height, 0);
+            const auto viewport_u = viewport_width * u; // u is horizontal
+            const auto viewport_v = viewport_height * -v; // v is vertical
 
             // Delta vectors from pixel to pixel
             pixel_delta_u = viewport_u / image_width;
@@ -44,12 +50,9 @@ class camera {
 
             // Location of upper left pixel
             const auto viewport_ul = origin
-                - direction3(0, 0, focal_length)
-                - viewport_u / 2
-                - viewport_v / 2;
-            pixel00_loc = viewport_ul
-                + pixel_delta_u / 2
-                + pixel_delta_v / 2;
+                - (focal_length * w)
+                - 0.5 * (viewport_u + viewport_v);
+            pixel00_loc = viewport_ul + 0.5 * (pixel_delta_u + pixel_delta_v);
         }
 
         ray get_ray(int i, int j) const {
@@ -101,6 +104,9 @@ class camera {
         int image_width = 400;
         int samples_per_pixel = 100;
         int max_depth = 10;
+        point3 lookfrom = point3(0, 0, 0);
+        point3 lookat = point3(0, 0, -1);
+        direction3 vup = direction3(0, 1, 0);
 
         // Vertical field of view in degrees
         double vfov = 90;

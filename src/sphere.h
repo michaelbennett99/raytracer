@@ -1,17 +1,23 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#include <memory>
+
 #include "ray.h"
 #include "hittable.h"
+#include "material.h"
 
 class sphere : public hittable {
     private:
         point3 cent;
         double rad;
+        std::shared_ptr<material> mat;
 
     public:
         sphere(point3 center, double radius)
-            : cent(center), rad(std::fmax(radius, 0)) {}
+            : cent(center), rad(std::fmax(radius, 0)) {
+            mat = std::make_shared<lambertian>(colour(0.5, 0.5, 0.5));
+        }
 
         double x() const { return cent[0]; }
         double y() const { return cent[1]; }
@@ -51,6 +57,7 @@ class sphere : public hittable {
             rec.t = root;
             rec.p = r.at(root);
             rec.set_face_normal(r, normal(rec.p));
+            rec.mat = mat;
             return true;
         }
 };

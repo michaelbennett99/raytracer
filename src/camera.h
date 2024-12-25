@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "aspect.h"
 #include "random.h"
+#include "material.h"
 
 class camera {
     private:
@@ -75,13 +76,16 @@ class camera {
             hit_record rec;
 
             if (world.hit(r, interval_d{0.001, infinity_d}, rec)) {
-                const auto direction = rec.normal + random_unit_vector();
-                const auto scattered = ray(rec.p, direction);
-                return 0.5 * ray_colour(
-                    scattered,
-                    world,
-                    depth - 1
-                );
+                ray scattered;
+                colour attenuation;
+                if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+                    return attenuation * ray_colour(
+                        scattered,
+                        world,
+                        depth - 1
+                    );
+                }
+                return colour(0, 0, 0);
             }
 
             direction3 unit_direction = unit_vector(r.direction());

@@ -63,6 +63,11 @@ class vec3 {
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
 
+        bool near_zero() const {
+            const auto s = 1e-8;
+            return length_squared() < s;
+        }
+
         static vec3<T> random() {
             return vec3<T>(
                 gen_rand::gen_rand<T>(),

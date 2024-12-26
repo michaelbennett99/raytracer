@@ -5,14 +5,24 @@
 #include "hittable_list.h"
 #include "sphere.h"
 #include "bvh.h"
+#include "texture.h"
 
 int main() {
     hittable_list world;
 
-    auto ground_material = std::make_shared<lambertian>(colour(0.5, 0.5, 0.5));
+    const auto checker = std::make_shared<checker_texture>(
+        0.32, colour(0.2, 0.3, 0.1), colour(0.9, 0.9, 0.9)
+    );
     world.add(std::make_shared<sphere>(
-        point3(0,-1000,0), 1000, ground_material
+        point3(0,-1000,0),
+        1000,
+        std::make_shared<lambertian>(checker)
     ));
+
+    // auto ground_material = std::make_shared<lambertian>(colour(0.5, 0.5, 0.5));
+    // world.add(std::make_shared<sphere>(
+    //     point3(0,-1000,0), 1000, ground_material
+    // ));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {

@@ -1,8 +1,11 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include <memory>
+
 #include "colour.h"
 #include "hittable.h"
+#include "texture.h"
 
 class material {
     public:
@@ -20,10 +23,11 @@ class material {
 
 class lambertian : public material {
     private:
-        colour albedo;
+        std::shared_ptr<texture> tex;
 
     public:
-        lambertian(const colour& a) : albedo(a) {}
+        lambertian(const colour& a) : tex(std::make_shared<solid_colour>(a)) {}
+        lambertian(std::shared_ptr<texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,
@@ -36,7 +40,7 @@ class lambertian : public material {
                 scatter_direction = rec.normal;
             }
             scattered = ray(rec.p, scatter_direction, r_in.time());
-            attenuation = albedo;
+            attenuation = tex->value(rec.u, rec.v, rec.p);
             return true;
         }
 };

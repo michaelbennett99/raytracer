@@ -42,6 +42,9 @@ struct hit_record {
     bool front_face;
     direction3 normal;
     std::shared_ptr<material> mat;
+    // Texture coordinates
+    double u;
+    double v;
 
     hit_record(
         const ray& r,

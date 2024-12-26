@@ -34,7 +34,12 @@ class bvh_node : public hittable {
             size_t start,
             size_t end
         ) {
-            const int axis = vec_index::gen_rand();
+            bbox = aabb::empty;
+            for (const auto& object : objects) {
+                bbox = aabb(bbox, object->bounding_box());
+            }
+
+            const vec_index axis = bbox.longest_axis();
 
             const auto comparator = [&axis](
                 const std::shared_ptr<hittable> a,

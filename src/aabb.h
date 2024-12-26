@@ -68,6 +68,24 @@ class aabb {
             }
             return true;
         }
+
+        vec_index longest_axis() const {
+            return x().size() > y().size()
+                ? x().size() > z().size()
+                    ? 0 : 2
+                : y().size() > z().size()
+                    ? 1 : 2;
+        }
+
+        static const aabb empty, universe;
 };
+
+const aabb aabb::empty = aabb(
+    interval_d::empty, interval_d::empty, interval_d::empty
+);
+
+const aabb aabb::universe = aabb(
+    interval_d::universe, interval_d::universe, interval_d::universe
+);
 
 #endif

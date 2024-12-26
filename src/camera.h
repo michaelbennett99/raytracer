@@ -85,15 +85,17 @@ class camera {
 
         ray get_ray(int i, int j) const {
             // Construct ray from defocus disk to sampled point at (i, j)
-            auto offset = sample_square();
-            auto pixel_sample = pixel00_loc
+            const auto offset = sample_square();
+            const auto pixel_sample = pixel00_loc
                 + ((i + offset.x()) * pixel_delta_u)
                 + ((j + offset.y()) * pixel_delta_v);
-            auto ray_origin = (defocus_angle <= 0)
+            const auto ray_origin = (defocus_angle <= 0)
                 ? origin
                 : defocus_disk_sample();
-            auto ray_direction = pixel_sample - ray_origin;
-            return ray(ray_origin, ray_direction);
+            const auto ray_direction = pixel_sample - ray_origin;
+            const auto ray_time = gen_rand::random_double(0, 1);
+
+            return ray(ray_origin, ray_direction, ray_time);
         }
 
         direction3 sample_square() const {

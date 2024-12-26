@@ -29,17 +29,27 @@ int main() {
                     // diffuse
                     auto albedo = colour::random() * colour::random();
                     sphere_material = std::make_shared<lambertian>(albedo);
-                    world.add(std::make_shared<sphere>(center, 0.2, sphere_material));
+                    auto center2 = center
+                        + direction3(0, gen_rand::random_double(0, 0.5), 0);
+
+                    world.add(std::make_shared<sphere>(
+                            center, center2, 0.2, sphere_material
+                    ));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = colour::random(0.5, 1);
                     auto fuzz = gen_rand::random_double(0, 0.5);
                     sphere_material = std::make_shared<metal>(albedo, fuzz);
-                    world.add(std::make_shared<sphere>(center, 0.2, sphere_material));
+
+                    world.add(std::make_shared<sphere>(
+                        center, 0.2, sphere_material
+                    ));
                 } else {
                     // glass
                     sphere_material = std::make_shared<dielectric>(1.5);
-                    world.add(std::make_shared<sphere>(center, 0.2, sphere_material));
+                    world.add(std::make_shared<sphere>(
+                        center, 0.2, sphere_material
+                    ));
                 }
             }
         }
@@ -56,7 +66,7 @@ int main() {
 
     camera cam(
         16.0 / 9.0,
-        600,
+        400,
         100,
         50,
         20,

@@ -6,18 +6,23 @@
 
 #include "random.h"
 #include "raytracing.h"
+
 class vec_index {
     private:
         unsigned char value;
 
     public:
-        consteval vec_index(int i) : value(i) {
+        constexpr vec_index(int i) : value(i) {
             if (i < 0 || i >= 3) {
                 throw std::out_of_range("Index out of bounds");
             }
         }
 
         constexpr operator size_t() const { return value; }
+
+        static vec_index gen_rand() {
+            return int(gen_rand::random_double(0, 3));
+        }
 };
 
 template <typename T>

@@ -12,6 +12,7 @@ class sphere : public hittable {
         ray cent;
         double rad;
         std::shared_ptr<material> mat;
+        aabb bbox;
 
     public:
         // Stationary sphere
@@ -21,7 +22,10 @@ class sphere : public hittable {
             std::shared_ptr<material> m
         ) : cent(center, direction3(0, 0, 0)),
             rad{std::fmax(radius, 0)},
-            mat{m} {}
+            mat{m} {
+                const auto radius_vec = direction3(radius, radius, radius);
+                bbox = aabb(center - radius_vec, center + radius_vec);
+            }
 
         // Moving sphere
         sphere(
@@ -29,7 +33,12 @@ class sphere : public hittable {
             const point3& c1,
             double radius,
             std::shared_ptr<material> m
-        ) : cent(c0, c1 - c0), rad{std::fmax(radius, 0)}, mat{m} {}
+        ) : cent(c0, c1 - c0), rad{std::fmax(radius, 0)}, mat{m} {
+            const auto radius_vec = direction3(radius, radius, radius);
+            aabb box0 = aabb(c0 - radius_vec, c0 + radius_vec);
+            aabb box1 = aabb(c1 - radius_vec, c1 + radius_vec);
+            bbox = aabb(box0, box1);
+        }
 
         const ray& center() const { return cent; }
         double radius() const { return rad; }
@@ -68,6 +77,8 @@ class sphere : public hittable {
             rec.set(root, r, outward_normal, mat);
             return true;
         }
+
+        aabb bounding_box() const override { return bbox; }
 };
 
 #endif

@@ -6,7 +6,7 @@
 #include "ray.h"
 #include "vec3.h"
 #include "interval.h"
-
+#include "aabb.h"
 struct hit_record;
 
 class hittable {
@@ -18,6 +18,8 @@ class hittable {
             interval_d t,
             hit_record& rec
         ) const = 0;
+
+        virtual aabb bounding_box() const = 0;
 
         static bool is_front_face(
             const ray& r, const direction3& outward_normal

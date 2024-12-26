@@ -16,6 +16,11 @@ class interval {
 
         interval(T _min, T _max) : min{_min}, max{_max} {}
 
+        interval(const interval<T>& a, const interval<T>& b) {
+            min = std::fmin(a.min, b.min);
+            max = std::fmax(a.max, b.max);
+        }
+
         T size() const {
             return max - min;
         }
@@ -32,6 +37,11 @@ class interval {
             if (x < min) return min;
             if (x > max) return max;
             return x;
+        }
+
+        interval<T> expand(T delta) const {
+            const auto padding = delta / 2;
+            return interval<T>(min - padding, max + padding);
         }
 
         static const interval empty, universe;

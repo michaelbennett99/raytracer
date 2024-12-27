@@ -253,6 +253,14 @@ void ellipses() {
         ellipse_material)
     );
 
+    world.add(std::make_shared<disc>(
+        point3(-2.5, 0, 0),
+        direction3(1, 1, 0),
+        direction3(0, 1, 0),
+        1.5,
+        ellipse_material)
+    );
+
     camera cam(1.0, 400, 100, 50, 80, point3(0, 0, 5), point3(0, 0, 0));
     cam.render(world);
 }

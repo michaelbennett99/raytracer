@@ -6,6 +6,7 @@
 #include "sphere.h"
 #include "bvh.h"
 #include "texture.h"
+#include "quad.h"
 
 void bouncing_spheres() {
     hittable_list world;
@@ -163,9 +164,49 @@ void perlin_spheres() {
     cam.render(world);
 }
 
+void quads() {
+    hittable_list world;
+
+    // Materials
+    const auto left_red = std::make_shared<lambertian>(colour(1, 0.2, 0.2));
+    const auto back_green = std::make_shared<lambertian>(colour(0.2, 1, 0.2));
+    const auto right_blue = std::make_shared<lambertian>(colour(0.2, 0.2, 1));
+    const auto upper_orange = std::make_shared<lambertian>(colour(1, 0.5, 0));
+    const auto lower_teal = std::make_shared<lambertian>(colour(0.2, 0.8, 0.8));
+
+    // Quads
+    world.add(std::make_shared<quad>(
+        point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
+    ));
+    world.add(std::make_shared<quad>(
+        point3(-2, -2, 0), direction3(4, 0, 0), direction3(0, 4, 0), right_blue
+    ));
+    world.add(std::make_shared<quad>(
+        point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
+    ));
+    world.add(std::make_shared<quad>(
+        point3(-2, 3, 1), direction3(4, 0, 0), direction3(0, 0, 4), upper_orange
+    ));
+    world.add(std::make_shared<quad>(
+        point3(-2, -3, 1), direction3(4, 0, 0), direction3(0, 0, 4), lower_teal
+    ));
+
+    camera cam(
+        1.0,
+        400,
+        100,
+        50,
+        80,
+        point3(0, 0, 9),
+        point3(0, 0, 0)
+    );
+
+    cam.render(world);
+}
+
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -179,6 +220,7 @@ int main(int argc, char* argv[]) {
         case 2: checkered_spheres(); break;
         case 3: earth(); break;
         case 4: perlin_spheres(); break;
+        case 5: quads(); break;
         default: usage(argv[0]); return 1;
     }
 }

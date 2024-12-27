@@ -8,11 +8,20 @@
 class aabb {
     private:
         interval_d x_, y_, z_;
+        constexpr static const double delta = 0.0001;
+
+    void pad_to_minimums() {
+        if (x_.size() < delta) x_ = x_.expand(delta);
+        if (y_.size() < delta) y_ = y_.expand(delta);
+        if (z_.size() < delta) z_ = z_.expand(delta);
+    }
 
     public:
         aabb() {}
         aabb(const interval_d& _x, const interval_d& _y, const interval_d& _z)
-            : x_{_x}, y_{_y}, z_{_z} {}
+            : x_{_x}, y_{_y}, z_{_z} {
+                pad_to_minimums();
+            }
 
         aabb(const point3& a, const point3& b) :
             x_{

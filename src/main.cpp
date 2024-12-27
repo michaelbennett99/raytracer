@@ -234,9 +234,32 @@ void triangles() {
     cam.render(world);
 }
 
+void ellipses() {
+    hittable_list world;
+
+    const auto ellipse_material = std::make_shared<lambertian>(
+        colour(0.8, 0.8, 0.0)
+    );
+    world.add(std::make_shared<ellipse>(
+        point3(0, 0, 0),
+        direction3(1, 0, 0),
+        direction3(0, 1, 0),
+        ellipse_material)
+    );
+    world.add(std::make_shared<ellipse>(
+        point3(2.5, 0, 0),
+        direction3(1, 0, 0),
+        direction3(0, 2, -1),
+        ellipse_material)
+    );
+
+    camera cam(1.0, 400, 100, 50, 80, point3(0, 0, 5), point3(0, 0, 0));
+    cam.render(world);
+}
+
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4, 5, 6" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -252,6 +275,7 @@ int main(int argc, char* argv[]) {
         case 4: perlin_spheres(); break;
         case 5: quads(); break;
         case 6: triangles(); break;
+        case 7: ellipses(); break;
         default: usage(argv[0]); return 1;
     }
 }

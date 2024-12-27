@@ -133,4 +133,32 @@ class triangle : public simple_surface {
         }
 };
 
+class ellipse : public simple_surface {
+    private:
+        void set_bounding_box() override {
+            const auto box_0 = aabb(Q_, Q_ + u_ + v_);
+            const auto box_1 = aabb(Q_ + u_, Q_ + v_);
+            bbox_ = aabb(box_0, box_1);
+        }
+
+        bool is_interior(double a, double b, hit_record& rec) const override {
+            interval_d unit {-1, 1};
+            if (!unit.contains(a) || !unit.contains(b)) return false;
+            if (a * a + b * b > 1) return false;
+            rec.u = a;
+            rec.v = b;
+            return true;
+        }
+
+    public:
+        ellipse(
+            const point3& Q,
+            const direction3& u,
+            const direction3& v,
+            std::shared_ptr<material> mat
+        ) {
+            init_surface(Q, u, v, mat);
+        }
+};
+
 #endif

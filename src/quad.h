@@ -8,6 +8,7 @@
 #include "material.h"
 #include "vec3.h"
 
+// Abstract class for surfaces
 class surface : public hittable {
     protected:
         point3 Q_;
@@ -53,7 +54,30 @@ class surface : public hittable {
         }
 };
 
-class quad : public surface {
+// Abstract class for simple surfaces
+class simple_surface : public surface {
+    protected:
+        void init_surface(
+            const point3& Q,
+            const direction3& u,
+            const direction3& v,
+            std::shared_ptr<material> mat
+        ) {
+            Q_ = Q;
+            u_ = u;
+            v_ = v;
+            mat_ = mat;
+
+            const auto n = cross(u_, v_);
+            normal_ = unit_vector(n);
+            D_ = dot(normal_, Q_);
+            w_ = n / dot(n, n);
+
+            set_bounding_box();
+        }
+};
+
+class quad : public simple_surface {
     private:
         void set_bounding_box() override {
             const auto box_0 = aabb(Q_, Q_ + u_ + v_);
@@ -75,22 +99,12 @@ class quad : public surface {
             const direction3& u,
             const direction3& v,
             std::shared_ptr<material> mat
-        ) : surface() {
-            Q_ = Q;
-            u_ = u;
-            v_ = v;
-            mat_ = mat;
-
-            const auto n = cross(u_, v_);
-            normal_ = unit_vector(n);
-            D_ = dot(normal_, Q_);
-            w_ = n / dot(n, n);
-
-            set_bounding_box();
+        ) {
+            init_surface(Q, u, v, mat);
         }
 };
 
-class triangle : public surface {
+class triangle : public simple_surface {
     private:
         void set_bounding_box() override {
             const auto box_0 = aabb(Q_, Q_ + u_);
@@ -114,18 +128,8 @@ class triangle : public surface {
             const direction3& u,
             const direction3& v,
             std::shared_ptr<material> mat
-        ) : surface() {
-            Q_ = Q;
-            u_ = u;
-            v_ = v;
-            mat_ = mat;
-
-            const auto n = cross(u_, v_);
-            normal_ = unit_vector(n);
-            D_ = dot(normal_, Q_);
-            w_ = n / dot(n, n);
-
-            set_bounding_box();
+        ) {
+            init_surface(Q, u, v, mat);
         }
 };
 

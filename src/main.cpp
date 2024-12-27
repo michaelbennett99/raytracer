@@ -74,6 +74,7 @@ void bouncing_spheres() {
         600,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         20,
         point3(13,2,3),
         point3(0,0,0),
@@ -104,6 +105,7 @@ void checkered_spheres() {
         400,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         20,
         point3(13, 2, 3),
         point3(0, 0, 0),
@@ -129,6 +131,7 @@ void earth() {
         400,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         20,
         point3(0, 0, 12),
         point3(0, 0, 0)
@@ -155,6 +158,7 @@ void perlin_spheres() {
         400,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         20,
         point3(13, 2, 3),
         point3(0, 0, 0),
@@ -196,6 +200,7 @@ void quads() {
         400,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         80,
         point3(0, 0, 9),
         point3(0, 0, 0)
@@ -226,6 +231,7 @@ void triangles() {
         400,
         100,
         50,
+        colour(0.7, 0.8, 1.0),
         80,
         point3(0, 0, 9),
         point3(0, 0, 0)
@@ -261,13 +267,51 @@ void ellipses() {
         ellipse_material)
     );
 
-    camera cam(1.0, 400, 100, 50, 80, point3(0, 0, 5), point3(0, 0, 0));
+    camera cam(
+        1.0,
+        400,
+        100,
+        50,
+        colour(0.7, 0.8, 1.0),
+        80,
+        point3(0, 0, 5),
+        point3(0, 0, 0)
+    );
+    cam.render(world);
+}
+
+void simple_light() {
+    hittable_list world;
+
+    const auto pertext = std::make_shared<noise_texture>(4);
+    const auto sphere_material = std::make_shared<lambertian>(pertext);
+    world.add(
+        std::make_shared<sphere>(point3(0,-1000,0), 1000, sphere_material)
+    );
+    world.add(std::make_shared<sphere>(point3(0,2,0), 2, sphere_material));
+
+    const auto light = std::make_shared<diffuse_light>(colour(4, 4, 4));
+    world.add(std::make_shared<quad>(
+        point3(3, 1, -2), direction3(2, 0, 0), direction3(0, 2, 0), light
+    ));
+    world.add(std::make_shared<sphere>(point3(0, 7, 0), 2, light));
+
+    camera cam(
+        16.0 / 9.0,
+        400,
+        100,
+        50,
+        colour(0, 0, 0),
+        20,
+        point3(26, 3, 6),
+        point3(0, 2, 0)
+    );
     cam.render(world);
 }
 
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -284,6 +328,7 @@ int main(int argc, char* argv[]) {
         case 5: quads(); break;
         case 6: triangles(); break;
         case 7: ellipses(); break;
+        case 8: simple_light(); break;
         default: usage(argv[0]); return 1;
     }
 }

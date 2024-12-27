@@ -19,6 +19,10 @@ class material {
         ) const {
             return false;
         }
+
+        virtual colour emitted(double u, double v, const point3& p) const {
+            return colour(0, 0, 0);
+        }
 };
 
 class lambertian : public material {
@@ -110,6 +114,20 @@ class dielectric : public material {
 
             scattered = ray(rec.p, direction, r_in.time());
             return true;
+        }
+};
+
+class diffuse_light : public material {
+    private:
+        std::shared_ptr<texture> tex;
+
+    public:
+        diffuse_light(std::shared_ptr<texture> tex) : tex(tex) {}
+        diffuse_light(const colour& emit)
+            : tex(std::make_shared<solid_colour>(emit)) {}
+
+        colour emitted(double u, double v, const point3& p) const override {
+            return tex->value(u, v, p);
         }
 };
 

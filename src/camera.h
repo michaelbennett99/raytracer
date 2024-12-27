@@ -20,6 +20,7 @@ class camera {
         int image_height;
         int samples_per_pixel;
         int max_depth;
+        colour background;
 
         // Camera parameters
         double vfov;
@@ -118,23 +119,20 @@ class camera {
 
             hit_record rec;
 
-            if (world.hit(r, interval_d{0.001, infinity_d}, rec)) {
-                ray scattered;
-                colour attenuation;
-                if (rec.mat->scatter(r, rec, attenuation, scattered)) {
-                    return attenuation * ray_colour(
-                        scattered,
-                        world,
-                        depth - 1
-                    );
-                }
-                return colour(0, 0, 0);
+            if (!world.hit(r, interval_d{0.001, infinity_d}, rec)) {
+                return background;
             }
 
-            direction3 unit_direction = unit_vector(r.direction());
-            auto a = 0.5 * (unit_direction[1] + 1.0);
-            return (1.0 - a) * colour{ 1.0, 1.0, 1.0 }
-                + a * colour{ 0.5, 0.7, 1.0 };
+            ray scattered;
+            colour attenuation;
+            colour emmitted = rec.mat->emitted(rec.u, rec.v, rec.p);
+
+            if (!rec.mat->scatter(r, rec, attenuation, scattered)) {
+                return emmitted;
+            }
+
+            return emmitted
+                + attenuation * ray_colour(scattered, world, depth - 1);
         }
 
     public:
@@ -143,6 +141,7 @@ class camera {
             int image_width = 400,
             int samples_per_pixel = 100,
             int max_depth = 10,
+            colour background = colour(0, 0, 0),
             double vfov = 90,
             point3 lookfrom = point3(0, 0, 0),
             point3 lookat = point3(0, 0, -1),
@@ -153,6 +152,7 @@ class camera {
             image_width{ image_width },
             samples_per_pixel{ samples_per_pixel },
             max_depth{ max_depth },
+            background{ background },
             vfov{ vfov },
             lookfrom{ lookfrom },
             lookat{ lookat },

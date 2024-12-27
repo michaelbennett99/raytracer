@@ -23,6 +23,10 @@ namespace gen_rand {
     inline double random_double(double min, double max) {
         return gen_rand<double>(min, max);
     }
+
+    inline int random_int(int min, int max) {
+        return static_cast<int>(gen_rand<double>(min, max + 1));
+    }
 };
 
 #endif

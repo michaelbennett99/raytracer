@@ -89,6 +89,14 @@ class aabb {
         static const aabb empty, universe;
 };
 
+inline aabb operator+(const aabb& a, const direction3& b) {
+    return aabb(a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
+}
+
+inline aabb operator+(const direction3& b, const aabb& a) {
+    return a + b;
+}
+
 const aabb aabb::empty = aabb(
     interval_d::empty, interval_d::empty, interval_d::empty
 );

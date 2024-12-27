@@ -7,6 +7,7 @@
 #include "vec3.h"
 #include "interval.h"
 #include "aabb.h"
+
 struct hit_record;
 
 class hittable {

@@ -49,6 +49,16 @@ class interval {
 };
 
 template <typename T>
+inline interval<T> operator+(const interval<T>& a, T b) {
+    return interval<T>(a.min + b, a.max + b);
+}
+
+template <typename T>
+inline interval<T> operator+(T b, const interval<T>& a) {
+    return interval<T>(a.min + b, a.max + b);
+}
+
+template <typename T>
 const interval<T> interval<T>::empty = interval<T>(infinity<T>, -infinity<T>);
 
 template <typename T>

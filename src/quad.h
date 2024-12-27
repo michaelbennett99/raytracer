@@ -7,6 +7,7 @@
 #include "hittable.h"
 #include "material.h"
 #include "vec3.h"
+#include "hittable_list.h"
 
 // Abstract class for surfaces
 class surface : public hittable {
@@ -176,5 +177,47 @@ class disc : public ellipse {
             v_ = unit_vector(v_perp) / radius;
         }
 };
+
+inline std::shared_ptr<hittable_list> box(
+    const point3& a, const point3& b, std::shared_ptr<material> mat
+) {
+    const auto sides = std::make_shared<hittable_list>();
+
+    const auto min = point3(
+        std::min(a.x(), b.x()),
+        std::min(a.y(), b.y()),
+        std::min(a.z(), b.z())
+    );
+    const auto max = point3(
+        std::max(a.x(), b.x()),
+        std::max(a.y(), b.y()),
+        std::max(a.z(), b.z())
+    );
+
+    const auto dx = direction3(max.x() - min.x(), 0, 0);
+    const auto dy = direction3(0, max.y() - min.y(), 0);
+    const auto dz = direction3(0, 0, max.z() - min.z());
+
+    sides->add(std::make_shared<quad>(
+        point3(min.x(), min.y(), max.z()), dx, dz, mat)
+    );
+    sides->add(std::make_shared<quad>(
+        point3(max.x(), min.y(), max.z()), -dz, dy, mat)
+    );
+    sides->add(std::make_shared<quad>(
+        point3(max.x(), min.y(), min.z()), -dx, dy, mat)
+    );
+    sides->add(std::make_shared<quad>(
+        point3(min.x(), min.y(), min.z()), dz, dy, mat)
+    );
+    sides->add(std::make_shared<quad>(
+        point3(min.x(), max.y(), max.z()), dx, -dz, mat)
+    );
+    sides->add(std::make_shared<quad>(
+        point3(min.x(), min.y(), min.z()), dx, dz, mat)
+    );
+
+    return sides;
+}
 
 #endif

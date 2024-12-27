@@ -7,7 +7,7 @@
 #include "bvh.h"
 #include "texture.h"
 #include "quad.h"
-
+#include "movement.h"
 void bouncing_spheres() {
     hittable_list world;
 
@@ -309,9 +309,66 @@ void simple_light() {
     cam.render(world);
 }
 
+void cornell_box() {
+    hittable_list world;
+
+    const auto red = std::make_shared<lambertian>(colour(0.65, 0.05, 0.05));
+    const auto white = std::make_shared<lambertian>(colour(0.73, 0.73, 0.73));
+    const auto green = std::make_shared<lambertian>(colour(0.12, 0.45, 0.09));
+    const auto light = std::make_shared<diffuse_light>(colour(15, 15, 15));
+
+    world.add(std::make_shared<quad>(
+        point3(555, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), green
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), red
+    ));
+    world.add(std::make_shared<quad>(
+        point3(343, 554, 332),
+        direction3(-130, 0, 0),
+        direction3(0, 0, -105),
+        light
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0, 0, 0), direction3(555, 0, 0), direction3(0, 0, 555), white
+    ));
+    world.add(std::make_shared<quad>(
+        point3(555,555,555), direction3(-555,0,0), direction3(0,0,-555), white
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0, 0, 555), direction3(555, 0, 0), direction3(0, 555, 0), white
+    ));
+
+    std::shared_ptr<hittable> box1 = box(
+        point3(0,0,0), point3(165,330,165), white
+    );
+    box1 = std::make_shared<rotate_y>(box1, 15);
+    box1 = std::make_shared<translate>(box1, direction3(265,0,295));
+    world.add(box1);
+
+    std::shared_ptr<hittable> box2 = box(
+        point3(0,0,0), point3(165,165,165), white
+    );
+    box2 = std::make_shared<rotate_y>(box2, -18);
+    box2 = std::make_shared<translate>(box2, direction3(130,0,65));
+    world.add(box2);
+
+    camera cam(
+        1.0,
+        600,
+        200,
+        20,
+        colour(0, 0, 0),
+        40,
+        point3(278, 278, -800),
+        point3(278, 278, 0)
+    );
+    cam.render(world);
+}
+
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -329,6 +386,7 @@ int main(int argc, char* argv[]) {
         case 6: triangles(); break;
         case 7: ellipses(); break;
         case 8: simple_light(); break;
+        case 9: cornell_box(); break;
         default: usage(argv[0]); return 1;
     }
 }

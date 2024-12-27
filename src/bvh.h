@@ -18,7 +18,7 @@ class bvh_node : public hittable {
         static bool box_compare(
             const std::shared_ptr<hittable> a,
             const std::shared_ptr<hittable> b,
-            vec_index axis_index
+            int axis_index
         ) {
             auto a_axis_interval = a->bounding_box()[axis_index];
             auto b_axis_interval = b->bounding_box()[axis_index];
@@ -39,7 +39,7 @@ class bvh_node : public hittable {
                 bbox = aabb(bbox, object->bounding_box());
             }
 
-            const vec_index axis = bbox.longest_axis();
+            const int axis = bbox.longest_axis();
 
             const auto comparator = [&axis](
                 const std::shared_ptr<hittable> a,

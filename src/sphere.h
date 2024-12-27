@@ -1,11 +1,13 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#include <cmath>
 #include <memory>
 
 #include "ray.h"
 #include "hittable.h"
 #include "material.h"
+#include "raytracing.h"
 
 class sphere : public hittable {
     private:
@@ -13,6 +15,14 @@ class sphere : public hittable {
         double rad;
         std::shared_ptr<material> mat;
         aabb bbox;
+
+        static void get_sphere_uv(const point3& p, double& u, double& v) {
+            const auto theta = std::acos(-p.y());
+            const auto phi = std::atan2(-p.z(), p.x()) + pi;
+
+            u = phi / (2 * pi);
+            v = theta / pi;
+        }
 
     public:
         // Stationary sphere
@@ -72,9 +82,12 @@ class sphere : public hittable {
             }
 
             // Set hit record
-            const auto outward_normal = (r.at(root) - current_center)
-                / radius();
-            rec.set(root, r, outward_normal, mat);
+            rec.t = root;
+            rec.p = r.at(root);
+            const auto outward_normal = (rec.p - current_center) / radius();
+            rec.set_face_normal(r, outward_normal);
+            rec.mat = mat;
+            get_sphere_uv(outward_normal, rec.u, rec.v);
             return true;
         }
 

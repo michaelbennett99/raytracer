@@ -5,6 +5,7 @@
 
 #include "vec3.h"
 #include "colour.h"
+#include "rtw_stb_image.h"
 
 class texture {
     public:
@@ -61,6 +62,32 @@ class checker_texture : public texture {
 
             const bool is_even = (x + y + z) % 2 == 0;
             return is_even ? even->value(u, v, p) : odd->value(u, v, p);
+        }
+};
+
+class image_texture : public texture {
+    private:
+        rtw_image img;
+
+    public:
+        image_texture(const char* filename) : img(filename) {}
+
+        colour value(double u, double v, const point3& p) const override {
+            if (img.height() <= 0) return colour(0, 1, 1);
+
+            u = interval_d(0, 1).clamp(u);
+            v = 1.0 - interval_d(0, 1).clamp(v); // Flip V to image coordinates
+
+            const auto i = int(u * img.width());
+            const auto j = int(v * img.height());
+            const auto pixel = img.pixel_data(i, j);
+
+            const auto colour_scale = 1.0 / 255.0;
+            return colour(
+                pixel[0] * colour_scale,
+                pixel[1] * colour_scale,
+                pixel[2] * colour_scale
+            );
         }
 };
 

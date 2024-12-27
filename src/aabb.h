@@ -39,7 +39,7 @@ class aabb {
         const interval_d& y() const { return y_; }
         const interval_d& z() const { return z_; }
 
-        const interval_d& operator[](vec_index i) const {
+        const interval_d& operator[](int i) const {
             return (i == 0) ? x_ : (i == 1) ? y_ : z_;
         }
 
@@ -69,7 +69,7 @@ class aabb {
             return true;
         }
 
-        vec_index longest_axis() const {
+        int longest_axis() const {
             return x().size() > y().size()
                 ? x().size() > z().size()
                     ? 0 : 2

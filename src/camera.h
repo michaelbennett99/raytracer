@@ -8,6 +8,7 @@
 #include "aspect.h"
 #include "random.h"
 #include "material.h"
+#include "sampler.h"
 #include <thread>
 #include <mutex>
 #include <sstream>
@@ -33,14 +34,8 @@ class camera {
         double focus_dist;
         double pixel_samples_scale;
 
-        // Camera parameters
-        point3 origin;
-        point3 pixel00_loc;
-        direction3 pixel_delta_u;
-        direction3 pixel_delta_v;
-        direction3 u, v, w;
-        direction3 defocus_disk_u;
-        direction3 defocus_disk_v;
+        // Pixel sampler
+        std::unique_ptr<sampler> sampler;
 
         int calc_image_height() const {
             const auto h = height(image_width, ar);
@@ -49,8 +44,7 @@ class camera {
 
         void initialize() {
             image_height = calc_image_height();
-            pixel_samples_scale = 1.0 / samples_per_pixel;
-            origin = lookfrom;
+            const auto origin = lookfrom;
 
             // Viewport dimensions
             const auto theta = degrees_to_radians(vfov);
@@ -60,56 +54,40 @@ class camera {
                 * aspect_ratio(image_width, image_height);
 
             // Calculate orthonormal basis
-            w = unit_vector(lookfrom - lookat);
-            u = unit_vector(cross(vup, w));
-            v = cross(w, u);
+            const auto w = unit_vector(lookfrom - lookat);
+            const auto u = unit_vector(cross(vup, w));
+            const auto v = cross(w, u);
 
             // Edge vectors of viewport
             const auto viewport_u = viewport_width * u; // u is horizontal
             const auto viewport_v = viewport_height * -v; // v is vertical
 
             // Delta vectors from pixel to pixel
-            pixel_delta_u = viewport_u / image_width;
-            pixel_delta_v = viewport_v / image_height;
+            const auto pixel_delta_u = viewport_u / image_width;
+            const auto pixel_delta_v = viewport_v / image_height;
 
             // Location of upper left pixel
             const auto viewport_ul = origin
                 - (focus_dist * w)
                 - 0.5 * (viewport_u + viewport_v);
-            pixel00_loc = viewport_ul + 0.5 * (pixel_delta_u + pixel_delta_v);
+            const auto pixel00_loc = viewport_ul
+                + 0.5 * (pixel_delta_u + pixel_delta_v);
 
             const auto defocus_radius = focus_dist
                 * std::tan(degrees_to_radians(defocus_angle / 2));
-            defocus_disk_u = u * defocus_radius;
-            defocus_disk_v = v * defocus_radius;
-        }
+            const auto defocus_disk_u = u * defocus_radius;
+            const auto defocus_disk_v = v * defocus_radius;
 
-        ray get_ray(int i, int j) const {
-            // Construct ray from defocus disk to sampled point at (i, j)
-            const auto offset = sample_square();
-            const auto pixel_sample = pixel00_loc
-                + ((i + offset.x()) * pixel_delta_u)
-                + ((j + offset.y()) * pixel_delta_v);
-            const auto ray_origin = (defocus_angle <= 0)
-                ? origin
-                : defocus_disk_sample();
-            const auto ray_direction = pixel_sample - ray_origin;
-            const auto ray_time = gen_rand::random_double(0, 1);
-
-            return ray(ray_origin, ray_direction, ray_time);
-        }
-
-        direction3 sample_square() const {
-            return direction3(
-                gen_rand::random_double(-0.5, 0.5),
-                gen_rand::random_double(-0.5, 0.5),
-                0
+            sampler = std::make_unique<random_sampler>(
+                origin,
+                pixel00_loc,
+                pixel_delta_u,
+                pixel_delta_v,
+                defocus_angle,
+                defocus_disk_u,
+                defocus_disk_v,
+                samples_per_pixel
             );
-        }
-
-        point3 defocus_disk_sample() const {
-            const auto p = random_in_unit_disk();
-            return origin + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
         }
 
         colour ray_colour(
@@ -158,7 +136,8 @@ class camera {
             lookat{ lookat },
             vup{ vup },
             defocus_angle{ defocus_angle },
-            focus_dist{ focus_dist }
+            focus_dist{ focus_dist },
+            pixel_samples_scale{ 1.0 / samples_per_pixel }
         {
             initialize();
         }
@@ -181,11 +160,13 @@ class camera {
                     std::ostringstream line_stream;
                     for (int i = 0; i < image_width; ++i) {
                         colour pixel_colour(0, 0, 0);
-                        for (int s = 0; s < samples_per_pixel; ++s) {
-                            auto ray = get_ray(i, j);
+                        const auto rays = sampler->samples(i, j);
+                        for (const auto& ray : rays) {
                             pixel_colour += ray_colour(ray, world, max_depth);
                         }
-                        write_colour(line_stream, pixel_colour * pixel_samples_scale);
+                        write_colour(
+                            line_stream, pixel_colour * pixel_samples_scale
+                        );
                     }
                     scanlines[j] = line_stream.str();
 

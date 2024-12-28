@@ -424,9 +424,114 @@ void cornell_smoke() {
     cam.render(world);
 }
 
+void final_scene(int img_width, int samples_per_pixel, int max_depth) {
+    // Ground of boxes
+    hittable_list boxes1;
+    auto ground = std::make_shared<lambertian>(colour(0.48, 0.83, 0.53));
+    int boxes_per_side = 20;
+    for (int i = 0; i < boxes_per_side; i++) {
+        for (int j = 0; j < boxes_per_side; j++) {
+            auto w = 100.0;
+            auto x0 = -1000.0 + i*w;
+            auto z0 = -1000.0 + j*w;
+            auto y0 = 0.0;
+            auto x1 = x0 + w;
+            auto y1 = gen_rand::random_double(1,101);
+            auto z1 = z0 + w;
+
+            boxes1.add(box(point3(x0,y0,z0), point3(x1,y1,z1), ground));
+        }
+    }
+
+    hittable_list world;
+
+    // Bounding volume hierarchy for the boxes
+    world.add(std::make_shared<bvh_node>(boxes1));
+
+    // Light
+    auto light = std::make_shared<diffuse_light>(colour(7, 7, 7));
+    world.add(std::make_shared<quad>(
+        point3(123,554,147), direction3(300,0,0), direction3(0,0,265), light
+    ));
+
+    // Moving sphere
+    auto center1 = point3(400, 400, 200);
+    auto center2 = center1 + direction3(30,0,0);
+    auto sphere_material = std::make_shared<lambertian>(colour(0.7, 0.3, 0.1));
+    world.add(std::make_shared<sphere>(center1, center2, 50, sphere_material));
+
+    // Static spheres
+    const auto dielectric_material = std::make_shared<dielectric>(1.5);
+    const auto metal_material = std::make_shared<metal>(
+        colour(0.8, 0.8, 0.9), 1.0
+    );
+    world.add(std::make_shared<sphere>(
+        point3(260, 150, 45), 50, dielectric_material
+    ));
+    world.add(std::make_shared<sphere>(
+        point3(0, 150, 145), 50, metal_material
+    ));
+
+    // SSR sphere
+    auto boundary = std::make_shared<sphere>(
+        point3(360,150,145), 70, dielectric_material
+    );
+    world.add(boundary);
+    world.add(std::make_shared<constant_medium>(
+        boundary, 0.2, colour(0.2, 0.4, 0.9)
+    ));
+    boundary = std::make_shared<sphere>(
+        point3(0,0,0), 5000, dielectric_material
+    );
+    world.add(std::make_shared<constant_medium>(
+        boundary, .0001, colour(1,1,1)
+    ));
+
+    // World sphere
+    auto map = std::make_shared<lambertian>(std::make_shared<image_texture>(
+        "map.jpg"
+    ));
+    world.add(std::make_shared<sphere>(point3(400,200,400), 100, map));
+
+    // Perlin sphere
+    const auto pertext = std::make_shared<noise_texture>(0.2);
+    const auto pertext_material = std::make_shared<lambertian>(pertext);
+    world.add(std::make_shared<sphere>(
+        point3(220,280,300), 80, pertext_material
+    ));
+
+    // Box of spheres
+    hittable_list boxes2;
+    const auto white = std::make_shared<lambertian>(colour(.73, .73, .73));
+    int ns = 1000;
+    for (int j = 0; j < ns; j++) {
+        boxes2.add(std::make_shared<sphere>(point3::random(0,165), 10, white));
+    }
+
+    // Bounding volume hierarchy for the box of spheres
+    world.add(std::make_shared<translate>(
+        std::make_shared<rotate_y>(
+            std::make_shared<bvh_node>(boxes2), 15),
+            direction3(-100,270,395)
+        )
+    );
+
+    camera cam(
+        1.0,
+        img_width,
+        samples_per_pixel,
+        max_depth,
+        colour(0, 0, 0),
+        40,
+        point3(478, 278, -600),
+        point3(278, 278, 0)
+    );
+    cam.render(world);
+}
+
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -446,6 +551,8 @@ int main(int argc, char* argv[]) {
         case 8: simple_light(); break;
         case 9: cornell_box(); break;
         case 10: cornell_smoke(); break;
+        case 11: final_scene(800, 1000, 40); break;
+        case 12: final_scene(600, 250, 4); break;
         default: usage(argv[0]); return 1;
     }
 }

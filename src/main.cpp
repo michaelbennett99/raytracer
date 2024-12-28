@@ -8,6 +8,8 @@
 #include "texture.h"
 #include "quad.h"
 #include "movement.h"
+#include "constant_medium.h"
+
 void bouncing_spheres() {
     hittable_list world;
 
@@ -315,7 +317,7 @@ void cornell_box() {
     const auto red = std::make_shared<lambertian>(colour(0.65, 0.05, 0.05));
     const auto white = std::make_shared<lambertian>(colour(0.73, 0.73, 0.73));
     const auto green = std::make_shared<lambertian>(colour(0.12, 0.45, 0.09));
-    const auto light = std::make_shared<diffuse_light>(colour(15, 15, 15));
+    const auto light = std::make_shared<diffuse_light>(colour(25, 25, 25));
 
     world.add(std::make_shared<quad>(
         point3(555, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), green
@@ -356,7 +358,7 @@ void cornell_box() {
     camera cam(
         1.0,
         600,
-        200,
+        1000,
         20,
         colour(0, 0, 0),
         40,
@@ -366,9 +368,65 @@ void cornell_box() {
     cam.render(world);
 }
 
+void cornell_smoke() {
+    hittable_list world;
+
+    auto red   = std::make_shared<lambertian>(colour(.65, .05, .05));
+    auto white = std::make_shared<lambertian>(colour(.73, .73, .73));
+    auto green = std::make_shared<lambertian>(colour(.12, .45, .15));
+    auto light = std::make_shared<diffuse_light>(colour(7, 7, 7));
+
+    world.add(std::make_shared<quad>(
+        point3(555,0,0), direction3(0,555,0), direction3(0,0,555), green
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0,0,0), direction3(0,555,0), direction3(0,0,555), red
+    ));
+    world.add(std::make_shared<quad>(
+        point3(113,554,127), direction3(330,0,0), direction3(0,0,305), light
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0,555,0), direction3(555,0,0), direction3(0,0,555), white
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0,0,0), direction3(555,0,0), direction3(0,0,555), white
+    ));
+    world.add(std::make_shared<quad>(
+        point3(0,0,555), direction3(555,0,0), direction3(0,555,0), white
+    ));
+
+    std::shared_ptr<hittable> box1 = box(
+        point3(0,0,0), point3(165,330,165), white
+    );
+    box1 = std::make_shared<rotate_y>(box1, 15);
+    box1 = std::make_shared<translate>(box1, direction3(265,0,295));
+
+    std::shared_ptr<hittable> box2 = box(
+        point3(0,0,0), point3(165,165,165), white
+    );
+    box2 = std::make_shared<rotate_y>(box2, -18);
+    box2 = std::make_shared<translate>(box2, direction3(130,0,65));
+
+    world.add(std::make_shared<constant_medium>(box1, 0.01, colour(0,0,0)));
+    world.add(std::make_shared<constant_medium>(box2, 0.01, colour(1,1,1)));
+
+    camera cam {
+        1.0,
+        600,
+        200,
+        50,
+        colour(0, 0, 0),
+        40,
+        point3(278, 278, -800),
+        point3(278, 278, 0)
+    };
+
+    cam.render(world);
+}
+
 static void usage(const char* argv0) {
     std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
-        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9" << std::endl;
+        << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -387,6 +445,7 @@ int main(int argc, char* argv[]) {
         case 7: ellipses(); break;
         case 8: simple_light(); break;
         case 9: cornell_box(); break;
+        case 10: cornell_smoke(); break;
         default: usage(argv[0]); return 1;
     }
 }

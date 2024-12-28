@@ -553,6 +553,8 @@ int main(int argc, char* argv[]) {
         case 10: cornell_smoke(); break;
         case 11: final_scene(800, 1000, 40); break;
         case 12: final_scene(600, 250, 4); break;
-        default: usage(argv[0]); return 1;
+        default: final_scene(600, 250, 4);
     }
+
+    return 0;
 }

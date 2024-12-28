@@ -22,7 +22,7 @@ class bvh_node : public hittable {
         ) {
             auto a_axis_interval = a->bounding_box()[axis_index];
             auto b_axis_interval = b->bounding_box()[axis_index];
-            return a_axis_interval.min < b_axis_interval.min;
+            return a_axis_interval.min() < b_axis_interval.min();
         }
 
     public:
@@ -74,7 +74,7 @@ class bvh_node : public hittable {
             if (!bbox.hit(r, t)) return false;
 
             const bool hit_left = left->hit(r, t, rec);
-            const auto rt = interval_d{t.min, hit_left ? rec.t : t.max};
+            const auto rt = interval_d{t.min(), hit_left ? rec.t : t.max()};
             const bool hit_right = right->hit(r, rt, rec);
 
             return hit_left || hit_right;

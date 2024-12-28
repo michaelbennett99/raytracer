@@ -39,17 +39,17 @@ class rotate_y : public hittable {
 
         point3 rotate(const point3& p) const {
             return point3(
-                cos_theta * p.x() + sin_theta * p.z(),
+                cos_theta * p.x() - sin_theta * p.z(),
                 p.y(),
-                -sin_theta * p.x() + cos_theta * p.z()
+                sin_theta * p.x() + cos_theta * p.z()
             );
         }
 
         point3 derotate(const point3& p) const {
             return point3(
-                cos_theta * p.x() - sin_theta * p.z(),
+                cos_theta * p.x() + sin_theta * p.z(),
                 p.y(),
-                sin_theta * p.x() + cos_theta * p.z()
+                -sin_theta * p.x() + cos_theta * p.z()
             );
         }
 
@@ -62,12 +62,12 @@ class rotate_y : public hittable {
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
                     for (int k = 0; k < 2; k++) {
-                        const auto x = i * bbox.x().max + (1 - i)
-                            * bbox.x().min;
-                        const auto y = j * bbox.y().max + (1 - j)
-                            * bbox.y().min;
-                        const auto z = k * bbox.z().max + (1 - k)
-                            * bbox.z().min;
+                        const auto x = i * bbox.x().max() + (1 - i)
+                            * bbox.x().min();
+                        const auto y = j * bbox.y().max() + (1 - j)
+                            * bbox.y().min();
+                        const auto z = k * bbox.z().max() + (1 - k)
+                            * bbox.z().min();
 
                         const auto newx = cos_theta * x + sin_theta * z;
                         const auto newz = -sin_theta * x + cos_theta * z;

@@ -7,41 +7,50 @@
 
 template <typename T>
 class interval {
+    private:
+        T min_;
+        T max_;
+
     public:
-        T min;
-        T max;
 
         // Default interval: empty
-        interval() : min{infinity<T>}, max{-infinity<T>} {}
+        interval() : min_{infinity<T>}, max_{-infinity<T>} {}
 
-        interval(T _min, T _max) : min{_min}, max{_max} {}
+        interval(T _min, T _max) : min_{_min}, max_{_max} {}
 
         interval(const interval<T>& a, const interval<T>& b) {
-            min = std::fmin(a.min, b.min);
-            max = std::fmax(a.max, b.max);
+            min_ = std::fmin(a.min(), b.min());
+            max_ = std::fmax(a.max(), b.max());
         }
 
         T size() const {
-            return max - min;
+            return max_ - min_;
+        }
+
+        T min() const {
+            return min_;
+        }
+        T max() const {
+            return max_;
         }
 
         bool contains(T x) const {
-            return min <= x && x <= max;
+            return min_ <= x && x <= max_;
         }
 
         bool surrounds(T x) const {
-            return min < x && x < max;
+            return min_ < x && x < max_;
         }
 
         T clamp(T x) const {
-            if (x < min) return min;
-            if (x > max) return max;
+            if (x < min_) return min_;
+            if (x > max_) return max_;
             return x;
         }
 
         interval<T> expand(T delta) const {
             const auto padding = delta / 2;
-            return interval<T>(min - padding, max + padding);
+            return interval<T>(min_ - padding, max_ + padding);
         }
 
         static const interval empty, universe;
@@ -50,12 +59,12 @@ class interval {
 
 template <typename T>
 inline interval<T> operator+(const interval<T>& a, T b) {
-    return interval<T>(a.min + b, a.max + b);
+    return interval<T>(a.min() + b, a.max() + b);
 }
 
 template <typename T>
 inline interval<T> operator+(T b, const interval<T>& a) {
-    return interval<T>(a.min + b, a.max + b);
+    return interval<T>(a.min() + b, a.max() + b);
 }
 
 template <typename T>

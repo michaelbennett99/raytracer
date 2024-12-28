@@ -155,8 +155,9 @@ inline vec3<T> unit_vector(const vec3<T>& v) {
 inline vec3<double> random_unit_vector() {
     const auto theta = gen_rand::random_double(0, pi);
     const auto phi = gen_rand::random_double(0, 2 * pi);
-    const auto x = std::sin(theta) * std::cos(phi);
-    const auto y = std::sin(theta) * std::sin(phi);
+    const auto sin_theta = std::sin(theta);
+    const auto x = sin_theta * std::cos(phi);
+    const auto y = sin_theta * std::sin(phi);
     const auto z = std::cos(theta);
     return vec3<double>(x, y, z);
 }

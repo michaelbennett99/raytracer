@@ -60,18 +60,18 @@ class aabb {
                 const interval_d& ax = operator[](axis);
                 const auto dir_inv = 1.0 / ray_direction[axis];
 
-                const auto t0 = (ax.min - ray_origin[axis]) * dir_inv;
-                const auto t1 = (ax.max - ray_origin[axis]) * dir_inv;
+                const auto t0 = (ax.min() - ray_origin[axis]) * dir_inv;
+                const auto t1 = (ax.max() - ray_origin[axis]) * dir_inv;
 
                 if (t0 < t1) {
-                    if (t0 > t.min) t.min = t0;
-                    if (t1 < t.max) t.max = t1;
+                    if (t0 > t.min()) t = interval_d{t0, t.max()};
+                    if (t1 < t.max()) t = interval_d{t.min(), t1};
                 } else {
-                    if (t1 > t.min) t.min = t1;
-                    if (t0 < t.max) t.max = t0;
+                    if (t1 > t.min()) t = interval_d{t1, t.max()};
+                    if (t0 < t.max()) t = interval_d{t.min(), t0};
                 }
 
-                if (t.max <= t.min) {
+                if (t.max() <= t.min()) {
                     return false;
                 }
             }

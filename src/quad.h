@@ -198,24 +198,30 @@ inline std::shared_ptr<hittable_list> box(
     const auto dy = direction3(0, max.y() - min.y(), 0);
     const auto dz = direction3(0, 0, max.z() - min.z());
 
+    // Front face (z = max.z)
     sides->add(std::make_shared<quad>(
-        point3(min.x(), min.y(), max.z()), dx, dz, mat)
-    );
+        point3(min.x(), min.y(), max.z()), dx, dy, mat
+    ));
+    // Right face (x = max.x)
     sides->add(std::make_shared<quad>(
-        point3(max.x(), min.y(), max.z()), -dz, dy, mat)
-    );
+        point3(max.x(), min.y(), max.z()), -dz, dy, mat
+    ));
+    // Back face (z = min.z)
     sides->add(std::make_shared<quad>(
-        point3(max.x(), min.y(), min.z()), -dx, dy, mat)
-    );
+        point3(max.x(), min.y(), min.z()), -dx, dy, mat
+    ));
+    // Left face (x = min.x)
     sides->add(std::make_shared<quad>(
-        point3(min.x(), min.y(), min.z()), dz, dy, mat)
-    );
+        point3(min.x(), min.y(), min.z()), dz, dy, mat
+    ));
+    // Top face (y = max.y)
     sides->add(std::make_shared<quad>(
-        point3(min.x(), max.y(), max.z()), dx, -dz, mat)
-    );
+        point3(min.x(), max.y(), min.z()), dx, dz, mat
+    ));
+    // Bottom face (y = min.y)
     sides->add(std::make_shared<quad>(
-        point3(min.x(), min.y(), min.z()), dx, dz, mat)
-    );
+        point3(min.x(), min.y(), min.z()), dx, dz, mat
+    ));
 
     return sides;
 }

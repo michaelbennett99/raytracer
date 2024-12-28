@@ -32,7 +32,6 @@ class camera {
         // Lens parameters
         double defocus_angle;
         double focus_dist;
-        double pixel_samples_scale;
 
         // Pixel sampler
         std::unique_ptr<sampler> sampler;
@@ -78,7 +77,7 @@ class camera {
             const auto defocus_disk_u = u * defocus_radius;
             const auto defocus_disk_v = v * defocus_radius;
 
-            sampler = std::make_unique<random_sampler>(
+            sampler = std::make_unique<adaptive_random_sampler>(
                 origin,
                 pixel00_loc,
                 pixel_delta_u,
@@ -136,8 +135,7 @@ class camera {
             lookat{ lookat },
             vup{ vup },
             defocus_angle{ defocus_angle },
-            focus_dist{ focus_dist },
-            pixel_samples_scale{ 1.0 / samples_per_pixel }
+            focus_dist{ focus_dist }
         {
             initialize();
         }
@@ -161,11 +159,15 @@ class camera {
                     for (int i = 0; i < image_width; ++i) {
                         colour pixel_colour(0, 0, 0);
                         const auto rays = sampler->samples(i, j);
+                        int samples = 0;
                         for (const auto& ray : rays) {
                             pixel_colour += ray_colour(ray, world, max_depth);
+                            sampler->add_sample(pixel_colour);
+                            samples++;
                         }
+                        sampler->clear();
                         write_colour(
-                            line_stream, pixel_colour * pixel_samples_scale
+                            line_stream, pixel_colour / samples
                         );
                     }
                     scanlines[j] = line_stream.str();

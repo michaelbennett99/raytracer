@@ -66,6 +66,10 @@ class vec3 {
             return !(*this < v);
         }
 
+        T sum() const {
+            return e[0] + e[1] + e[2];
+        }
+
         T length() const {
             return std::sqrt(length_squared());
         }

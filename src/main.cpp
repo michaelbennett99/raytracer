@@ -521,7 +521,7 @@ void final_scene(int img_width, int samples_per_pixel, int max_depth) {
         img_width,
         samples_per_pixel,
         max_depth,
-        colour(0, 0, 0),
+        colour(1e-3, 1e-3, 1e-3),
         40,
         point3(478, 278, -600),
         point3(278, 278, 0)

@@ -530,17 +530,19 @@ void final_scene(int img_width, int samples_per_pixel, int max_depth) {
 }
 
 static void usage(const char* argv0) {
-    std::cerr << "Usage: " << argv0 << " <scene>" << std::endl
+    std::cerr << "Usage: " << argv0 << " [<scene>]" << std::endl
         << "Valid scenes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
+    if (argc > 2) {
         usage(argv[0]);
         return 1;
     }
 
-    switch (std::stoi(argv[1])) {
+    int scene = argc > 1 ? std::stoi(argv[1]) : 12;
+
+    switch (scene) {
         case 1: bouncing_spheres(); break;
         case 2: checkered_spheres(); break;
         case 3: earth(); break;

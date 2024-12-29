@@ -3,30 +3,40 @@
 
 #include "vec3.h"
 #include "colour.h"
+#include "interval.h"
 
 constexpr int colour_multiplier = 256;
 
 using colour = vec3<double>;
 
-inline double linear_to_gamma(double linear) {
-    if (linear > 0) {
-        return std::sqrt(linear);
-    }
-    return 0;
-}
+class Colour : public vec3<double> {
+    private:
+        static constexpr int colour_multiplier = 256;
+        static constexpr interval_d intensity{0.0, 0.999};
 
-void write_colour(std::ostream& out, const colour& c) {
-    auto r = linear_to_gamma(c.x());
-    auto g = linear_to_gamma(c.y());
-    auto b = linear_to_gamma(c.z());
+        static constexpr double linear_to_gamma(double linear) {
+            if (linear > 0) {
+                return std::sqrt(linear);
+            }
+            return 0;
+        }
 
-    static const interval intensity(0.000, 0.999);
+        static constexpr double gamma_correct(double linear) {
+            return colour_multiplier * intensity.clamp(linear_to_gamma(linear));
+        }
 
-    int rb = static_cast<int>(colour_multiplier * intensity.clamp(r));
-    int gb = static_cast<int>(colour_multiplier * intensity.clamp(g));
-    int bb = static_cast<int>(colour_multiplier * intensity.clamp(b));
+    public:
+        Colour() = default;
+        Colour(double r, double g, double b) : vec3<double>(r, g, b) {}
+        Colour(const vec3<double>& v) : vec3<double>(v) {}
 
-    out << rb << ' ' << gb << ' ' << bb << '\n';
-}
+        Colour gamma_correct() const {
+            return Colour{
+                gamma_correct(x()),
+                gamma_correct(y()),
+                gamma_correct(z())
+            };
+        }
+};
 
 #endif

@@ -19,7 +19,55 @@ struct sample_range {
     ray_iterator end() const;
 };
 
+struct SamplerConfig {
+    int samples_per_pixel = 100;
+
+    struct Random {
+        bool enabled = false;
+    } random;
+
+    struct Adaptive {
+        bool enabled = false;
+        int burn_in = 64;
+        int check_every = 64;
+        double tolerance = 0.05;
+        double critical_value = 1.96;
+        double epsilon = 1e-16;
+    } adaptive;
+};
+
+std::ostream& operator<<(std::ostream& os, const SamplerConfig::Random& r) {
+    os << "Random(\n"
+        << "\t\tenabled=" << r.enabled << "\n"
+        << "\t)";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const SamplerConfig::Adaptive& a) {
+    os << "Adaptive(\n"
+        << "\t\tenabled=" << a.enabled << "\n"
+        << "\t\tburn_in=" << a.burn_in << "\n"
+        << "\t\tcheck_every=" << a.check_every << "\n"
+        << "\t\ttolerance=" << a.tolerance << "\n"
+        << "\t\tcritical_value=" << a.critical_value << "\n"
+        << "\t\tepsilon=" << a.epsilon << "\n"
+        << "\t)";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const SamplerConfig& cfg) {
+    os << "SamplerConfig(\n"
+        << "\tsamples_per_pixel=" << cfg.samples_per_pixel << "\n"
+        << "\trandom=" << cfg.random << "\n"
+        << "\tadaptive=" << cfg.adaptive << "\n"
+        << ")";
+    return os;
+}
+
 class sampler {
+    private:
+        bool initialised = false;
+
     protected:
         // Data we need to sample rays
         point3 origin;
@@ -29,6 +77,7 @@ class sampler {
         double defocus_angle;
         direction3 defocus_disk_u;
         direction3 defocus_disk_v;
+        SamplerConfig cfg;
 
         static direction3 sample_square() {
             return direction3(
@@ -46,23 +95,22 @@ class sampler {
         virtual point3 sample_pixel(int i, int j) const = 0;
 
     public:
-        sampler(
-            point3 origin,
-            point3 pixel00_loc,
-            direction3 pixel_delta_u,
-            direction3 pixel_delta_v,
-            double defocus_angle,
-            direction3 defocus_disk_u,
-            direction3 defocus_disk_v
-        ) : origin(origin),
-            pixel00_loc(pixel00_loc),
-            pixel_delta_u(pixel_delta_u),
-            pixel_delta_v(pixel_delta_v),
-            defocus_angle(defocus_angle),
-            defocus_disk_u(defocus_disk_u),
-            defocus_disk_v(defocus_disk_v) {}
-
+        sampler() = default;
         virtual ~sampler() = default;
+
+        virtual void set_config(const SamplerConfig& cfg) {
+            this->cfg = cfg;
+        }
+
+        virtual SamplerConfig get_config() const {
+            return cfg;
+        }
+
+        virtual bool has_next_sample(int i, int j, int sample) const = 0;
+        virtual void add_sample(const colour& sample) {}
+        virtual void clear() {}
+
+        virtual colour sampling_density_colour() const = 0;
 
         ray get_ray(int i, int j) const {
             const auto pixel_sample = sample_pixel(i, j);
@@ -79,11 +127,33 @@ class sampler {
             return {this, i, j};
         }
 
-        virtual bool has_next_sample(int i, int j, int sample) const = 0;
+        void initialise(
+            point3 origin,
+            point3 pixel00_loc,
+            direction3 pixel_delta_u,
+            direction3 pixel_delta_v,
+            double defocus_angle,
+            direction3 defocus_disk_u,
+            direction3 defocus_disk_v
+        ) {
+            this->origin = origin;
+            this->pixel00_loc = pixel00_loc;
+            this->pixel_delta_u = pixel_delta_u;
+            this->pixel_delta_v = pixel_delta_v;
+            this->defocus_angle = defocus_angle;
+            this->defocus_disk_u = defocus_disk_u;
+            this->defocus_disk_v = defocus_disk_v;
+            initialised = true;
+        }
 
-        virtual void add_sample(const colour& sample) {}
-        virtual void clear() {}
+        bool is_initialised() const {
+            return initialised;
+        }
 };
+
+std::ostream& operator<<(std::ostream& os, const sampler& s) {
+    return os << s.get_config();
+}
 
 class ray_iterator {
     private:
@@ -135,8 +205,6 @@ class ray_iterator {
 
 class random_sampler : public sampler {
     private:
-        int samples_per_pixel;
-
         point3 sample_pixel(int i, int j) const override {
             const auto offset = sample_square();
             return pixel00_loc
@@ -145,100 +213,96 @@ class random_sampler : public sampler {
         }
 
     public:
-        random_sampler(
-            point3 origin,
-            point3 pixel00_loc,
-            direction3 pixel_delta_u,
-            direction3 pixel_delta_v,
-            double defocus_angle,
-            direction3 defocus_disk_u,
-            direction3 defocus_disk_v,
-            int samples_per_pixel
-        ) : sampler(
-            origin,
-            pixel00_loc,
-            pixel_delta_u,
-            pixel_delta_v,
-            defocus_angle,
-            defocus_disk_u,
-            defocus_disk_v
-        ),
-        samples_per_pixel(samples_per_pixel) {}
+        random_sampler() {
+            cfg.random.enabled = true;
+        };
+        random_sampler(const SamplerConfig& cfg) {
+            this->cfg = cfg;
+            this->cfg.random.enabled = true;
+        }
+
+        colour sampling_density_colour() const override {
+            return colour(1, 1, 1);
+        }
 
         bool has_next_sample(int i, int j, int sample) const override {
-            return sample < samples_per_pixel;
+            return sample < cfg.samples_per_pixel;
         }
 };
 
 class adaptive_random_sampler : public random_sampler {
     private:
-        int samples = 0;
-        point3 s1{0,0,0};  // Sum for each channel
-        point3 s2{0,0,0};  // Sum of squares for each channel
-        static constexpr int check_every = 32;
-        static constexpr double tolerance = 0.01; // 1% relative error
-        static constexpr double critical_value = 2.576;
-        static constexpr double epsilon = 1e-10;
+        struct Data {
+            int samples = 0;
+            point3 s1{0,0,0};  // Sum for each channel
+            point3 s2{0,0,0};  // Sum of squares for each channel
+        };
+
+        Data data;
+
+        static const colour red;
+        static const colour blue;
 
         point3 mean() const {
-            if (samples == 0) return point3(infinity_d, infinity_d, infinity_d);
-            return s1 / samples;
+            if (data.samples == 0) {
+                return point3(infinity_d, infinity_d, infinity_d);
+            }
+            return data.s1 / data.samples;
         }
 
         point3 variance() const {
-            if (samples <= 1) return point3(infinity_d, infinity_d, infinity_d);
-            const auto s1_squared = s1 * s1;
-            const auto n = static_cast<double>(samples);
+            if (data.samples <= 1) {
+                return point3(infinity_d, infinity_d, infinity_d);
+            }
+            const auto s1_squared = data.s1 * data.s1;
+            const auto n = static_cast<double>(data.samples);
             const auto factor = 1.0 / (n - 1);
-            return factor * (s2 - (s1_squared / n));
+            return factor * (data.s2 - (s1_squared / n));
         }
 
         bool should_continue() const {
-            if (samples == 0 || samples % check_every != 0) return true;
+            if (
+                data.samples < cfg.adaptive.burn_in
+                || data.samples % cfg.adaptive.check_every != 0
+            ) return true;
             const auto mu = mean();
             const auto var = variance();
 
             // Check convergence for each channel
             for (int i = 0; i < 3; i++) {
-                if (std::abs(mu[i]) < epsilon) continue;
-                const auto relative_error = std::sqrt(var[i] / samples)
-                    * critical_value / std::abs(mu[i]);
-                if (relative_error >= tolerance) return true;
+                if (mu[i] < cfg.adaptive.epsilon) continue;
+                const auto relative_error = std::sqrt(var[i] / data.samples)
+                    * cfg.adaptive.critical_value / mu[i];
+                if (relative_error >= cfg.adaptive.tolerance) return true;
             }
             return false;
         }
 
     public:
-        adaptive_random_sampler(
-            point3 origin,
-            point3 pixel00_loc,
-            direction3 pixel_delta_u,
-            direction3 pixel_delta_v,
-            double defocus_angle,
-            direction3 defocus_disk_u,
-            direction3 defocus_disk_v,
-            int samples_per_pixel
-        ) : random_sampler(
-            origin,
-            pixel00_loc,
-            pixel_delta_u,
-            pixel_delta_v,
-            defocus_angle,
-            defocus_disk_u,
-            defocus_disk_v,
-            samples_per_pixel
-        ) {}
+        adaptive_random_sampler() {
+            cfg.random.enabled = true;
+            cfg.adaptive.enabled = true;
+        }
+        adaptive_random_sampler(const SamplerConfig& cfg) {
+            this->cfg = cfg;
+            this->cfg.random.enabled = true;
+            this->cfg.adaptive.enabled = true;
+        }
 
         void add_sample(const colour& sample) override {
-            samples++;
-            s1 += sample;
-            s2 += sample * sample;
+            data.samples++;
+            data.s1 += sample;
+            data.s2 += sample * sample;
         }
 
         void clear() override {
-            samples = 0;
-            s1 = point3(0, 0, 0);
-            s2 = point3(0, 0, 0);
+            data = Data();
+        }
+
+        colour sampling_density_colour() const override {
+            const auto density = static_cast<double>(data.samples)
+                / cfg.samples_per_pixel;
+            return red * density + blue * (1 - density);
         }
 
         // if we are under the sample limit, every N samples check if we
@@ -249,6 +313,9 @@ class adaptive_random_sampler : public random_sampler {
                 && should_continue();
         }
 };
+
+const colour adaptive_random_sampler::red(1, 0, 0);
+const colour adaptive_random_sampler::blue(0, 0, 1);
 
 inline ray_iterator sample_range::begin() const {
     return ray_iterator(s, i, j);

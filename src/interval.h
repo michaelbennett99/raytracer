@@ -14,61 +14,64 @@ class interval {
     public:
 
         // Default interval: empty
-        interval() : min_{infinity<T>}, max_{-infinity<T>} {}
+        constexpr interval() : min_{infinity<T>}, max_{-infinity<T>} {}
 
-        interval(T _min, T _max) : min_{_min}, max_{_max} {}
+        constexpr interval(T _min, T _max) : min_{_min}, max_{_max} {}
 
-        interval(const interval<T>& a, const interval<T>& b) {
+        constexpr interval(const interval<T>& a, const interval<T>& b) {
             min_ = std::fmin(a.min(), b.min());
             max_ = std::fmax(a.max(), b.max());
         }
 
-        T size() const {
+        constexpr T size() const {
             return max_ - min_;
         }
 
-        T min() const {
+        constexpr T min() const {
             return min_;
         }
-        T max() const {
+        constexpr T max() const {
             return max_;
         }
 
-        bool contains(T x) const {
+        constexpr bool contains(T x) const {
             return min_ <= x && x <= max_;
         }
 
-        bool surrounds(T x) const {
+        constexpr bool surrounds(T x) const {
             return min_ < x && x < max_;
         }
 
-        T clamp(T x) const {
+        constexpr T clamp(T x) const {
             if (x < min_) return min_;
             if (x > max_) return max_;
             return x;
         }
 
-        interval<T> expand(T delta) const {
+        constexpr interval<T> expand(T delta) const {
             const auto padding = delta / 2;
             return interval<T>(min_ - padding, max_ + padding);
         }
 
-        static const interval empty, universe;
+        static const interval<T> empty;
+        static const interval<T> universe;
 
 };
 
 template <typename T>
-inline interval<T> operator+(const interval<T>& a, T b) {
+constexpr interval<T> operator+(const interval<T>& a, T b) {
     return interval<T>(a.min() + b, a.max() + b);
 }
 
 template <typename T>
-inline interval<T> operator+(T b, const interval<T>& a) {
+constexpr interval<T> operator+(T b, const interval<T>& a) {
     return interval<T>(a.min() + b, a.max() + b);
 }
 
 template <typename T>
-const interval<T> interval<T>::empty = interval<T>(infinity<T>, -infinity<T>);
+const interval<T> interval<T>::empty = interval<T>(
+    infinity<T>, -infinity<T>
+);
 
 template <typename T>
 const interval<T> interval<T>::universe = interval<T>(

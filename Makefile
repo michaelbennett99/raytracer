@@ -46,6 +46,10 @@ $(DEBUG_DIR)/%.o: $(SRC_DIR)/%.cpp | $(DEBUG_DIR)
 $(RELEASE_DIR)/$(TARGET): $(RELEASE_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
+# Link object files to create executable (debug)
+$(DEBUG_DIR)/$(TARGET): $(DEBUG_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
 # Clean build files
 clean:
 	rm -rf $(BUILD_DIR)

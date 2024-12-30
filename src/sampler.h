@@ -13,7 +13,7 @@ class sampler;
 class ray_iterator;
 
 struct sample_range {
-    const sampler* s;
+    sampler* s;
     int i, j;
     ray_iterator begin() const;
     ray_iterator end() const;
@@ -67,6 +67,7 @@ std::ostream& operator<<(std::ostream& os, const SamplerConfig& cfg) {
 class sampler {
     private:
         bool initialised = false;
+        int samples_ = 0;;
 
     protected:
         // Data we need to sample rays
@@ -106,13 +107,16 @@ class sampler {
             return cfg;
         }
 
-        virtual bool has_next_sample(int i, int j, int sample) const = 0;
+        virtual bool has_next_sample(int i, int j) const = 0;
         virtual void add_sample(const colour& sample) {}
-        virtual void clear() {}
+        virtual void clear() {
+            samples_ = 0;
+        }
 
         virtual colour sampling_density_colour() const = 0;
 
-        ray get_ray(int i, int j) const {
+        ray get_ray(int i, int j) {
+            samples_++;
             const auto pixel_sample = sample_pixel(i, j);
             const auto ray_origin = (defocus_angle <= 0)
                 ? origin
@@ -123,7 +127,7 @@ class sampler {
             return ray(ray_origin, ray_direction, ray_time);
         }
 
-        sample_range samples(int i, int j) const {
+        sample_range samples(int i, int j) {
             return {this, i, j};
         }
 
@@ -149,6 +153,9 @@ class sampler {
         bool is_initialised() const {
             return initialised;
         }
+        int samples() const {
+            return samples_;
+        }
 };
 
 std::ostream& operator<<(std::ostream& os, const sampler& s) {
@@ -157,8 +164,8 @@ std::ostream& operator<<(std::ostream& os, const sampler& s) {
 
 class ray_iterator {
     private:
-        const sampler* sampler_ptr;
-        int pixel_i, pixel_j, current_sample;
+        sampler* sampler_ptr;
+        int pixel_i, pixel_j;
         ray current_ray;
 
     public:
@@ -169,12 +176,12 @@ class ray_iterator {
         using reference = const ray&;
 
         ray_iterator(
-            const sampler* s, int i, int j, int sample = 0
+            sampler* s, int i, int j
         ) : sampler_ptr(s),
             pixel_i(i),
-            pixel_j(j),
-            current_sample(sample) {
+            pixel_j(j) {
             if (sampler_ptr) {
+                sampler_ptr->clear();
                 current_ray = sampler_ptr->get_ray(pixel_i, pixel_j);
             }
         }
@@ -184,9 +191,8 @@ class ray_iterator {
 
         ray_iterator& operator++() {
             if (sampler_ptr && sampler_ptr->has_next_sample(
-                pixel_i, pixel_j, current_sample
+                pixel_i, pixel_j
             )) {
-                current_sample++;
                 current_ray = sampler_ptr->get_ray(pixel_i, pixel_j);
             } else {
                 sampler_ptr = nullptr;
@@ -225,15 +231,14 @@ class random_sampler : public sampler {
             return colour(1, 1, 1);
         }
 
-        bool has_next_sample(int i, int j, int sample) const override {
-            return sample < cfg.samples_per_pixel;
+        bool has_next_sample(int i, int j) const override {
+            return samples() < cfg.samples_per_pixel;
         }
 };
 
 class adaptive_random_sampler : public random_sampler {
     private:
         struct Data {
-            int samples = 0;
             point3 s1{0,0,0};  // Sum for each channel
             point3 s2{0,0,0};  // Sum of squares for each channel
         };
@@ -244,26 +249,26 @@ class adaptive_random_sampler : public random_sampler {
         static const colour blue;
 
         point3 mean() const {
-            if (data.samples == 0) {
+            if (samples() == 0) {
                 return point3(infinity_d, infinity_d, infinity_d);
             }
-            return data.s1 / data.samples;
+            return data.s1 / samples();
         }
 
         point3 variance() const {
-            if (data.samples <= 1) {
+            if (samples() <= 1) {
                 return point3(infinity_d, infinity_d, infinity_d);
             }
             const auto s1_squared = data.s1 * data.s1;
-            const auto n = static_cast<double>(data.samples);
+            const auto n = static_cast<double>(samples());
             const auto factor = 1.0 / (n - 1);
             return factor * (data.s2 - (s1_squared / n));
         }
 
         bool should_continue() const {
             if (
-                data.samples < cfg.adaptive.burn_in
-                || data.samples % cfg.adaptive.check_every != 0
+                samples() < cfg.adaptive.burn_in
+                || samples() % cfg.adaptive.check_every != 0
             ) return true;
             const auto mu = mean();
             const auto var = variance();
@@ -271,7 +276,7 @@ class adaptive_random_sampler : public random_sampler {
             // Check convergence for each channel
             for (int i = 0; i < 3; i++) {
                 if (mu[i] < cfg.adaptive.epsilon) continue;
-                const auto relative_error = std::sqrt(var[i] / data.samples)
+                const auto relative_error = std::sqrt(var[i] / samples())
                     * cfg.adaptive.critical_value / mu[i];
                 if (relative_error >= cfg.adaptive.tolerance) return true;
             }
@@ -290,17 +295,17 @@ class adaptive_random_sampler : public random_sampler {
         }
 
         void add_sample(const colour& sample) override {
-            data.samples++;
             data.s1 += sample;
             data.s2 += sample * sample;
         }
 
         void clear() override {
+            sampler::clear();
             data = Data();
         }
 
         colour sampling_density_colour() const override {
-            const auto density = static_cast<double>(data.samples)
+            const auto density = static_cast<double>(samples())
                 / cfg.samples_per_pixel;
             return red * density + blue * (1 - density);
         }
@@ -308,8 +313,8 @@ class adaptive_random_sampler : public random_sampler {
         // if we are under the sample limit, every N samples check if we
         // should stop sampling based on the mean and variance of sample
         // luminance values
-        bool has_next_sample(int i, int j, int sample) const override {
-            return random_sampler::has_next_sample(i, j, sample)
+        bool has_next_sample(int i, int j) const override {
+            return random_sampler::has_next_sample(i, j)
                 && should_continue();
         }
 };

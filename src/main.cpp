@@ -1,6 +1,7 @@
 #include <memory>
 #include <fstream>
 #include <iostream>
+#include <map>
 
 #include "scene.h"
 #include "cli.h"
@@ -33,22 +34,28 @@ std::shared_ptr<sampler> create_sampler(const RenderOptions& options) {
     return std::make_shared<random_sampler>(config);
 }
 
-std::vector<std::shared_ptr<Renderer>> create_renderers(
-    const RenderOptions& options
-) {
-    std::vector<std::shared_ptr<Renderer>> renderers;
-    renderers.push_back(std::make_shared<MainRenderer>());
-    return renderers;
-}
-
 int main(int argc, char* argv[]) {
     const auto options = cli::parse_args(argc, argv);
 
     OutputHandler output_handler(options.output_file);
 
-    const auto sampler_ptr = create_sampler(options);
+    auto sampler_ptr = create_sampler(options);
 
-    const auto renderers = create_renderers(options);
+    std::map<std::string, std::shared_ptr<Renderer>> renderers_map;
+
+    auto main_renderer = std::make_shared<MainRenderer>(sampler_ptr);
+    renderers_map["main"] = main_renderer;
+    if (options.output_density && options.output_file) {
+        const auto density_renderer = std::make_shared<DensityRenderer>(
+            sampler_ptr
+        );
+        renderers_map["density"] = density_renderer;
+    }
+
+    auto renderers = std::vector<std::shared_ptr<Renderer>>();
+    for (const auto& renderer : renderers_map) {
+        renderers.push_back(renderer.second);
+    }
 
     std::clog << "Scene: " << options.scene.value_or(12) << std::endl;
 
@@ -56,7 +63,7 @@ int main(int argc, char* argv[]) {
 
     scene scene;
 
-    switch (options.scene.value_or(12)) {
+    switch (options.scene.value_or(1)) {
     case 1:
         scene = bouncing_spheres(
             sampler_ptr, renderers, options.aspect_ratio, options.image_width
@@ -107,6 +114,16 @@ int main(int argc, char* argv[]) {
     }
 
     scene.render();
+
+    output_handler.write_main_image(
+        renderers_map["main"]->get_result(), image_format::PPM
+    );
+
+    if (renderers_map.find("density") != renderers_map.end()) {
+        output_handler.write_density_image(
+            renderers_map["density"]->get_result()
+        );
+    }
 
     return 0;
 }

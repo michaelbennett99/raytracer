@@ -113,6 +113,7 @@ class camera {
         }
 
     public:
+        camera() = delete;
         camera(
             std::shared_ptr<sampler> sampler,
             std::vector<std::shared_ptr<Renderer>> renderers,
@@ -157,43 +158,13 @@ class camera {
 
         // Modified render method that doesn't handle output
         void render(const World& world) {
-            const int num_threads = std::thread::hardware_concurrency();
-            std::vector<std::thread> threads;
-            std::mutex cout_mutex;
-            int completed_scanlines = 0;
-
-            auto process_chunk = [&](int start_row, int end_row) {
-                for (int j = start_row; j < end_row; ++j) {
-                    for (int i = 0; i < image_data.width; ++i) {
-                        process_pixel(i, j, world);
-                    }
-
-                    {
-                        std::lock_guard<std::mutex> lock(cout_mutex);
-                        completed_scanlines++;
-                        std::clog << "\rScanlines remaining: "
-                            << image_data.height - completed_scanlines << ' '
-                            << std::flush;
-                    }
+            for (int j = 0; j < image_data.height; ++j) {
+                for (int i = 0; i < image_data.width; ++i) {
+                    process_pixel(i, j, world);
                 }
-            };
-
-            // Calculate chunk size and create threads
-            const int chunk_size = (image_data.height + num_threads - 1)
-                / num_threads;
-            for (int t = 0; t < num_threads; ++t) {
-                int start_row = t * chunk_size;
-                int end_row = std::min(
-                    start_row + chunk_size, image_data.height
-                );
-                if (start_row < image_data.height) {
-                    threads.emplace_back(process_chunk, start_row, end_row);
-                }
-            }
-
-            // Wait for all threads to complete
-            for (auto& thread : threads) {
-                thread.join();
+                std::clog << "\rScanlines remaining: "
+                    << image_data.height - j << ' '
+                    << std::flush;
             }
 
             std::clog << "\rDone.                      \n";

@@ -34,28 +34,27 @@ class MainRenderer : public Renderer {
 private:
     Image image;
     colour current_pixel;
-    int samples;
+    std::shared_ptr<sampler> sampler_;
 
 public:
+    explicit MainRenderer(std::shared_ptr<sampler> s) : sampler_(s) {}
+
     void prepare(const ImageData& image_data) override {
         image = Image(image_data.width, image_data.height);
     }
 
     void start_pixel(int i, int j) override {
         current_pixel = colour(0,0,0);
-        samples = 0;
     }
 
     void process_sample(
         int i, int j, const ray& r, const colour& pixel_colour
     ) override {
         current_pixel += pixel_colour;
-        samples++;
     }
 
     void finish_pixel(int i, int j) override {
-        image[j][i] = current_pixel / samples;
-        current_pixel = colour(0,0,0);
+        image[j][i] = current_pixel / sampler_->samples();
     }
 
     Image get_result() const override {

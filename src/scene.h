@@ -33,7 +33,7 @@ class scene {
 };
 
 scene bouncing_spheres(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -119,7 +119,7 @@ scene bouncing_spheres(
 }
 
 scene checkered_spheres(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -156,7 +156,7 @@ scene checkered_spheres(
 }
 
 scene earth(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -189,7 +189,7 @@ scene earth(
 }
 
 scene perlin_spheres(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -225,7 +225,7 @@ scene perlin_spheres(
 }
 
 scene quads(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -274,7 +274,7 @@ scene quads(
 }
 
 scene triangles(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -313,7 +313,7 @@ scene triangles(
 }
 
 scene ellipses(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -362,7 +362,7 @@ scene ellipses(
 }
 
 scene simple_light(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -400,7 +400,7 @@ scene simple_light(
 }
 
 scene cornell_box(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -448,6 +448,11 @@ scene cornell_box(
     box2 = std::make_shared<translate>(box2, direction3(130,0,65));
     world.add(box2);
 
+    // Add light behind the camera
+    world.add(std::make_shared<quad>(
+        point3(0, 0, -1000), direction3(555, 0, 0), direction3(0, 555, 0), light
+    ));
+
     camera cam(
         sampler,
         renderers,
@@ -466,7 +471,7 @@ scene cornell_box(
 }
 
 scene cornell_smoke(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width
@@ -530,7 +535,7 @@ scene cornell_smoke(
 }
 
 scene final_scene(
-    std::shared_ptr<sampler> sampler,
+    std::shared_ptr<Sampler> sampler,
     std::vector<std::shared_ptr<Renderer>> renderers,
     double ar,
     int image_width

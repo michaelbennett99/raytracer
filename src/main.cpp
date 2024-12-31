@@ -11,6 +11,8 @@
 
 SamplerConfig create_sampler_config(const RenderOptions& options) {
     SamplerConfig config;
+    config.random.enabled = true;
+    config.adaptive.enabled = options.adaptive_sampling;
     if (options.samples_per_pixel) {
         config.samples_per_pixel = options.samples_per_pixel;
     }
@@ -26,20 +28,14 @@ SamplerConfig create_sampler_config(const RenderOptions& options) {
     return config;
 }
 
-std::shared_ptr<sampler> create_sampler(const RenderOptions& options) {
-    const auto config = create_sampler_config(options);
-    if (options.adaptive_sampling) {
-        return std::make_shared<adaptive_random_sampler>(config);
-    }
-    return std::make_shared<random_sampler>(config);
-}
-
 int main(int argc, char* argv[]) {
     const auto options = cli::parse_args(argc, argv);
 
     OutputHandler output_handler(options.output_file);
 
-    auto sampler_ptr = create_sampler(options);
+    const auto config = create_sampler_config(options);
+
+    auto sampler_ptr = std::make_shared<Sampler>(config);
 
     std::map<std::string, std::shared_ptr<Renderer>> renderers_map;
 

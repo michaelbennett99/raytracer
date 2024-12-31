@@ -15,6 +15,8 @@
 #include "random.h"
 #include "material.h"
 #include "sampler.h"
+#include "pixel_sampler.h"
+#include "sampler_types.h"
 #include "image.h"
 #include "world.h"
 #include "renderer.h"
@@ -25,7 +27,7 @@ class camera {
         ImageData image_data;
 
         // Pixel sampler
-        std::shared_ptr<sampler> sampler_;
+        std::shared_ptr<Sampler> sampler_;
 
         // Render parameters
         int max_depth;
@@ -43,7 +45,8 @@ class camera {
         std::vector<std::shared_ptr<Renderer>> renderers_;
 
         void initialize() {
-            const auto origin = lookfrom;
+            SamplerData data;
+            data.origin = lookfrom;
 
             // Viewport dimensions
             const auto theta = degrees_to_radians(vfov);
@@ -62,30 +65,23 @@ class camera {
             const auto viewport_v = viewport_height * -v; // v is vertical
 
             // Delta vectors from pixel to pixel
-            const auto pixel_delta_u = viewport_u / image_data.width;
-            const auto pixel_delta_v = viewport_v / image_data.height;
+            data.pixel_delta_u = viewport_u / image_data.width;
+            data.pixel_delta_v = viewport_v / image_data.height;
 
             // Location of upper left pixel
-            const auto viewport_ul = origin
+            const auto viewport_ul = data.origin
                 - (focus_dist * w)
                 - 0.5 * (viewport_u + viewport_v);
-            const auto pixel00_loc = viewport_ul
-                + 0.5 * (pixel_delta_u + pixel_delta_v);
+            data.pixel00_loc = viewport_ul
+                + 0.5 * (data.pixel_delta_u + data.pixel_delta_v);
 
             const auto defocus_radius = focus_dist
                 * std::tan(degrees_to_radians(defocus_angle / 2));
-            const auto defocus_disk_u = u * defocus_radius;
-            const auto defocus_disk_v = v * defocus_radius;
+            data.defocus_disk_u = u * defocus_radius;
+            data.defocus_disk_v = v * defocus_radius;
 
-            sampler_->initialise(
-                origin,
-                pixel00_loc,
-                pixel_delta_u,
-                pixel_delta_v,
-                defocus_angle,
-                defocus_disk_u,
-                defocus_disk_v
-            );
+            // Prepare objects the camera relies upon
+            sampler_->initialise(data);
 
             for (auto& renderer : renderers_) {
                 renderer->prepare(image_data);
@@ -97,25 +93,25 @@ class camera {
                 renderer->start_pixel(i, j);
             }
 
-            const auto rays = sampler_->samples(i, j);
-            for (const auto& ray : rays) {
+            auto pixel_sampler_ptr = sampler_->pixel(i, j);
+            auto& pixel_sampler = *pixel_sampler_ptr;
+            for (const auto& ray : pixel_sampler) {
                 colour pixel_colour = world.ray_colour(ray, max_depth);
                 for (auto& renderer : renderers_) {
                     renderer->process_sample(i, j, ray, pixel_colour);
                 }
+                pixel_sampler.add_sample(pixel_colour);
             }
 
             for (auto& renderer : renderers_) {
-                renderer->finish_pixel(i, j);
+                renderer->finish_pixel(i, j, pixel_sampler);
             }
-
-            sampler_->clear();
         }
 
     public:
         camera() = delete;
         camera(
-            std::shared_ptr<sampler> sampler,
+            std::shared_ptr<Sampler> sampler,
             std::vector<std::shared_ptr<Renderer>> renderers,
             double ar = 1.0,
             int image_width = 400,
@@ -143,6 +139,19 @@ class camera {
             initialize();
         }
 
+        void render(const World& world) {
+            for (int j = 0; j < image_data.height; ++j) {
+                for (int i = 0; i < image_data.width; ++i) {
+                    process_pixel(i, j, world);
+                }
+                std::clog << "\rScanlines remaining: "
+                    << image_data.height - j << ' '
+                    << std::flush;
+            }
+
+            std::clog << "\rDone.                      \n";
+        }
+
         void add_renderer(std::shared_ptr<Renderer> renderer) {
             renderer->prepare(image_data);
             renderers_.push_back(renderer);
@@ -157,18 +166,6 @@ class camera {
         }
 
         // Modified render method that doesn't handle output
-        void render(const World& world) {
-            for (int j = 0; j < image_data.height; ++j) {
-                for (int i = 0; i < image_data.width; ++i) {
-                    process_pixel(i, j, world);
-                }
-                std::clog << "\rScanlines remaining: "
-                    << image_data.height - j << ' '
-                    << std::flush;
-            }
-
-            std::clog << "\rDone.                      \n";
-        }
 };
 
 #endif

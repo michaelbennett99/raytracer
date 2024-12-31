@@ -55,6 +55,10 @@ public:
     };
 
     int samples() const { return samples_; }
+    int max_samples() const { return cfg->samples_per_pixel; }
+    double sampling_density() const {
+        return static_cast<double>(samples() / max_samples());
+    }
 
     class Iterator {
     private:

@@ -89,22 +89,21 @@ class camera {
         }
 
         void process_pixel(int i, int j, const World& world) {
-            for (auto& renderer : renderers_) {
-                renderer->start_pixel(i, j);
-            }
-
             auto pixel_sampler_ptr = sampler_->pixel(i, j);
             auto& pixel_sampler = *pixel_sampler_ptr;
-            for (const auto& ray : pixel_sampler) {
-                colour pixel_colour = world.ray_colour(ray, max_depth);
-                for (auto& renderer : renderers_) {
-                    renderer->process_sample(i, j, ray, pixel_colour);
-                }
-                pixel_sampler.add_sample(pixel_colour);
+            std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
+            for (auto& renderer : renderers_) {
+                pixel_renderer_ptrs.emplace_back(
+                    renderer->create_pixel_renderer(i, j, pixel_sampler)
+                );
             }
 
-            for (auto& renderer : renderers_) {
-                renderer->finish_pixel(i, j, pixel_sampler);
+            for (const auto& ray : pixel_sampler) {
+                colour pixel_colour = world.ray_colour(ray, max_depth);
+                for (auto& renderer : pixel_renderer_ptrs) {
+                    renderer->process_sample(ray, pixel_colour);
+                }
+                pixel_sampler.add_sample(pixel_colour);
             }
         }
 
@@ -160,7 +159,7 @@ class camera {
         std::vector<Image> get_results() const {
             std::vector<Image> results;
             for (const auto& renderer : renderers_) {
-                results.push_back(renderer->get_result());
+                results.push_back(renderer->image());
             }
             return results;
         }

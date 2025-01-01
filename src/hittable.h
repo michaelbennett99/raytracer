@@ -8,16 +8,16 @@
 #include "interval.h"
 #include "aabb.h"
 
-struct hit_record;
+struct HitRecord;
 
-class hittable {
+class Hittable {
     public:
-        virtual ~hittable() = default;
+        virtual ~Hittable() = default;
 
         virtual bool hit(
             const ray& r,
             interval_d t,
-            hit_record& rec
+            HitRecord& rec
         ) const = 0;
 
         virtual AABB bounding_box() const = 0;
@@ -37,7 +37,7 @@ class hittable {
 
 class material;
 
-struct hit_record {
+struct HitRecord {
     point3 p;
     double t;
     bool front_face;
@@ -47,7 +47,7 @@ struct hit_record {
     double u;
     double v;
 
-    hit_record(
+    HitRecord(
         const ray& r,
         const point3& p,
         const direction3& outward_normal,
@@ -55,12 +55,12 @@ struct hit_record {
     )
         : p{ p }
         , t{ t }
-        , front_face{ hittable::is_front_face(r, outward_normal) }
-        , normal{ hittable::direct_normal(front_face, outward_normal) }
+        , front_face{ Hittable::is_front_face(r, outward_normal) }
+        , normal{ Hittable::direct_normal(front_face, outward_normal) }
     {}
 
     // Add default constructor since we'll use it as an outparam
-    hit_record() = default;
+    HitRecord() = default;
 
     void set_face_normal(const ray& r, const direction3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;

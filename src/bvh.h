@@ -9,15 +9,15 @@
 #include "hittable_list.h"
 #include "vec3.h"
 
-class BVHNode : public hittable {
+class BVHNode : public Hittable {
     private:
-        std::shared_ptr<hittable> left {};
-        std::shared_ptr<hittable> right {};
+        std::shared_ptr<Hittable> left {};
+        std::shared_ptr<Hittable> right {};
         AABB bbox {};
 
         static bool box_compare(
-            const std::shared_ptr<hittable> a,
-            const std::shared_ptr<hittable> b,
+            const std::shared_ptr<Hittable> a,
+            const std::shared_ptr<Hittable> b,
             int axis_index
         ) {
             const auto a_axis_interval { a->bounding_box()[axis_index] };
@@ -30,7 +30,7 @@ class BVHNode : public hittable {
         explicit BVHNode(hittable_list list)
             : BVHNode {list.objects, 0, list.objects.size()} {}
         explicit BVHNode(
-            std::vector<std::shared_ptr<hittable>> objects,
+            std::vector<std::shared_ptr<Hittable>> objects,
             size_t start,
             size_t end
         ) {
@@ -42,8 +42,8 @@ class BVHNode : public hittable {
             const int axis = bbox.longest_axis();
 
             const auto comparator = [&axis](
-                const std::shared_ptr<hittable> a,
-                const std::shared_ptr<hittable> b
+                const std::shared_ptr<Hittable> a,
+                const std::shared_ptr<Hittable> b
             ) -> bool {
                 return box_compare(a, b, axis);
             };
@@ -70,7 +70,7 @@ class BVHNode : public hittable {
             bbox = AABB(left->bounding_box(), right->bounding_box());
         }
 
-        bool hit(const ray& r, interval_d t, hit_record& rec) const override {
+        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
             if (!bbox.hit(r, t)) return false;
 
             const auto hit_left { left->hit(r, t, rec) };

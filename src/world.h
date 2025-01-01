@@ -24,7 +24,7 @@ class World {
         ) const {
             if (depth <= 0) return background_;
 
-            hit_record rec;
+            HitRecord rec;
 
             if (!world_->hit(r, interval_d{0.001, infinity_d}, rec)) {
                 return background_;

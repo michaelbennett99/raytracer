@@ -13,7 +13,7 @@ class material {
 
         virtual bool scatter(
             const ray& r_in,
-            const hit_record& rec,
+            const HitRecord& rec,
             Colour& attenuation,
             ray& scattered
         ) const {
@@ -35,7 +35,7 @@ class lambertian : public material {
 
         bool scatter(
             const ray& r_in,
-            const hit_record& rec,
+            const HitRecord& rec,
             Colour& attenuation,
             ray& scattered
         ) const override {
@@ -59,7 +59,7 @@ class metal : public material {
 
         bool scatter(
             const ray& r_in,
-            const hit_record& rec,
+            const HitRecord& rec,
             Colour& attenuation,
             ray& scattered
         ) const override {
@@ -91,7 +91,7 @@ class dielectric : public material {
 
         bool scatter(
             const ray& r_in,
-            const hit_record& rec,
+            const HitRecord& rec,
             Colour& attenuation,
             ray& scattered
         ) const override {
@@ -142,7 +142,7 @@ class isotropic : public material {
 
         bool scatter(
             const ray& r_in,
-            const hit_record& rec,
+            const HitRecord& rec,
             Colour& attenuation,
             ray& scattered
         ) const override {

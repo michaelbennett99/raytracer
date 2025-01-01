@@ -6,15 +6,15 @@
 #include "material.h"
 #include "texture.h"
 
-class constant_medium : public hittable {
+class constant_medium : public Hittable {
     private:
-        std::shared_ptr<hittable> boundary;
+        std::shared_ptr<Hittable> boundary;
         double neg_inv_density;
         std::shared_ptr<material> phase_function;
 
     public:
         constant_medium(
-            std::shared_ptr<hittable> boundary,
+            std::shared_ptr<Hittable> boundary,
             double density,
             std::shared_ptr<texture> tex
         )
@@ -24,7 +24,7 @@ class constant_medium : public hittable {
         {}
 
         constant_medium(
-            std::shared_ptr<hittable> boundary,
+            std::shared_ptr<Hittable> boundary,
             double density,
             const Colour& albedo
         )
@@ -34,9 +34,9 @@ class constant_medium : public hittable {
         {}
 
         bool hit(
-            const ray& r, interval_d t, hit_record& rec
+            const ray& r, interval_d t, HitRecord& rec
         ) const override {
-            hit_record rec1, rec2;
+            HitRecord rec1, rec2;
 
             if (!boundary->hit(r, interval_d::universe, rec1))
                 return false;

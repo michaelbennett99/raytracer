@@ -9,7 +9,7 @@
 #include "material.h"
 #include "raytracing.h"
 
-class sphere : public hittable {
+class sphere : public Hittable {
     private:
         ray cent;
         double rad;
@@ -56,7 +56,7 @@ class sphere : public hittable {
         bool hit(
             const ray& r,
             interval_d t,
-            hit_record& rec
+            HitRecord& rec
         ) const override {
             const auto current_center = center().at(r.time());
             // Ray-sphere interaction quantities

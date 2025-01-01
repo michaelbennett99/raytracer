@@ -6,17 +6,17 @@
 #include <memory>
 #include <vector>
 
-class hittable_list : public hittable {
+class hittable_list : public Hittable {
     private:
         AABB bbox;
     public:
-        std::vector<std::shared_ptr<hittable>> objects;
+        std::vector<std::shared_ptr<Hittable>> objects;
 
         hittable_list() {}
-        hittable_list(std::shared_ptr<hittable> object) { add(object); }
+        hittable_list(std::shared_ptr<Hittable> object) { add(object); }
 
         void clear() { objects.clear(); }
-        void add(std::shared_ptr<hittable> object) {
+        void add(std::shared_ptr<Hittable> object) {
             objects.push_back(object);
             bbox = AABB(bbox, object->bounding_box());
         }
@@ -24,9 +24,9 @@ class hittable_list : public hittable {
         bool hit(
             const ray& r,
             interval_d t,
-            hit_record& rec
+            HitRecord& rec
         ) const override {
-            hit_record temp_rec;
+            HitRecord temp_rec;
             bool hit_anything = false;
             auto closest_so_far = t.max();
 

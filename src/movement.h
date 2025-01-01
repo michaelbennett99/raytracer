@@ -5,19 +5,19 @@
 #include "ray.h"
 #include "hittable.h"
 
-class translate : public hittable {
+class translate : public Hittable {
     private:
-        std::shared_ptr<hittable> object;
+        std::shared_ptr<Hittable> object;
         direction3 offset;
         AABB bbox;
 
     public:
-        translate(std::shared_ptr<hittable> p, const direction3& displacement)
+        translate(std::shared_ptr<Hittable> p, const direction3& displacement)
             : object{ p }, offset{ displacement } {
                 bbox = object->bounding_box() + offset;
             }
 
-        bool hit(const ray& r, interval_d t, hit_record& rec) const override {
+        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
             ray offset_r(r.origin() - offset, r.direction());
             if (!object->hit(offset_r, t, rec)) return false;
 
@@ -30,9 +30,9 @@ class translate : public hittable {
         }
 };
 
-class rotate_y : public hittable {
+class rotate_y : public Hittable {
     private:
-        std::shared_ptr<hittable> object;
+        std::shared_ptr<Hittable> object;
         double sin_theta;
         double cos_theta;
         AABB bbox;
@@ -86,14 +86,14 @@ class rotate_y : public hittable {
         }
 
     public:
-        rotate_y(std::shared_ptr<hittable> object, double angle) : object{ object } {
+        rotate_y(std::shared_ptr<Hittable> object, double angle) : object{ object } {
             const auto radians = degrees_to_radians(angle);
             sin_theta = std::sin(radians);
             cos_theta = std::cos(radians);
             set_bounding_box();
         }
 
-        bool hit(const ray& r, interval_d t, hit_record& rec) const override {
+        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
 
             // Transform ray from world space to object space
             const auto origin = rotate(r.origin());

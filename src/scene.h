@@ -436,14 +436,14 @@ scene cornell_box(
         point3(0, 0, 555), direction3(555, 0, 0), direction3(0, 555, 0), white
     ));
 
-    std::shared_ptr<hittable> box1 = box(
+    std::shared_ptr<Hittable> box1 = box(
         point3(0,0,0), point3(165,330,165), white
     );
     box1 = std::make_shared<rotate_y>(box1, 15);
     box1 = std::make_shared<translate>(box1, direction3(265,0,295));
     world.add(box1);
 
-    std::shared_ptr<hittable> box2 = box(
+    std::shared_ptr<Hittable> box2 = box(
         point3(0,0,0), point3(165,165,165), white
     );
     box2 = std::make_shared<rotate_y>(box2, -18);
@@ -504,13 +504,13 @@ scene cornell_smoke(
         point3(0,0,555), direction3(555,0,0), direction3(0,555,0), white
     ));
 
-    std::shared_ptr<hittable> box1 = box(
+    std::shared_ptr<Hittable> box1 = box(
         point3(0,0,0), point3(165,330,165), white
     );
     box1 = std::make_shared<rotate_y>(box1, 15);
     box1 = std::make_shared<translate>(box1, direction3(265,0,295));
 
-    std::shared_ptr<hittable> box2 = box(
+    std::shared_ptr<Hittable> box2 = box(
         point3(0,0,0), point3(165,165,165), white
     );
     box2 = std::make_shared<rotate_y>(box2, -18);

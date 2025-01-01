@@ -10,7 +10,7 @@
 #include "hittable_list.h"
 
 // Abstract class for surfaces
-class surface : public hittable {
+class surface : public Hittable {
     protected:
         point3 Q_;
         direction3 u_, v_;
@@ -21,7 +21,7 @@ class surface : public hittable {
         double D_;
 
         virtual void set_bounding_box() = 0;
-        virtual bool is_interior(double a, double b, hit_record& rec) const = 0;
+        virtual bool is_interior(double a, double b, HitRecord& rec) const = 0;
 
     public:
         AABB bounding_box() const override {
@@ -31,7 +31,7 @@ class surface : public hittable {
         bool hit(
             const ray& r,
             interval_d ray_t,
-            hit_record& rec
+            HitRecord& rec
         ) const override {
             const auto denom = dot(normal_, r.direction());
 
@@ -86,7 +86,7 @@ class quad : public simple_surface {
             bbox_ = AABB(box_0, box_1);
         }
 
-        bool is_interior(double a, double b, hit_record& rec) const override {
+        bool is_interior(double a, double b, HitRecord& rec) const override {
             interval_d unit {0, 1};
             if (!unit.contains(a) || !unit.contains(b)) return false;
             rec.u = a;
@@ -113,7 +113,7 @@ class triangle : public simple_surface {
             bbox_ = AABB(box_0, box_1);
         }
 
-        bool is_interior(double a, double b, hit_record& rec) const override {
+        bool is_interior(double a, double b, HitRecord& rec) const override {
             interval_d unit {0, 1};
             if (!unit.contains(a) || !unit.contains(b)) return false;
             if (a + b > 1) return false;
@@ -142,7 +142,7 @@ class ellipse : public simple_surface {
             bbox_ = AABB(box_0, box_1);
         }
 
-        bool is_interior(double a, double b, hit_record& rec) const override {
+        bool is_interior(double a, double b, HitRecord& rec) const override {
             if (a * a + b * b > 1) return false;
             rec.u = a;
             rec.v = b;

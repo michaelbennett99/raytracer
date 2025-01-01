@@ -14,14 +14,14 @@ class material {
         virtual bool scatter(
             const ray& r_in,
             const hit_record& rec,
-            colour& attenuation,
+            Colour& attenuation,
             ray& scattered
         ) const {
             return false;
         }
 
-        virtual colour emitted(double u, double v, const point3& p) const {
-            return colour(0, 0, 0);
+        virtual Colour emitted(double u, double v, const point3& p) const {
+            return Colour(0, 0, 0);
         }
 };
 
@@ -30,13 +30,13 @@ class lambertian : public material {
         std::shared_ptr<texture> tex;
 
     public:
-        lambertian(const colour& a) : tex(std::make_shared<solid_colour>(a)) {}
+        lambertian(const Colour& a) : tex(std::make_shared<solid_colour>(a)) {}
         lambertian(std::shared_ptr<texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,
             const hit_record& rec,
-            colour& attenuation,
+            Colour& attenuation,
             ray& scattered
         ) const override {
             auto scatter_direction = rec.normal + random_unit_vector();
@@ -51,16 +51,16 @@ class lambertian : public material {
 
 class metal : public material {
     private:
-        colour albedo;
+        Colour albedo;
         double fuzz;
 
     public:
-        metal(const colour& a, double f) : albedo(a), fuzz(f) {}
+        metal(const Colour& a, double f) : albedo(a), fuzz(f) {}
 
         bool scatter(
             const ray& r_in,
             const hit_record& rec,
-            colour& attenuation,
+            Colour& attenuation,
             ray& scattered
         ) const override {
             const auto reflected = reflect(
@@ -92,10 +92,10 @@ class dielectric : public material {
         bool scatter(
             const ray& r_in,
             const hit_record& rec,
-            colour& attenuation,
+            Colour& attenuation,
             ray& scattered
         ) const override {
-            attenuation = colour(1.0, 1.0, 1.0);
+            attenuation = Colour(1.0, 1.0, 1.0);
             const auto refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
             const auto unit_direction = unit_vector(r_in.direction());
 
@@ -123,10 +123,10 @@ class diffuse_light : public material {
 
     public:
         diffuse_light(std::shared_ptr<texture> tex) : tex(tex) {}
-        diffuse_light(const colour& emit)
+        diffuse_light(const Colour& emit)
             : tex(std::make_shared<solid_colour>(emit)) {}
 
-        colour emitted(double u, double v, const point3& p) const override {
+        Colour emitted(double u, double v, const point3& p) const override {
             return tex->value(u, v, p);
         }
 };
@@ -136,14 +136,14 @@ class isotropic : public material {
         std::shared_ptr<texture> tex;
 
     public:
-        isotropic(const colour& albedo)
+        isotropic(const Colour& albedo)
             : tex(std::make_shared<solid_colour>(albedo)) {}
         isotropic(std::shared_ptr<texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,
             const hit_record& rec,
-            colour& attenuation,
+            Colour& attenuation,
             ray& scattered
         ) const override {
             scattered = ray(rec.p, random_unit_vector(), r_in.time());

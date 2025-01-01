@@ -2,17 +2,12 @@
 #define COLOR_H
 
 #include "vec3.h"
-#include "colour.h"
 #include "interval.h"
-
-constexpr int colour_multiplier = 256;
-
-using colour = vec3<double>;
 
 class Colour : public vec3<double> {
     private:
-        static constexpr int colour_multiplier = 256;
-        static constexpr interval_d intensity{0.0, 0.999};
+        static constexpr int colour_multiplier { 256 };
+        static constexpr interval_d intensity { 0.0, 0.999 };
 
         static constexpr double linear_to_gamma(double linear) {
             if (linear > 0) {

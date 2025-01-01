@@ -12,20 +12,20 @@ class texture {
     public:
         virtual ~texture() = default;
 
-        virtual colour value(double u, double v, const point3& p) const = 0;
+        virtual Colour value(double u, double v, const point3& p) const = 0;
 };
 
 class solid_colour : public texture {
     private:
-        colour albedo;
+        Colour albedo;
 
     public:
-        solid_colour(const colour& c) : albedo(c) {}
+        solid_colour(const Colour& c) : albedo(c) {}
 
         solid_colour(double red, double green, double blue)
-            : solid_colour(colour(red, green, blue)) {}
+            : solid_colour(Colour(red, green, blue)) {}
 
-        virtual colour value(
+        virtual Colour value(
             double u, double v, const point3& p
         ) const override {
             return albedo;
@@ -49,14 +49,14 @@ class checker_texture : public texture {
             , odd(odd)
         {}
 
-        checker_texture(double scale, const colour& c1, const colour& c2)
+        checker_texture(double scale, const Colour& c1, const Colour& c2)
             : checker_texture(
                 scale,
                 std::make_shared<solid_colour>(c1),
                 std::make_shared<solid_colour>(c2)
             ) {}
 
-        colour value(double u, double v, const point3& p) const override {
+        Colour value(double u, double v, const point3& p) const override {
             const auto x = int(std::floor(inv_scale * p.x()));
             const auto y = int(std::floor(inv_scale * p.y()));
             const auto z = int(std::floor(inv_scale * p.z()));
@@ -73,8 +73,8 @@ class image_texture : public texture {
     public:
         image_texture(const char* filename) : img(filename) {}
 
-        colour value(double u, double v, const point3& p) const override {
-            if (img.height() <= 0) return colour(0, 1, 1);
+        Colour value(double u, double v, const point3& p) const override {
+            if (img.height() <= 0) return Colour(0, 1, 1);
 
             u = interval_d(0, 1).clamp(u);
             v = 1.0 - interval_d(0, 1).clamp(v); // Flip V to image coordinates
@@ -84,7 +84,7 @@ class image_texture : public texture {
             const auto pixel = img.pixel_data(i, j);
 
             const auto colour_scale = 1.0 / 255.0;
-            return colour(
+            return Colour(
                 pixel[0] * colour_scale,
                 pixel[1] * colour_scale,
                 pixel[2] * colour_scale
@@ -100,8 +100,8 @@ class noise_texture : public texture {
     public:
         noise_texture(double scale) : scale(scale) {}
 
-        colour value(double u, double v, const point3& p) const override {
-            return colour(1, 1, 1)
+        Colour value(double u, double v, const point3& p) const override {
+            return Colour(1, 1, 1)
                 * 0.5 * (1 + std::sin(scale * p.z() + 10 * noise.turb(p, 7)));
         }
 };

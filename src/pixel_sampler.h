@@ -44,7 +44,7 @@ public:
     virtual ~PixelSampler() = default;
 
     virtual bool has_next_sample() const = 0;
-    virtual void add_sample(const colour& sample) {}
+    virtual void add_sample(const Colour& sample) {}
     virtual ray sample() {
         const auto pixel_sample = sample_pixel();
         const auto ray_origin = sample_defocus_disk();
@@ -186,7 +186,7 @@ public:
         int j
     ) : PixelSampler(data, cfg, i, j) {};
 
-    void add_sample(const colour& sample) override {
+    void add_sample(const Colour& sample) override {
         sampling_data.s1 += sample;
         sampling_data.s2 += sample * sample;
     }

@@ -10,16 +10,16 @@
 class World {
     private:
         std::shared_ptr<hittable_list> world_;
-        colour background_;
+        Colour background_;
 
     public:
         World(
             const hittable_list& world,
-            colour background = colour(1e-3, 1e-3, 1e-3)
+            Colour background = Colour(1e-3, 1e-3, 1e-3)
         ) : world_{ std::make_shared<hittable_list>(world) },
             background_{ background } {}
 
-        colour ray_colour(
+        Colour ray_colour(
             const ray& r, int depth
         ) const {
             if (depth <= 0) return background_;
@@ -31,8 +31,8 @@ class World {
             }
 
             ray scattered;
-            colour attenuation;
-            colour emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
+            Colour attenuation;
+            Colour emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
 
             if (!rec.mat->scatter(r, rec, attenuation, scattered)) {
                 return emitted;

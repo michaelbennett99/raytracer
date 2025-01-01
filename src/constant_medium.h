@@ -26,7 +26,7 @@ class constant_medium : public hittable {
         constant_medium(
             std::shared_ptr<hittable> boundary,
             double density,
-            const colour& albedo
+            const Colour& albedo
         )
             : boundary{ boundary }
             , neg_inv_density{ -1 / density }

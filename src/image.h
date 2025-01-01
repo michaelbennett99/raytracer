@@ -25,7 +25,7 @@ class Image {
     private:
         ImageData data_;
         int max_colour_value_;
-        std::vector<std::vector<colour>> image_;
+        std::vector<std::vector<Colour>> image_;
 
         static constexpr int default_max_colour_value = 255;
 
@@ -36,7 +36,7 @@ class Image {
 
             for (const auto& row : image_) {
                 for (const auto& pixel : row) {
-                    const auto gamma_corrected = Colour{pixel}.gamma_correct();
+                    const auto gamma_corrected = pixel.gamma_correct();
                     output
                         << static_cast<int>(gamma_corrected.x()) << ' '
                         << static_cast<int>(gamma_corrected.y()) << ' '
@@ -54,7 +54,7 @@ class Image {
             int max_colour_value = default_max_colour_value
         ) : data_{width, calc_image_height(width, aspect_ratio)},
             max_colour_value_(max_colour_value),
-            image_(data_.height, std::vector<colour>(data_.width)) {}
+            image_(data_.height, std::vector<Colour>(data_.width)) {}
 
         Image(
             int width,
@@ -62,7 +62,7 @@ class Image {
             int max_colour_value = default_max_colour_value
         ) : data_{width, height},
             max_colour_value_(max_colour_value),
-            image_(data_.height, std::vector<colour>(data_.width)) {}
+            image_(data_.height, std::vector<Colour>(data_.width)) {}
 
         int width() const {
             return data_.width;
@@ -79,19 +79,19 @@ class Image {
         Image& resize(int width, int height) {
             data_.width = width;
             data_.height = height;
-            image_.resize(data_.height, std::vector<colour>(data_.width));
+            image_.resize(data_.height, std::vector<Colour>(data_.width));
             return *this;
         }
 
-        std::vector<colour>& operator[](int row) {
+        std::vector<Colour>& operator[](int row) {
             return image_[row];
         }
 
-        void set_pixel(int row, int col, const colour& c) {
+        void set_pixel(int row, int col, const Colour& c) {
             image_[row][col] = c;
         }
 
-        void set_pixels(int row, const std::vector<colour>& pixels) {
+        void set_pixels(int row, const std::vector<Colour>& pixels) {
             image_[row] = pixels;
         }
 

@@ -30,7 +30,7 @@ class BVHNode : public hittable {
         explicit BVHNode(hittable_list list)
             : BVHNode {list.objects, 0, list.objects.size()} {}
         explicit BVHNode(
-            const std::vector<std::shared_ptr<hittable>>& objects,
+            std::vector<std::shared_ptr<hittable>> objects,
             size_t start,
             size_t end
         ) {

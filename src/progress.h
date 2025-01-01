@@ -4,18 +4,18 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+
 class Progress {
 private:
     const int total;
-    mutable int current;
-    mutable std::mutex mutex;
+    std::atomic<int> current;
+    mutable std::mutex print_mutex;
     const int width = 50;
 
 public:
     explicit Progress(int height) : total(height), current(0) {}
 
-    void update() const {
-        std::lock_guard<std::mutex> lock(mutex);
+    void update() {
         current++;
     }
 
@@ -32,17 +32,16 @@ public:
             ss << "-";
         }
         ss << "] " << current << "/" << total << " Scanlines" << std::flush;
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(print_mutex);
         std::clog << ss.str();
     }
 
     void done() const {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(print_mutex);
         std::clog << "\n";
     }
 
-    void reset() const {
-        std::lock_guard<std::mutex> lock(mutex);
+    void reset() {
         current = 0;
     }
 };

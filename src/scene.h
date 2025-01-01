@@ -19,13 +19,13 @@
 class scene {
     private:
         std::shared_ptr<World> world;
-        std::shared_ptr<camera> cam;
+        std::shared_ptr<Camera> cam;
 
     public:
         scene() = default;
         scene(
             std::shared_ptr<World> world,
-            std::shared_ptr<camera> cam
+            std::shared_ptr<Camera> cam
         ) : world(world), cam(cam) {}
 
         std::map<RendererType, Image> render() {
@@ -100,7 +100,7 @@ scene bouncing_spheres(
 
     world = hittable_list(std::make_shared<bvh_node>(world));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -139,7 +139,7 @@ scene checkered_spheres(
     world.add(std::make_shared<sphere>(point3(0,-10,0), 10, sphere_material));
     world.add(std::make_shared<sphere>(point3(0,10,0), 10, sphere_material));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -173,7 +173,7 @@ scene earth(
 
     world.add(globe);
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -208,7 +208,7 @@ scene perlin_spheres(
         std::make_shared<sphere>(point3(0, 2, 0), 2, sphere_material)
     );
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -258,7 +258,7 @@ scene quads(
         point3(-2, -3, 1), direction3(4, 0, 0), direction3(0, 0, 4), lower_teal
     ));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -297,7 +297,7 @@ scene triangles(
         point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
     ));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -346,7 +346,7 @@ scene ellipses(
         ellipse_material)
     );
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -384,7 +384,7 @@ scene simple_light(
     ));
     world.add(std::make_shared<sphere>(point3(0, 7, 0), 2, light));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -455,7 +455,7 @@ scene cornell_box(
         point3(0, 0, -1000), direction3(555, 0, 0), direction3(0, 555, 0), light
     ));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -519,7 +519,7 @@ scene cornell_smoke(
     world.add(std::make_shared<constant_medium>(box1, 0.01, colour(0,0,0)));
     world.add(std::make_shared<constant_medium>(box2, 0.01, colour(1,1,1)));
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,
@@ -633,7 +633,7 @@ scene final_scene(
         )
     );
 
-    auto cam = std::make_shared<camera>(
+    auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,
         ar,

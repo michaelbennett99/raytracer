@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     const auto results = scene.render();
 
     output_handler.write_main_image(
-        results.at(RendererType::Colour), image_format::PPM
+        results.at(RendererType::Colour), ImageFormat::PPM
     );
 
     if (results.find(RendererType::Density) != results.end()) {

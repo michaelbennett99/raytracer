@@ -35,7 +35,7 @@ public:
 
     void write_main_image(
         const Image& image,
-        image_format format
+        ImageFormat format
     ) {
         image.write(stream(), format);
     }
@@ -55,7 +55,7 @@ public:
                 << std::endl;
             throw std::runtime_error("Failed to open density output stream");
         }
-        density_image->write(density_output, image_format::PPM);
+        density_image->write(density_output, ImageFormat::PPM);
     }
 };
 

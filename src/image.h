@@ -6,7 +6,7 @@
 
 #include "colour.h"
 
-enum class image_format {
+enum class ImageFormat {
     PPM
 };
 
@@ -95,9 +95,9 @@ class Image {
             image_[row] = pixels;
         }
 
-        void write(std::ostream& output, image_format format) const {
+        void write(std::ostream& output, ImageFormat format) const {
             switch (format) {
-                case image_format::PPM: write_ppm(output); break;
+                case ImageFormat::PPM: write_ppm(output); break;
             }
         }
 

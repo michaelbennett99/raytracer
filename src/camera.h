@@ -20,6 +20,7 @@
 #include "image.h"
 #include "world.h"
 #include "renderer.h"
+#include "progress.h"
 
 class camera {
     private:
@@ -32,6 +33,9 @@ class camera {
 
         // Render parameters
         int max_depth;
+
+        // Progress
+        const Progress progress;
 
         void process_pixel(int i, int j, const World& world) {
             auto pixel_sampler_ptr = sampler.pixel(i, j);
@@ -77,20 +81,19 @@ class camera {
                 defocus_angle,
                 focus_dist
             },
-            renderers{image_data, renderer_types},
-            max_depth{ max_depth } {}
+            renderers{ image_data, renderer_types },
+            max_depth{ max_depth },
+            progress{ image_data.height } {}
 
         void render(const World& world) {
             for (int j = 0; j < image_data.height; ++j) {
                 for (int i = 0; i < image_data.width; ++i) {
                     process_pixel(i, j, world);
                 }
-                std::clog << "\rScanlines remaining: "
-                    << image_data.height - j << ' '
-                    << std::flush;
+                progress.update();
+                progress.print();
             }
-
-            std::clog << "\rDone.                      \n";
+            progress.done();
         }
 
         std::map<RendererType, Image> get_results() const {

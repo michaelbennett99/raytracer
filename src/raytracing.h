@@ -4,9 +4,11 @@
 #include <limits>
 #include <numbers>
 
+#include "concepts.h"
+
 // Constants
 
-template <typename T>
+template <Arithmetic T>
 constexpr T infinity = std::numeric_limits<T>::infinity();
 
 constexpr double infinity_d = infinity<double>;

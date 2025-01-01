@@ -37,20 +37,11 @@ int main(int argc, char* argv[]) {
 
     auto sampler_ptr = std::make_shared<Sampler>(config);
 
-    std::map<RendererType, std::shared_ptr<Renderer>> renderers_map;
+    std::vector<RendererType> renderers;
 
-    auto main_renderer = std::make_shared<Renderer>(RendererType::Colour);
-    renderers_map[RendererType::Colour] = main_renderer;
+    renderers.push_back(RendererType::Colour);
     if (options.output_density && options.output_file) {
-        const auto density_renderer = std::make_shared<Renderer>(
-            RendererType::Density
-        );
-        renderers_map[RendererType::Density] = density_renderer;
-    }
-
-    auto renderers = std::vector<std::shared_ptr<Renderer>>();
-    for (const auto& renderer : renderers_map) {
-        renderers.push_back(renderer.second);
+        renderers.push_back(RendererType::Density);
     }
 
     std::clog << "Scene: " << options.scene.value_or(12) << std::endl;
@@ -109,15 +100,15 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    scene.render();
+    const auto results = scene.render();
 
     output_handler.write_main_image(
-        renderers_map[RendererType::Colour]->image(), image_format::PPM
+        results.at(RendererType::Colour), image_format::PPM
     );
 
-    if (renderers_map.find(RendererType::Density) != renderers_map.end()) {
+    if (results.find(RendererType::Density) != results.end()) {
         output_handler.write_density_image(
-            renderers_map[RendererType::Density]->image()
+            results.at(RendererType::Density)
         );
     }
 

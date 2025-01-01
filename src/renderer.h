@@ -1,6 +1,10 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <memory>
+#include <vector>
+#include <iterator>
+
 #include "image.h"
 #include "ray.h"
 #include "world.h"
@@ -19,14 +23,10 @@ protected:
     const RendererType type_;
 
 public:
-    explicit Renderer(
+    Renderer(
+        const ImageData& image_data,
         RendererType type = RendererType::Colour
-    ) : type_(type) {}
-
-    // Prepare the renderer for a new image
-    void prepare(const ImageData& image_data) {
-        image_ = Image(image_data.width, image_data.height);
-    }
+    ) : image_(image_data.width, image_data.height), type_(type) {}
 
     std::unique_ptr<PixelRenderer> create_pixel_renderer(
         int i, int j, const PixelSampler& pixel_sampler
@@ -43,10 +43,26 @@ public:
         }
     }
 
+    RendererType type() const {
+        return type_;
+    }
+
     // Get the final image
-    Image image() {
+    Image image() const {
         return image_;
     };
+};
+
+class Renderers : public std::vector<Renderer> {
+public:
+    Renderers(
+        const ImageData& image_data,
+        std::vector<RendererType> renderer_types
+    ) {
+        for (const auto& type : renderer_types) {
+            emplace_back(Renderer(image_data, type));
+        }
+    }
 };
 
 #endif

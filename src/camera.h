@@ -28,6 +28,7 @@ class camera {
 
         // Pixel sampler
         std::shared_ptr<Sampler> sampler_;
+        Renderers renderers_;
 
         // Render parameters
         int max_depth;
@@ -41,8 +42,6 @@ class camera {
         // Lens parameters
         double defocus_angle;
         double focus_dist;
-
-        std::vector<std::shared_ptr<Renderer>> renderers_;
 
         void initialize() {
             SamplerData data;
@@ -82,10 +81,6 @@ class camera {
 
             // Prepare objects the camera relies upon
             sampler_->initialise(data);
-
-            for (auto& renderer : renderers_) {
-                renderer->prepare(image_data);
-            }
         }
 
         void process_pixel(int i, int j, const World& world) {
@@ -94,7 +89,7 @@ class camera {
             std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
             for (auto& renderer : renderers_) {
                 pixel_renderer_ptrs.emplace_back(
-                    renderer->create_pixel_renderer(i, j, pixel_sampler)
+                    renderer.create_pixel_renderer(i, j, pixel_sampler)
                 );
             }
 
@@ -111,7 +106,7 @@ class camera {
         camera() = delete;
         camera(
             std::shared_ptr<Sampler> sampler,
-            std::vector<std::shared_ptr<Renderer>> renderers,
+            std::vector<RendererType> renderer_types,
             double ar = 1.0,
             int image_width = 400,
             int max_depth = 10,
@@ -126,14 +121,14 @@ class camera {
                 image_width, Image::calc_image_height(image_width, ar)
             },
             sampler_{ sampler },
+            renderers_{image_data, renderer_types},
             max_depth{ max_depth },
             vfov{ vfov },
             lookfrom{ lookfrom },
             lookat{ lookat },
             vup{ vup },
             defocus_angle{ defocus_angle },
-            focus_dist{ focus_dist },
-            renderers_{ renderers }
+            focus_dist{ focus_dist }
         {
             initialize();
         }
@@ -151,20 +146,13 @@ class camera {
             std::clog << "\rDone.                      \n";
         }
 
-        void add_renderer(std::shared_ptr<Renderer> renderer) {
-            renderer->prepare(image_data);
-            renderers_.push_back(renderer);
-        }
-
-        std::vector<Image> get_results() const {
-            std::vector<Image> results;
+        std::map<RendererType, Image> get_results() const {
+            std::map<RendererType, Image> results;
             for (const auto& renderer : renderers_) {
-                results.push_back(renderer->image());
+                results[renderer.type()] = renderer.image();
             }
             return results;
         }
-
-        // Modified render method that doesn't handle output
 };
 
 #endif

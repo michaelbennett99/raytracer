@@ -14,6 +14,7 @@
 #include "constant_medium.h"
 #include "material.h"
 #include "world.h"
+#include "renderer.h"
 
 class scene {
     private:
@@ -27,14 +28,15 @@ class scene {
             std::shared_ptr<camera> cam
         ) : world(world), cam(cam) {}
 
-        void render() {
+        std::map<RendererType, Image> render() {
             cam->render(*world);
+            return cam->get_results();
         }
 };
 
 scene bouncing_spheres(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -120,7 +122,7 @@ scene bouncing_spheres(
 
 scene checkered_spheres(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -157,7 +159,7 @@ scene checkered_spheres(
 
 scene earth(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -190,7 +192,7 @@ scene earth(
 
 scene perlin_spheres(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -226,7 +228,7 @@ scene perlin_spheres(
 
 scene quads(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -275,7 +277,7 @@ scene quads(
 
 scene triangles(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -314,7 +316,7 @@ scene triangles(
 
 scene ellipses(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -363,7 +365,7 @@ scene ellipses(
 
 scene simple_light(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -401,7 +403,7 @@ scene simple_light(
 
 scene cornell_box(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -472,7 +474,7 @@ scene cornell_box(
 
 scene cornell_smoke(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {
@@ -536,7 +538,7 @@ scene cornell_smoke(
 
 scene final_scene(
     std::shared_ptr<Sampler> sampler,
-    std::vector<std::shared_ptr<Renderer>> renderers,
+    std::vector<RendererType> renderers,
     double ar,
     int image_width
 ) {

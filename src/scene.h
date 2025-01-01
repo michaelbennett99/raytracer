@@ -98,7 +98,7 @@ scene bouncing_spheres(
     auto material3 = std::make_shared<metal>(colour(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
-    world = hittable_list(std::make_shared<bvh_node>(world));
+    world = hittable_list(std::make_shared<BVHNode>(world));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -563,7 +563,7 @@ scene final_scene(
     hittable_list world;
 
     // Bounding volume hierarchy for the boxes
-    world.add(std::make_shared<bvh_node>(boxes1));
+    world.add(std::make_shared<BVHNode>(boxes1));
 
     // Light
     auto light = std::make_shared<diffuse_light>(colour(7, 7, 7));
@@ -628,7 +628,7 @@ scene final_scene(
     // Bounding volume hierarchy for the box of spheres
     world.add(std::make_shared<translate>(
         std::make_shared<rotate_y>(
-            std::make_shared<bvh_node>(boxes2), 15),
+            std::make_shared<BVHNode>(boxes2), 15),
             direction3(-100,270,395)
         )
     );

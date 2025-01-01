@@ -26,6 +26,8 @@ class Camera {
 private:
     const ImageData image_data;
     const Sampler sampler;
+    // Containers contain our images, non const to allow the images to be edited
+    // during rendering
     Renderers renderers;
     const int max_depth;
     Progress progress;

@@ -516,8 +516,8 @@ scene cornell_smoke(
     box2 = std::make_shared<rotate_y>(box2, -18);
     box2 = std::make_shared<translate>(box2, direction3(130,0,65));
 
-    world.add(std::make_shared<constant_medium>(box1, 0.01, Colour(0,0,0)));
-    world.add(std::make_shared<constant_medium>(box2, 0.01, Colour(1,1,1)));
+    world.add(std::make_shared<ConstantMedium>(box1, 0.01, Colour(0,0,0)));
+    world.add(std::make_shared<ConstantMedium>(box2, 0.01, Colour(1,1,1)));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -594,13 +594,13 @@ scene final_scene(
         point3(360,150,145), 70, dielectric_material
     );
     world.add(boundary);
-    world.add(std::make_shared<constant_medium>(
+    world.add(std::make_shared<ConstantMedium>(
         boundary, 0.2, Colour(0.2, 0.4, 0.9)
     ));
     boundary = std::make_shared<sphere>(
         point3(0,0,0), 5000, dielectric_material
     );
-    world.add(std::make_shared<constant_medium>(
+    world.add(std::make_shared<ConstantMedium>(
         boundary, .0001, Colour(1,1,1)
     ));
 

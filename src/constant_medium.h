@@ -6,14 +6,14 @@
 #include "material.h"
 #include "texture.h"
 
-class constant_medium : public Hittable {
+class ConstantMedium : public Hittable {
     private:
         std::shared_ptr<Hittable> boundary;
         double neg_inv_density;
         std::shared_ptr<Material> phase_function;
 
     public:
-        constant_medium(
+        ConstantMedium(
             std::shared_ptr<Hittable> boundary,
             double density,
             std::shared_ptr<texture> tex
@@ -23,7 +23,7 @@ class constant_medium : public Hittable {
             , phase_function{ std::make_shared<isotropic>(tex) }
         {}
 
-        constant_medium(
+        ConstantMedium(
             std::shared_ptr<Hittable> boundary,
             double density,
             const Colour& albedo

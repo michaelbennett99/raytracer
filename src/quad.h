@@ -178,10 +178,10 @@ class disc : public ellipse {
         }
 };
 
-inline std::shared_ptr<hittable_list> box(
+inline std::shared_ptr<HittableList> box(
     const point3& a, const point3& b, std::shared_ptr<Material> mat
 ) {
-    const auto sides = std::make_shared<hittable_list>();
+    const auto sides = std::make_shared<HittableList>();
 
     const auto min = point3(
         std::min(a.x(), b.x()),

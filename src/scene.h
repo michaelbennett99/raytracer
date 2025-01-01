@@ -40,7 +40,7 @@ scene bouncing_spheres(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     auto ground_material = std::make_shared<lambertian>(Colour(0.5, 0.5, 0.5));
     world.add(std::make_shared<sphere>(
@@ -98,7 +98,7 @@ scene bouncing_spheres(
     auto material3 = std::make_shared<metal>(Colour(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
-    world = hittable_list(std::make_shared<BVHNode>(world));
+    world = HittableList(std::make_shared<BVHNode>(world));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -126,7 +126,7 @@ scene checkered_spheres(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto checker = std::make_shared<checker_texture>(
         0.32,
@@ -163,7 +163,7 @@ scene earth(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto earth_texture = std::make_shared<image_texture>("map.jpg");
     const auto earth_material = std::make_shared<lambertian>(earth_texture);
@@ -196,7 +196,7 @@ scene perlin_spheres(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto pertext = std::make_shared<noise_texture>(4);
     const auto sphere_material = std::make_shared<lambertian>(pertext);
@@ -232,7 +232,7 @@ scene quads(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     // Materials
     const auto left_red = std::make_shared<lambertian>(Colour(1, 0.2, 0.2));
@@ -281,7 +281,7 @@ scene triangles(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto left_red = std::make_shared<lambertian>(Colour(1, 0.2, 0.2));
     const auto back_green = std::make_shared<lambertian>(Colour(0.2, 1, 0.2));
@@ -320,7 +320,7 @@ scene ellipses(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto ellipse_material = std::make_shared<lambertian>(
         Colour(0.8, 0.8, 0.0)
@@ -369,7 +369,7 @@ scene simple_light(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto pertext = std::make_shared<noise_texture>(4);
     const auto sphere_material = std::make_shared<lambertian>(pertext);
@@ -407,7 +407,7 @@ scene cornell_box(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     const auto red = std::make_shared<lambertian>(Colour(0.65, 0.05, 0.05));
     const auto white = std::make_shared<lambertian>(Colour(0.73, 0.73, 0.73));
@@ -478,7 +478,7 @@ scene cornell_smoke(
     double ar,
     int image_width
 ) {
-    hittable_list world;
+    HittableList world;
 
     auto red   = std::make_shared<lambertian>(Colour(.65, .05, .05));
     auto white = std::make_shared<lambertian>(Colour(.73, .73, .73));
@@ -543,7 +543,7 @@ scene final_scene(
     int image_width
 ) {
     // Ground of boxes
-    hittable_list boxes1;
+    HittableList boxes1;
     auto ground = std::make_shared<lambertian>(Colour(0.48, 0.83, 0.53));
     int boxes_per_side = 20;
     for (int i = 0; i < boxes_per_side; i++) {
@@ -560,7 +560,7 @@ scene final_scene(
         }
     }
 
-    hittable_list world;
+    HittableList world;
 
     // Bounding volume hierarchy for the boxes
     world.add(std::make_shared<BVHNode>(boxes1));
@@ -618,7 +618,7 @@ scene final_scene(
     ));
 
     // Box of spheres
-    hittable_list boxes2;
+    HittableList boxes2;
     const auto white = std::make_shared<lambertian>(Colour(.73, .73, .73));
     int ns = 1000;
     for (int j = 0; j < ns; j++) {

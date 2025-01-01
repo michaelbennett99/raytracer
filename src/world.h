@@ -9,14 +9,14 @@
 
 class World {
     private:
-        std::shared_ptr<hittable_list> world_;
+        std::shared_ptr<HittableList> world_;
         Colour background_;
 
     public:
         World(
-            const hittable_list& world,
+            const HittableList& world,
             Colour background = Colour(1e-3, 1e-3, 1e-3)
-        ) : world_{ std::make_shared<hittable_list>(world) },
+        ) : world_{ std::make_shared<HittableList>(world) },
             background_{ background } {}
 
         Colour ray_colour(

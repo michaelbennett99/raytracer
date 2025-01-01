@@ -6,14 +6,14 @@
 #include <memory>
 #include <vector>
 
-class hittable_list : public Hittable {
+class HittableList : public Hittable {
     private:
         AABB bbox;
     public:
         std::vector<std::shared_ptr<Hittable>> objects;
 
-        hittable_list() {}
-        hittable_list(std::shared_ptr<Hittable> object) { add(object); }
+        HittableList() {}
+        HittableList(std::shared_ptr<Hittable> object) { add(object); }
 
         void clear() { objects.clear(); }
         void add(std::shared_ptr<Hittable> object) {

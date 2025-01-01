@@ -33,67 +33,64 @@ int main(int argc, char* argv[]) {
 
     OutputHandler output_handler(options.output_file);
 
-    const auto config = create_sampler_config(options);
+    const auto sampler_config = create_sampler_config(options);
 
-    auto sampler_ptr = std::make_shared<Sampler>(config);
-
-    std::vector<RendererType> renderers;
-
-    renderers.push_back(RendererType::Colour);
+    std::vector<RendererType> renderer_types;
+    renderer_types.push_back(RendererType::Colour);
     if (options.output_density && options.output_file) {
-        renderers.push_back(RendererType::Density);
+        renderer_types.push_back(RendererType::Density);
     }
 
     std::clog << "Scene: " << options.scene.value_or(12) << std::endl;
 
-    std::clog << "Sampler config: " << sampler_ptr->get_config() << std::endl;
+    std::clog << "Sampler config: " << sampler_config << std::endl;
 
     scene scene;
 
     switch (options.scene.value_or(1)) {
     case 1:
         scene = bouncing_spheres(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 2:
         scene = checkered_spheres(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 3:
         scene = earth(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 4:
         scene = perlin_spheres(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 5:
         scene = quads(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 6:
         scene = triangles(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 7:
         scene = ellipses(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 8:
         scene = simple_light(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 9:
         scene = cornell_box(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 10:
         scene = cornell_smoke(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 11:
         scene = final_scene(
-            sampler_ptr, renderers, options.aspect_ratio, options.image_width
+            sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     default:
         std::cerr << "Invalid scene number" << std::endl;

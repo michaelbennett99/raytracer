@@ -197,4 +197,28 @@ public:
     }
 };
 
+class PixelSamplerFactory {
+private:
+    const SamplerType type_;
+
+public:
+    explicit PixelSamplerFactory(SamplerType type) : type_(type) {}
+
+    std::shared_ptr<PixelSampler> operator()(
+        std::shared_ptr<SamplerData> data,
+        std::shared_ptr<SamplerConfig> cfg,
+        int i,
+        int j
+    ) const {
+        switch (type_) {
+        case SamplerType::Random:
+            return std::make_shared<RandomPixelSampler>(data, cfg, i, j);
+        case SamplerType::AdaptiveRandom:
+            return std::make_shared<AdaptiveRandomPixelSampler>(data, cfg, i, j);
+        default:
+            throw std::runtime_error("Unknown sampler type");
+        }
+    }
+};
+
 #endif // PIXEL_SAMPLER_H

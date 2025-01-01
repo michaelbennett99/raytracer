@@ -27,67 +27,17 @@ class camera {
         ImageData image_data;
 
         // Pixel sampler
-        std::shared_ptr<Sampler> sampler_;
-        Renderers renderers_;
+        Sampler sampler;
+        Renderers renderers;
 
         // Render parameters
         int max_depth;
 
-        // Camera parameters
-        double vfov;
-        point3 lookfrom;
-        point3 lookat;
-        direction3 vup;
-
-        // Lens parameters
-        double defocus_angle;
-        double focus_dist;
-
-        void initialize() {
-            SamplerData data;
-            data.origin = lookfrom;
-
-            // Viewport dimensions
-            const auto theta = degrees_to_radians(vfov);
-            const auto h = std::tan(theta / 2);
-            const auto viewport_height = 2 * h * focus_dist;
-            const auto viewport_width = viewport_height
-                * image_data.aspect_ratio();
-
-            // Calculate orthonormal basis
-            const auto w = unit_vector(lookfrom - lookat);
-            const auto u = unit_vector(cross(vup, w));
-            const auto v = cross(w, u);
-
-            // Edge vectors of viewport
-            const auto viewport_u = viewport_width * u; // u is horizontal
-            const auto viewport_v = viewport_height * -v; // v is vertical
-
-            // Delta vectors from pixel to pixel
-            data.pixel_delta_u = viewport_u / image_data.width;
-            data.pixel_delta_v = viewport_v / image_data.height;
-
-            // Location of upper left pixel
-            const auto viewport_ul = data.origin
-                - (focus_dist * w)
-                - 0.5 * (viewport_u + viewport_v);
-            data.pixel00_loc = viewport_ul
-                + 0.5 * (data.pixel_delta_u + data.pixel_delta_v);
-
-            const auto defocus_radius = focus_dist
-                * std::tan(degrees_to_radians(defocus_angle / 2));
-            data.defocus_disk_u = u * defocus_radius;
-            data.defocus_disk_v = v * defocus_radius;
-
-            // Prepare objects the camera relies upon
-            sampler_->initialise(data);
-        }
-
         void process_pixel(int i, int j, const World& world) {
-            auto pixel_sampler_ptr = sampler_->pixel(i, j);
+            auto pixel_sampler_ptr = sampler.pixel(i, j);
             auto& pixel_sampler = *pixel_sampler_ptr;
             std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
-            for (auto& renderer : renderers_) {
+            for (auto& renderer : renderers) {
                 pixel_renderer_ptrs.emplace_back(
                     renderer.create_pixel_renderer(i, j, pixel_sampler)
                 );
@@ -105,33 +55,33 @@ class camera {
     public:
         camera() = delete;
         camera(
-            std::shared_ptr<Sampler> sampler,
-            std::vector<RendererType> renderer_types,
+            const SamplerConfig& sampler_config,
+            const std::vector<RendererType>& renderer_types,
             double ar = 1.0,
             int image_width = 400,
             int max_depth = 10,
             double vfov = 90,
-            point3 lookfrom = point3(0, 0, 0),
-            point3 lookat = point3(0, 0, -1),
-            direction3 vup = direction3(0, 1, 0),
+            const point3& lookfrom = point3(0, 0, 0),
+            const point3& lookat = point3(0, 0, -1),
+            const direction3& vup = direction3(0, 1, 0),
             double defocus_angle = 0,
             double focus_dist = 10
         ) :
             image_data{
                 image_width, Image::calc_image_height(image_width, ar)
             },
-            sampler_{ sampler },
-            renderers_{image_data, renderer_types},
-            max_depth{ max_depth },
-            vfov{ vfov },
-            lookfrom{ lookfrom },
-            lookat{ lookat },
-            vup{ vup },
-            defocus_angle{ defocus_angle },
-            focus_dist{ focus_dist }
-        {
-            initialize();
-        }
+            sampler{
+                sampler_config,
+                image_data,
+                lookfrom,
+                lookat,
+                vup,
+                vfov,
+                defocus_angle,
+                focus_dist
+            },
+            renderers{image_data, renderer_types},
+            max_depth{ max_depth } {}
 
         void render(const World& world) {
             for (int j = 0; j < image_data.height; ++j) {
@@ -148,7 +98,7 @@ class camera {
 
         std::map<RendererType, Image> get_results() const {
             std::map<RendererType, Image> results;
-            for (const auto& renderer : renderers_) {
+            for (const auto& renderer : renderers) {
                 results[renderer.type()] = renderer.image();
             }
             return results;

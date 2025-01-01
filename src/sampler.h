@@ -9,68 +9,44 @@
 
 class Sampler {
 private:
-    using SamplerConfigPtr = std::shared_ptr<SamplerConfig>;
-    using SamplerDataPtr = std::shared_ptr<SamplerData>;
-
-    bool initialised = false;
-    SamplerConfigPtr cfg;
-    SamplerDataPtr data;
-    std::function<
-        std::shared_ptr<PixelSampler>(
-            SamplerDataPtr,
-            SamplerConfigPtr,
-            int,
-            int
-        )
-    > sampler_factory;
-
-    // Returns the function that creates the pixel sampler based on the config
-    void set_pixel_sampler_factory() {
-        if (cfg->random.enabled) {
-            if (cfg->adaptive.enabled) {
-                sampler_factory = [](auto data, auto cfg, int i, int j) {
-                    return std::make_shared<AdaptiveRandomPixelSampler>(
-                        data, cfg, i, j
-                    );
-                };
-            } else {
-                sampler_factory = [](auto data, auto cfg, int i, int j) {
-                    return std::make_shared<RandomPixelSampler>(data, cfg, i, j);
-                };
-            }
-        } else {
-            throw std::runtime_error("No pixel sampler enabled");
-        }
-    }
+    std::shared_ptr<SamplerConfig> cfg;
+    std::shared_ptr<SamplerData> data;
+    PixelSamplerFactory sampler_factory;
 
 public:
-    Sampler(const SamplerConfig& cfg)
-        : cfg(std::make_shared<SamplerConfig>(cfg))
-    {
-        set_pixel_sampler_factory();
-    }
-    ~Sampler() = default;
+    Sampler(const SamplerConfig& cfg, const SamplerData& data) :
+        cfg(std::make_shared<SamplerConfig>(cfg)),
+        data(std::make_shared<SamplerData>(data)),
+        sampler_factory(cfg.type())
+    {}
+
+    Sampler(
+        const SamplerConfig& cfg,
+        const ImageData& image_data,
+        const point3& lookfrom,
+        const point3& lookat,
+        const direction3& vup,
+        double vfov,
+        double defocus_angle,
+        double focus_dist
+    ) : cfg(std::make_shared<SamplerConfig>(cfg)),
+        data(std::make_shared<SamplerData>(
+            image_data,
+            lookfrom,
+            lookat,
+            vup,
+            vfov,
+            defocus_angle,
+            focus_dist
+        )),
+        sampler_factory(cfg.type()) {}
 
     std::shared_ptr<PixelSampler> pixel(int i, int j) {
-#ifndef NDEBUG
-        if (!is_initialised()) {
-            throw std::runtime_error("Sampler not initialised");
-        }
-#endif
         return sampler_factory(data, cfg, i, j);
-    }
-
-    void initialise(const SamplerData& data) {
-        this->data = std::make_shared<SamplerData>(data);
-        initialised = true;
     }
 
     const SamplerConfig& get_config() const {
         return *cfg;
-    }
-
-    bool is_initialised() const {
-        return initialised;
     }
 };
 

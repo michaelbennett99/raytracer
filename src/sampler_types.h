@@ -3,7 +3,13 @@
 
 #include <iostream>
 
+#include "image.h"
 #include "vec3.h"
+
+enum class SamplerType {
+    Random,
+    AdaptiveRandom
+};
 
 struct SamplerConfig {
     int samples_per_pixel = 100;
@@ -20,6 +26,18 @@ struct SamplerConfig {
         double critical_value = 1.96;
         double epsilon = 1e-16;
     } adaptive;
+
+    SamplerType type() const {
+        const auto settings_mask = (adaptive.enabled << 1) | random.enabled;
+        switch (settings_mask) {
+        case 0b01:
+            return SamplerType::Random;
+        case 0b11:
+            return SamplerType::AdaptiveRandom;
+        default:
+            throw std::runtime_error("No sampler type enabled");
+        }
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, const SamplerConfig::Random& r) {
@@ -58,6 +76,52 @@ struct SamplerData {
     double defocus_angle;
     direction3 defocus_disk_u;
     direction3 defocus_disk_v;
+
+    SamplerData() = default;
+    SamplerData(
+        const ImageData& image_data,
+        const point3& lookfrom,
+        const point3& lookat,
+        const direction3& vup,
+        double vfov,
+        double defocus_angle,
+        double focus_dist
+    ) {
+        origin = lookfrom;
+
+        // Viewport dimensions
+        const auto theta = degrees_to_radians(vfov);
+        const auto h = std::tan(theta / 2);
+        const auto viewport_height = 2 * h * focus_dist;
+        const auto viewport_width = viewport_height * image_data.aspect_ratio();
+
+        // Calculate orthonormal basis
+        const auto w = unit_vector(lookfrom - lookat);
+        const auto u = unit_vector(cross(vup, w));
+        const auto v = cross(w, u);
+
+        // Edge vectors of viewport
+        const auto viewport_u = viewport_width * u; // u is horizontal
+        const auto viewport_v = viewport_height * -v; // v is vertical
+
+
+        // Delta vectors from pixel to pixel
+        pixel_delta_u = viewport_u / image_data.width;
+        pixel_delta_v = viewport_v / image_data.height;
+
+        // Location of upper left pixel
+        const auto viewport_ul = origin
+            - (focus_dist * w)
+            - 0.5 * (viewport_u + viewport_v);
+        pixel00_loc = viewport_ul
+            + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+        // Defocus disk
+        const auto defocus_radius = focus_dist
+            * std::tan(degrees_to_radians(defocus_angle / 2));
+        defocus_disk_u = u * defocus_radius;
+        defocus_disk_v = v * defocus_radius;
+    }
 };
 
 #endif // SAMPLER_TYPES_H

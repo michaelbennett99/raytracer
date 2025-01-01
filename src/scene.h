@@ -35,8 +35,8 @@ class scene {
 };
 
 scene bouncing_spheres(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -101,8 +101,8 @@ scene bouncing_spheres(
     world = hittable_list(std::make_shared<bvh_node>(world));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -121,8 +121,8 @@ scene bouncing_spheres(
 }
 
 scene checkered_spheres(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -140,8 +140,8 @@ scene checkered_spheres(
     world.add(std::make_shared<sphere>(point3(0,10,0), 10, sphere_material));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -158,8 +158,8 @@ scene checkered_spheres(
 }
 
 scene earth(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -174,8 +174,8 @@ scene earth(
     world.add(globe);
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -191,8 +191,8 @@ scene earth(
 }
 
 scene perlin_spheres(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -209,8 +209,8 @@ scene perlin_spheres(
     );
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -227,8 +227,8 @@ scene perlin_spheres(
 }
 
 scene quads(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -259,8 +259,8 @@ scene quads(
     ));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -276,8 +276,8 @@ scene quads(
 }
 
 scene triangles(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -298,8 +298,8 @@ scene triangles(
     ));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -315,8 +315,8 @@ scene triangles(
 }
 
 scene ellipses(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -347,8 +347,8 @@ scene ellipses(
     );
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -364,8 +364,8 @@ scene ellipses(
 }
 
 scene simple_light(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -385,8 +385,8 @@ scene simple_light(
     world.add(std::make_shared<sphere>(point3(0, 7, 0), 2, light));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -402,8 +402,8 @@ scene simple_light(
 }
 
 scene cornell_box(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -456,8 +456,8 @@ scene cornell_box(
     ));
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         20,
@@ -473,8 +473,8 @@ scene cornell_box(
 }
 
 scene cornell_smoke(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -520,8 +520,8 @@ scene cornell_smoke(
     world.add(std::make_shared<constant_medium>(box2, 0.01, colour(1,1,1)));
 
     camera cam {
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,
@@ -537,8 +537,8 @@ scene cornell_smoke(
 }
 
 scene final_scene(
-    std::shared_ptr<Sampler> sampler,
-    std::vector<RendererType> renderers,
+    const SamplerConfig& sampler_config,
+    const std::vector<RendererType>& renderer_types,
     double ar,
     int image_width
 ) {
@@ -634,8 +634,8 @@ scene final_scene(
     );
 
     camera cam(
-        sampler,
-        renderers,
+        sampler_config,
+        renderer_types,
         ar,
         image_width,
         50,

@@ -9,7 +9,7 @@
 #include "material.h"
 #include "raytracing.h"
 
-class sphere : public Hittable {
+class Sphere : public Hittable {
     private:
         Ray cent;
         double rad;
@@ -25,8 +25,8 @@ class sphere : public Hittable {
         }
 
     public:
-        // Stationary sphere
-        sphere(
+        // Stationary Sphere
+        Sphere(
             const point3& center,
             double radius,
             std::shared_ptr<Material> m
@@ -37,8 +37,8 @@ class sphere : public Hittable {
                 bbox = AABB(center - radius_vec, center + radius_vec);
             }
 
-        // Moving sphere
-        sphere(
+        // Moving Sphere
+        Sphere(
             const point3& c0,
             const point3& c1,
             double radius,
@@ -59,13 +59,13 @@ class sphere : public Hittable {
             HitRecord& rec
         ) const override {
             const auto current_center = center().at(r.time());
-            // Ray-sphere interaction quantities
+            // Ray-Sphere interaction quantities
             const direction3 oc = r.origin() - current_center;
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(), oc);
             auto c = oc.length_squared() - radius() * radius();
 
-            // Quadratic equation to determine if Ray intersects sphere
+            // Quadratic equation to determine if Ray intersects Sphere
             const auto discriminant = h * h - a * c;
             if (discriminant < 0) {
                 return false;

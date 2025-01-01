@@ -43,7 +43,7 @@ Scene bouncing_spheres(
     HittableList world;
 
     auto ground_material = std::make_shared<Lambertian>(Colour(0.5, 0.5, 0.5));
-    world.add(std::make_shared<sphere>(
+    world.add(std::make_shared<Sphere>(
         point3(0,-1000,0), 1000, ground_material
     ));
 
@@ -66,7 +66,7 @@ Scene bouncing_spheres(
                     auto center2 = center
                         + direction3(0, gen_rand::random_double(0, 0.5), 0);
 
-                    world.add(std::make_shared<sphere>(
+                    world.add(std::make_shared<Sphere>(
                             center, center2, 0.2, sphere_material
                     ));
                 } else if (choose_mat < 0.95) {
@@ -75,13 +75,13 @@ Scene bouncing_spheres(
                     auto fuzz = gen_rand::random_double(0, 0.5);
                     sphere_material = std::make_shared<Metal>(albedo, fuzz);
 
-                    world.add(std::make_shared<sphere>(
+                    world.add(std::make_shared<Sphere>(
                         center, 0.2, sphere_material
                     ));
                 } else {
                     // glass
                     sphere_material = std::make_shared<Dielectric>(1.5);
-                    world.add(std::make_shared<sphere>(
+                    world.add(std::make_shared<Sphere>(
                         center, 0.2, sphere_material
                     ));
                 }
@@ -90,13 +90,13 @@ Scene bouncing_spheres(
     }
 
     auto material1 = std::make_shared<Dielectric>(1.5);
-    world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
+    world.add(std::make_shared<Sphere>(point3(0, 1, 0), 1.0, material1));
 
     auto material2 = std::make_shared<Lambertian>(Colour(0.4, 0.2, 0.1));
-    world.add(std::make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
+    world.add(std::make_shared<Sphere>(point3(-4, 1, 0), 1.0, material2));
 
     auto material3 = std::make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0);
-    world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
+    world.add(std::make_shared<Sphere>(point3(4, 1, 0), 1.0, material3));
 
     world = HittableList(std::make_shared<BVHNode>(world));
 
@@ -136,8 +136,8 @@ Scene checkered_spheres(
 
     const auto sphere_material = std::make_shared<Lambertian>(checker);
 
-    world.add(std::make_shared<sphere>(point3(0,-10,0), 10, sphere_material));
-    world.add(std::make_shared<sphere>(point3(0,10,0), 10, sphere_material));
+    world.add(std::make_shared<Sphere>(point3(0,-10,0), 10, sphere_material));
+    world.add(std::make_shared<Sphere>(point3(0,10,0), 10, sphere_material));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -167,7 +167,7 @@ Scene earth(
 
     const auto earth_texture = std::make_shared<image_texture>("map.jpg");
     const auto earth_material = std::make_shared<Lambertian>(earth_texture);
-    const auto globe = std::make_shared<sphere>(
+    const auto globe = std::make_shared<Sphere>(
         point3(0, 0, 0), 2, earth_material
     );
 
@@ -202,10 +202,10 @@ Scene perlin_spheres(
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
 
     world.add(
-        std::make_shared<sphere>(point3(0, -1000, 0), 1000, sphere_material)
+        std::make_shared<Sphere>(point3(0, -1000, 0), 1000, sphere_material)
     );
     world.add(
-        std::make_shared<sphere>(point3(0, 2, 0), 2, sphere_material)
+        std::make_shared<Sphere>(point3(0, 2, 0), 2, sphere_material)
     );
 
     auto cam = std::make_shared<Camera>(
@@ -374,15 +374,15 @@ Scene simple_light(
     const auto pertext = std::make_shared<noise_texture>(4);
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
     world.add(
-        std::make_shared<sphere>(point3(0,-1000,0), 1000, sphere_material)
+        std::make_shared<Sphere>(point3(0,-1000,0), 1000, sphere_material)
     );
-    world.add(std::make_shared<sphere>(point3(0,2,0), 2, sphere_material));
+    world.add(std::make_shared<Sphere>(point3(0,2,0), 2, sphere_material));
 
     const auto light = std::make_shared<DiffuseLight>(Colour(4, 4, 4));
     world.add(std::make_shared<Quad>(
         point3(3, 1, -2), direction3(2, 0, 0), direction3(0, 2, 0), light
     ));
-    world.add(std::make_shared<sphere>(point3(0, 7, 0), 2, light));
+    world.add(std::make_shared<Sphere>(point3(0, 7, 0), 2, light));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -571,49 +571,49 @@ Scene final_scene(
         point3(123,554,147), direction3(300,0,0), direction3(0,0,265), light
     ));
 
-    // Moving sphere
+    // Moving Sphere
     auto center1 = point3(400, 400, 200);
     auto center2 = center1 + direction3(30,0,0);
     auto sphere_material = std::make_shared<Lambertian>(Colour(0.7, 0.3, 0.1));
-    world.add(std::make_shared<sphere>(center1, center2, 50, sphere_material));
+    world.add(std::make_shared<Sphere>(center1, center2, 50, sphere_material));
 
     // Static spheres
     const auto dielectric_material = std::make_shared<Dielectric>(1.5);
     const auto metal_material = std::make_shared<Metal>(
         Colour(0.8, 0.8, 0.9), 1.0
     );
-    world.add(std::make_shared<sphere>(
+    world.add(std::make_shared<Sphere>(
         point3(260, 150, 45), 50, dielectric_material
     ));
-    world.add(std::make_shared<sphere>(
+    world.add(std::make_shared<Sphere>(
         point3(0, 150, 145), 50, metal_material
     ));
 
-    // SSR sphere
-    auto boundary = std::make_shared<sphere>(
+    // SSR Sphere
+    auto boundary = std::make_shared<Sphere>(
         point3(360,150,145), 70, dielectric_material
     );
     world.add(boundary);
     world.add(std::make_shared<ConstantMedium>(
         boundary, 0.2, Colour(0.2, 0.4, 0.9)
     ));
-    boundary = std::make_shared<sphere>(
+    boundary = std::make_shared<Sphere>(
         point3(0,0,0), 5000, dielectric_material
     );
     world.add(std::make_shared<ConstantMedium>(
         boundary, .0001, Colour(1,1,1)
     ));
 
-    // World sphere
+    // World Sphere
     auto map = std::make_shared<Lambertian>(std::make_shared<image_texture>(
         "map.jpg"
     ));
-    world.add(std::make_shared<sphere>(point3(400,200,400), 100, map));
+    world.add(std::make_shared<Sphere>(point3(400,200,400), 100, map));
 
-    // Perlin sphere
+    // Perlin Sphere
     const auto pertext = std::make_shared<noise_texture>(0.2);
     const auto pertext_material = std::make_shared<Lambertian>(pertext);
-    world.add(std::make_shared<sphere>(
+    world.add(std::make_shared<Sphere>(
         point3(220,280,300), 80, pertext_material
     ));
 
@@ -622,7 +622,7 @@ Scene final_scene(
     const auto white = std::make_shared<Lambertian>(Colour(.73, .73, .73));
     int ns = 1000;
     for (int j = 0; j < ns; j++) {
-        boxes2.add(std::make_shared<sphere>(point3::random(0,165), 10, white));
+        boxes2.add(std::make_shared<Sphere>(point3::random(0,165), 10, white));
     }
 
     // Bounding volume hierarchy for the box of spheres

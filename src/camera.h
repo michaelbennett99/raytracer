@@ -31,14 +31,14 @@ private:
     Progress progress;
 
     void process_pixel(int i, int j, const World& world) {
-        auto pixel_sampler = sampler.pixel(i, j);
-        auto& pixel_sampler_ref = *pixel_sampler;
-        auto pixel_renderers = renderers.create_pixel_renderers(
+        auto pixel_sampler { sampler.pixel(i, j) };
+        auto& pixel_sampler_ref { *pixel_sampler };
+        auto pixel_renderers { renderers.create_pixel_renderers(
             i, j, pixel_sampler_ref
-        );
+        ) };
 
         for (const auto& ray : pixel_sampler_ref) {
-            colour pixel_colour = world.ray_colour(ray, max_depth);
+            const auto pixel_colour { world.ray_colour(ray, max_depth) };
             for (auto& renderer : pixel_renderers) {
                 renderer->process_sample(ray, pixel_colour);
             }

@@ -70,7 +70,7 @@ class BVHNode : public Hittable {
             bbox = AABB(left->bounding_box(), right->bounding_box());
         }
 
-        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
+        bool hit(const Ray& r, interval_d t, HitRecord& rec) const override {
             if (!bbox.hit(r, t)) return false;
 
             const auto hit_left { left->hit(r, t, rec) };

@@ -15,7 +15,7 @@ class Hittable {
         virtual ~Hittable() = default;
 
         virtual bool hit(
-            const ray& r,
+            const Ray& r,
             interval_d t,
             HitRecord& rec
         ) const = 0;
@@ -23,7 +23,7 @@ class Hittable {
         virtual AABB bounding_box() const = 0;
 
         static bool is_front_face(
-            const ray& r, const direction3& outward_normal
+            const Ray& r, const direction3& outward_normal
         ) {
             return dot(r.direction(), outward_normal) < 0;
         }
@@ -48,7 +48,7 @@ struct HitRecord {
     double v;
 
     HitRecord(
-        const ray& r,
+        const Ray& r,
         const point3& p,
         const direction3& outward_normal,
         double t
@@ -62,7 +62,7 @@ struct HitRecord {
     // Add default constructor since we'll use it as an outparam
     HitRecord() = default;
 
-    void set_face_normal(const ray& r, const direction3& outward_normal) {
+    void set_face_normal(const Ray& r, const direction3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }

@@ -39,10 +39,10 @@ private:
             i, j, pixel_sampler_ref
         ) };
 
-        for (const auto& ray : pixel_sampler_ref) {
-            const auto pixel_colour { world.ray_colour(ray, max_depth) };
+        for (const auto& Ray : pixel_sampler_ref) {
+            const auto pixel_colour { world.ray_colour(Ray, max_depth) };
             for (auto& renderer : pixel_renderers) {
-                renderer->process_sample(ray, pixel_colour);
+                renderer->process_sample(Ray, pixel_colour);
             }
             pixel_sampler_ref.add_sample(pixel_colour);
         }

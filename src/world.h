@@ -20,7 +20,7 @@ class World {
             background_{ background } {}
 
         Colour ray_colour(
-            const ray& r, int depth
+            const Ray& r, int depth
         ) const {
             if (depth <= 0) return background_;
 
@@ -30,7 +30,7 @@ class World {
                 return background_;
             }
 
-            ray scattered;
+            Ray scattered;
             Colour attenuation;
             Colour emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
 

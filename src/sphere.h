@@ -11,7 +11,7 @@
 
 class sphere : public Hittable {
     private:
-        ray cent;
+        Ray cent;
         double rad;
         std::shared_ptr<Material> mat;
         AABB bbox;
@@ -50,11 +50,11 @@ class sphere : public Hittable {
             bbox = AABB(box0, box1);
         }
 
-        const ray& center() const { return cent; }
+        const Ray& center() const { return cent; }
         double radius() const { return rad; }
 
         bool hit(
-            const ray& r,
+            const Ray& r,
             interval_d t,
             HitRecord& rec
         ) const override {
@@ -65,7 +65,7 @@ class sphere : public Hittable {
             auto h = dot(r.direction(), oc);
             auto c = oc.length_squared() - radius() * radius();
 
-            // Quadratic equation to determine if ray intersects sphere
+            // Quadratic equation to determine if Ray intersects sphere
             const auto discriminant = h * h - a * c;
             if (discriminant < 0) {
                 return false;

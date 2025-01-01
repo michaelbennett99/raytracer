@@ -22,7 +22,7 @@ class HittableList : public Hittable {
         }
 
         bool hit(
-            const ray& r,
+            const Ray& r,
             interval_d t,
             HitRecord& rec
         ) const override {

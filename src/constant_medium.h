@@ -34,7 +34,7 @@ class ConstantMedium : public Hittable {
         {}
 
         bool hit(
-            const ray& r, interval_d t, HitRecord& rec
+            const Ray& r, interval_d t, HitRecord& rec
         ) const override {
             HitRecord rec1, rec2;
 

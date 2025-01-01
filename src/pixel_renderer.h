@@ -15,7 +15,7 @@ public:
     PixelRenderer(const PixelSampler& pixel_sampler, Image& image, int i, int j)
         : pixel_sampler_(pixel_sampler), image_(image), i_(i), j_(j) {}
 
-    virtual void process_sample(const ray& r, const Colour& pixel_colour) = 0;
+    virtual void process_sample(const Ray& r, const Colour& pixel_colour) = 0;
     virtual ~PixelRenderer() = default;
 };
 
@@ -29,7 +29,7 @@ public:
     ) : PixelRenderer(pixel_sampler, image, i, j),
         current_colour_(0, 0, 0) {}
 
-    void process_sample(const ray& r, const Colour& pixel_colour) override {
+    void process_sample(const Ray& r, const Colour& pixel_colour) override {
         current_colour_ += pixel_colour;
     }
 
@@ -48,7 +48,7 @@ public:
         const PixelSampler& pixel_sampler, Image& image, int i, int j
     ) : PixelRenderer(pixel_sampler, image, i, j) {}
 
-    void process_sample(const ray& r, const Colour& pixel_colour) override {}
+    void process_sample(const Ray& r, const Colour& pixel_colour) override {}
 
     ~DensityPixelRenderer() {
         image_[j_][i_] = colour_pixel(pixel_sampler_.sampling_density());

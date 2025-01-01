@@ -12,10 +12,10 @@ class Material {
         virtual ~Material() = default;
 
         virtual bool scatter(
-            const ray& r_in,
+            const Ray& r_in,
             const HitRecord& rec,
             Colour& attenuation,
-            ray& scattered
+            Ray& scattered
         ) const {
             return false;
         }
@@ -34,16 +34,16 @@ class Lambertian : public Material {
         Lambertian(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
-            const ray& r_in,
+            const Ray& r_in,
             const HitRecord& rec,
             Colour& attenuation,
-            ray& scattered
+            Ray& scattered
         ) const override {
             auto scatter_direction = rec.normal + random_unit_vector();
             if (scatter_direction.near_zero()) {
                 scatter_direction = rec.normal;
             }
-            scattered = ray(rec.p, scatter_direction, r_in.time());
+            scattered = Ray(rec.p, scatter_direction, r_in.time());
             attenuation = tex->value(rec.u, rec.v, rec.p);
             return true;
         }
@@ -58,10 +58,10 @@ class Metal : public Material {
         Metal(const Colour& a, double f) : albedo(a), fuzz(f) {}
 
         bool scatter(
-            const ray& r_in,
+            const Ray& r_in,
             const HitRecord& rec,
             Colour& attenuation,
-            ray& scattered
+            Ray& scattered
         ) const override {
             const auto reflected = reflect(
                 r_in.direction(),
@@ -69,7 +69,7 @@ class Metal : public Material {
             );
             const auto fuzzed = unit_vector(reflected)
                 + (fuzz * random_unit_vector());
-            scattered = ray(rec.p, fuzzed, r_in.time());
+            scattered = Ray(rec.p, fuzzed, r_in.time());
             attenuation = albedo;
             return (dot(scattered.direction(), rec.normal) > 0);
         }
@@ -90,10 +90,10 @@ class Dielectric : public Material {
         Dielectric(double index_of_refraction) : ir(index_of_refraction) {}
 
         bool scatter(
-            const ray& r_in,
+            const Ray& r_in,
             const HitRecord& rec,
             Colour& attenuation,
-            ray& scattered
+            Ray& scattered
         ) const override {
             attenuation = Colour(1.0, 1.0, 1.0);
             const auto refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
@@ -112,7 +112,7 @@ class Dielectric : public Material {
                 ? reflect(unit_direction, rec.normal)
                 : refract(unit_direction, rec.normal, refraction_ratio);
 
-            scattered = ray(rec.p, direction, r_in.time());
+            scattered = Ray(rec.p, direction, r_in.time());
             return true;
         }
 };
@@ -141,12 +141,12 @@ class Isotropic : public Material {
         Isotropic(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
-            const ray& r_in,
+            const Ray& r_in,
             const HitRecord& rec,
             Colour& attenuation,
-            ray& scattered
+            Ray& scattered
         ) const override {
-            scattered = ray(rec.p, random_unit_vector(), r_in.time());
+            scattered = Ray(rec.p, random_unit_vector(), r_in.time());
             attenuation = tex->value(rec.u, rec.v, rec.p);
             return true;
         }

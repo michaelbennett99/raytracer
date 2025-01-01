@@ -54,7 +54,7 @@ class AABB {
             return (i == 0) ? x_ : (i == 1) ? y_ : z_;
         }
 
-        bool hit(const ray& r, interval_d t) const {
+        bool hit(const Ray& r, interval_d t) const {
             const auto& ray_origin { r.origin() };
             const auto& ray_direction { r.direction() };
 

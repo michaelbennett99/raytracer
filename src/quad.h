@@ -29,7 +29,7 @@ class Surface : public Hittable {
         }
 
         bool hit(
-            const ray& r,
+            const Ray& r,
             interval_d ray_t,
             HitRecord& rec
         ) const override {

@@ -17,8 +17,8 @@ class Translate : public Hittable {
                 bbox = object->bounding_box() + offset;
             }
 
-        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
-            ray offset_r(r.origin() - offset, r.direction());
+        bool hit(const Ray& r, interval_d t, HitRecord& rec) const override {
+            Ray offset_r(r.origin() - offset, r.direction());
             if (!object->hit(offset_r, t, rec)) return false;
 
             rec.p += offset;
@@ -93,13 +93,13 @@ class RotateY : public Hittable {
             set_bounding_box();
         }
 
-        bool hit(const ray& r, interval_d t, HitRecord& rec) const override {
+        bool hit(const Ray& r, interval_d t, HitRecord& rec) const override {
 
-            // Transform ray from world space to object space
+            // Transform Ray from world space to object space
             const auto origin = rotate(r.origin());
             const auto direction = rotate(r.direction());
 
-            ray rotated_r(origin, direction, r.time());
+            Ray rotated_r(origin, direction, r.time());
 
             // Determine if there's a hit in object space
 

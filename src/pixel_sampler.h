@@ -45,13 +45,13 @@ public:
 
     virtual bool has_next_sample() const = 0;
     virtual void add_sample(const Colour& sample) {}
-    virtual ray sample() {
+    virtual Ray sample() {
         const auto pixel_sample = sample_pixel();
         const auto ray_origin = sample_defocus_disk();
         const auto ray_direction = pixel_sample - ray_origin;
         const auto ray_time = gen_rand::random_double(0, 1);
         samples_++;
-        return ray(ray_origin, ray_direction, ray_time);
+        return Ray(ray_origin, ray_direction, ray_time);
     };
 
     int samples() const { return samples_; }
@@ -63,7 +63,7 @@ public:
     class Iterator {
     private:
         PixelSampler* pixel_sampler;
-        ray current_ray;
+        Ray current_ray;
 
     public:
         explicit Iterator(
@@ -89,8 +89,8 @@ public:
         bool operator!=(const Iterator& other) const {
             return !(*this == other);
         }
-        const ray& operator*() const { return current_ray; }
-        const ray* operator->() const { return &current_ray; }
+        const Ray& operator*() const { return current_ray; }
+        const Ray* operator->() const { return &current_ray; }
     };
 
     Iterator begin() {

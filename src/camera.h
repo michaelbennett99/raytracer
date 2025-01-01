@@ -36,12 +36,9 @@ class camera {
         void process_pixel(int i, int j, const World& world) {
             auto pixel_sampler_ptr = sampler.pixel(i, j);
             auto& pixel_sampler = *pixel_sampler_ptr;
-            std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
-            for (auto& renderer : renderers) {
-                pixel_renderer_ptrs.emplace_back(
-                    renderer.create_pixel_renderer(i, j, pixel_sampler)
-                );
-            }
+            auto pixel_renderer_ptrs = renderers.create_pixel_renderers(
+                i, j, pixel_sampler
+            );
 
             for (const auto& ray : pixel_sampler) {
                 colour pixel_colour = world.ray_colour(ray, max_depth);

@@ -65,6 +65,18 @@ public:
             emplace_back(Renderer(image_data, type));
         }
     }
+
+    std::vector<std::unique_ptr<PixelRenderer>> create_pixel_renderers(
+        int i, int j, const PixelSampler& pixel_sampler
+    ) {
+        std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
+        for (auto& renderer : *this) {
+            pixel_renderer_ptrs.emplace_back(
+                renderer.create_pixel_renderer(i, j, pixel_sampler)
+            );
+        }
+        return pixel_renderer_ptrs;
+    }
 };
 
 #endif

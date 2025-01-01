@@ -16,14 +16,14 @@
 #include "world.h"
 #include "renderer.h"
 
-class scene {
+class Scene {
     private:
         std::shared_ptr<World> world;
         std::shared_ptr<Camera> cam;
 
     public:
-        scene() = default;
-        scene(
+        Scene() = default;
+        Scene(
             std::shared_ptr<World> world,
             std::shared_ptr<Camera> cam
         ) : world(world), cam(cam) {}
@@ -34,7 +34,7 @@ class scene {
         }
 };
 
-scene bouncing_spheres(
+Scene bouncing_spheres(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -114,13 +114,13 @@ scene bouncing_spheres(
         10.0
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene checkered_spheres(
+Scene checkered_spheres(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -151,13 +151,13 @@ scene checkered_spheres(
         direction3(0, 1, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene earth(
+Scene earth(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -184,13 +184,13 @@ scene earth(
         point3(0, 0, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene perlin_spheres(
+Scene perlin_spheres(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -220,13 +220,13 @@ scene perlin_spheres(
         direction3(0, 1, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene quads(
+Scene quads(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -269,13 +269,13 @@ scene quads(
         point3(0, 0, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene triangles(
+Scene triangles(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -308,13 +308,13 @@ scene triangles(
         point3(0, 0, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene ellipses(
+Scene ellipses(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -357,13 +357,13 @@ scene ellipses(
         point3(0, 0, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0.7, 0.8, 1.0)),
         cam
     );
 }
 
-scene simple_light(
+Scene simple_light(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -395,13 +395,13 @@ scene simple_light(
         point3(0, 2, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world, Colour(0, 0, 0)),
         cam
     );
 }
 
-scene cornell_box(
+Scene cornell_box(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -466,13 +466,13 @@ scene cornell_box(
         point3(278, 278, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world),
         cam
     );
 }
 
-scene cornell_smoke(
+Scene cornell_smoke(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -530,13 +530,13 @@ scene cornell_smoke(
         point3(278, 278, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world),
         cam
     );
 }
 
-scene final_scene(
+Scene final_scene(
     const SamplerConfig& sampler_config,
     const std::vector<RendererType>& renderer_types,
     double ar,
@@ -644,7 +644,7 @@ scene final_scene(
         point3(278, 278, 0)
     );
 
-    return scene(
+    return Scene(
         std::make_shared<World>(world),
         cam
     );

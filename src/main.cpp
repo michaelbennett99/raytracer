@@ -44,65 +44,65 @@ int main(int argc, char* argv[]) {
 
     const auto sampler_config = create_sampler_config(options);
     const auto renderer_types = create_renderer_config(options);
-    const auto scene_number = options.scene.value_or(1);
+    const auto scene_number = options.Scene.value_or(1);
 
     std::clog << "Scene: " << scene_number << std::endl;
 
     std::clog << "Sampler config: " << sampler_config << std::endl;
 
-    scene scene;
+    Scene Scene;
 
     switch (scene_number) {
     case 1:
-        scene = bouncing_spheres(
+        Scene = bouncing_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 2:
-        scene = checkered_spheres(
+        Scene = checkered_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 3:
-        scene = earth(
+        Scene = earth(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 4:
-        scene = perlin_spheres(
+        Scene = perlin_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 5:
-        scene = quads(
+        Scene = quads(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 6:
-        scene = triangles(
+        Scene = triangles(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 7:
-        scene = ellipses(
+        Scene = ellipses(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 8:
-        scene = simple_light(
+        Scene = simple_light(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 9:
-        scene = cornell_box(
+        Scene = cornell_box(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 10:
-        scene = cornell_smoke(
+        Scene = cornell_smoke(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 11:
-        scene = final_scene(
+        Scene = final_scene(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     default:
-        std::cerr << "Invalid scene number" << std::endl;
+        std::cerr << "Invalid Scene number" << std::endl;
         exit(1);
     }
 
-    const auto results = scene.render();
+    const auto results = Scene.render();
 
     output_handler.write_main_image(
         results.at(RendererType::Colour), ImageFormat::PPM

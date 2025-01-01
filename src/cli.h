@@ -7,7 +7,7 @@
 #include <optional>
 
 struct RenderOptions {
-    std::optional<int> scene {};
+    std::optional<int> Scene {};
     bool adaptive_sampling {false};
     int image_width {400};
     double aspect_ratio {16.0 / 9.0};
@@ -23,7 +23,7 @@ namespace CLI {
     static const RenderOptions DEFAULT_OPTIONS {};
 
     static void usage(const char* argv0) {
-        std::cerr << "Usage: " << argv0 << " [options] <scene>" << std::endl
+        std::cerr << "Usage: " << argv0 << " [options] <Scene>" << std::endl
             << "Options:" << std::endl
             << "  -h              Show this help message"
             << std::endl
@@ -154,7 +154,7 @@ namespace CLI {
 
         for (int i = 1; i < argc; i++) {
             if (isint(argv[i])) {
-                options.scene = std::stoi(argv[i]);
+                options.Scene = std::stoi(argv[i]);
             } else if (strcmp(argv[i], "-a") == 0) {
                 options.adaptive_sampling = true;
             } else if (strcmp(argv[i], "-w") == 0) {

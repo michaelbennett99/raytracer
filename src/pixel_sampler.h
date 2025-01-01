@@ -8,7 +8,7 @@
 #include "ray.h"
 
 // Pixel sampler class
-class PixelSampler : public std::enable_shared_from_this<PixelSampler> {
+class PixelSampler {
 protected:
     int samples_ = 0;
     std::shared_ptr<SamplerData> data;
@@ -62,12 +62,12 @@ public:
 
     class Iterator {
     private:
-        std::shared_ptr<PixelSampler> pixel_sampler;
+        PixelSampler* pixel_sampler;
         ray current_ray;
 
     public:
         explicit Iterator(
-            std::shared_ptr<PixelSampler> pixel_sampler
+            PixelSampler* pixel_sampler = nullptr
         ) : pixel_sampler(pixel_sampler) {
             if (pixel_sampler) {
                 current_ray = pixel_sampler->sample();
@@ -94,7 +94,7 @@ public:
     };
 
     Iterator begin() {
-        return Iterator(shared_from_this());
+        return Iterator(this);
     }
 
     Iterator end() const {
@@ -204,7 +204,7 @@ private:
 public:
     explicit PixelSamplerFactory(SamplerType type) : type_(type) {}
 
-    std::shared_ptr<PixelSampler> operator()(
+    std::unique_ptr<PixelSampler> operator()(
         std::shared_ptr<SamplerData> data,
         std::shared_ptr<SamplerConfig> cfg,
         int i,
@@ -212,9 +212,9 @@ public:
     ) const {
         switch (type_) {
         case SamplerType::Random:
-            return std::make_shared<RandomPixelSampler>(data, cfg, i, j);
+            return std::make_unique<RandomPixelSampler>(data, cfg, i, j);
         case SamplerType::AdaptiveRandom:
-            return std::make_shared<AdaptiveRandomPixelSampler>(data, cfg, i, j);
+            return std::make_unique<AdaptiveRandomPixelSampler>(data, cfg, i, j);
         default:
             throw std::runtime_error("Unknown sampler type");
         }

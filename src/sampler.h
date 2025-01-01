@@ -41,7 +41,7 @@ public:
         )),
         sampler_factory(cfg.type()) {}
 
-    std::shared_ptr<PixelSampler> pixel(int i, int j) {
+    std::unique_ptr<PixelSampler> pixel(int i, int j) {
         return sampler_factory(data, cfg, i, j);
     }
 

@@ -10,7 +10,7 @@
 #include "hittable_list.h"
 
 // Abstract class for surfaces
-class surface : public Hittable {
+class Surface : public Hittable {
     protected:
         point3 Q_;
         direction3 u_, v_;
@@ -56,7 +56,7 @@ class surface : public Hittable {
 };
 
 // Abstract class for simple surfaces
-class simple_surface : public surface {
+class SimpleSurface : public Surface {
     protected:
         void init_surface(
             const point3& Q,
@@ -78,7 +78,7 @@ class simple_surface : public surface {
         }
 };
 
-class quad : public simple_surface {
+class Quad : public SimpleSurface {
     private:
         void set_bounding_box() override {
             const auto box_0 = AABB(Q_, Q_ + u_ + v_);
@@ -95,7 +95,7 @@ class quad : public simple_surface {
         }
 
     public:
-        quad(
+        Quad(
             const point3& Q,
             const direction3& u,
             const direction3& v,
@@ -105,7 +105,7 @@ class quad : public simple_surface {
         }
 };
 
-class triangle : public simple_surface {
+class Triangle : public SimpleSurface {
     private:
         void set_bounding_box() override {
             const auto box_0 = AABB(Q_, Q_ + u_);
@@ -124,7 +124,7 @@ class triangle : public simple_surface {
         }
 
     public:
-        triangle(
+        Triangle(
             const point3& Q,
             const direction3& u,
             const direction3& v,
@@ -134,7 +134,7 @@ class triangle : public simple_surface {
         }
 };
 
-class ellipse : public simple_surface {
+class Ellipse : public SimpleSurface {
     private:
         void set_bounding_box() override {
             const auto box_0 = AABB(Q_ + u_ + v_, Q_ - u_ - v_);
@@ -150,7 +150,7 @@ class ellipse : public simple_surface {
         }
 
     public:
-        ellipse(
+        Ellipse(
             const point3& Q,
             const direction3& u,
             const direction3& v,
@@ -160,15 +160,15 @@ class ellipse : public simple_surface {
         }
 };
 
-class disc : public ellipse {
+class Disc : public Ellipse {
     public:
-        disc(
+        Disc(
             const point3& Q,
             const direction3& u,
             const direction3& v,
             double radius,
             std::shared_ptr<Material> mat
-        ) : ellipse(Q, u, v, mat) {
+        ) : Ellipse(Q, u, v, mat) {
             // Need to get the component of v_ perpendicular to u_
             const auto v_perp = v_ - dot(u_, v_) / dot(u_, u_) * u_;
             // Need to divide by radius due to dual basis method of getting
@@ -199,27 +199,27 @@ inline std::shared_ptr<HittableList> box(
     const auto dz = direction3(0, 0, max.z() - min.z());
 
     // Front face (z = max.z)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(min.x(), min.y(), max.z()), dx, dy, mat
     ));
     // Right face (x = max.x)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(max.x(), min.y(), max.z()), -dz, dy, mat
     ));
     // Back face (z = min.z)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(max.x(), min.y(), min.z()), -dx, dy, mat
     ));
     // Left face (x = min.x)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(min.x(), min.y(), min.z()), dz, dy, mat
     ));
     // Top face (y = max.y)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(min.x(), max.y(), min.z()), dx, dz, mat
     ));
     // Bottom face (y = min.y)
-    sides->add(std::make_shared<quad>(
+    sides->add(std::make_shared<Quad>(
         point3(min.x(), min.y(), min.z()), dx, dz, mat
     ));
 

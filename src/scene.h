@@ -242,19 +242,19 @@ scene quads(
     const auto lower_teal = std::make_shared<Lambertian>(Colour(0.2, 0.8, 0.8));
 
     // Quads
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(-2, -2, 0), direction3(4, 0, 0), direction3(0, 4, 0), right_blue
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(-2, 3, 1), direction3(4, 0, 0), direction3(0, 0, 4), upper_orange
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(-2, -3, 1), direction3(4, 0, 0), direction3(0, 0, 4), lower_teal
     ));
 
@@ -287,13 +287,13 @@ scene triangles(
     const auto back_green = std::make_shared<Lambertian>(Colour(0.2, 1, 0.2));
     const auto right_blue = std::make_shared<Lambertian>(Colour(0.2, 0.2, 1));
 
-    world.add(std::make_shared<triangle>(
+    world.add(std::make_shared<Triangle>(
         point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
     ));
-    world.add(std::make_shared<triangle>(
+    world.add(std::make_shared<Triangle>(
         point3(-2, -2, 0), direction3(4, 0, 0), direction3(0, 4, 0), right_blue
     ));
-    world.add(std::make_shared<triangle>(
+    world.add(std::make_shared<Triangle>(
         point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
     ));
 
@@ -325,20 +325,20 @@ scene ellipses(
     const auto ellipse_material = std::make_shared<Lambertian>(
         Colour(0.8, 0.8, 0.0)
     );
-    world.add(std::make_shared<ellipse>(
+    world.add(std::make_shared<Ellipse>(
         point3(0, 0, 0),
         direction3(1, 0, 0),
         direction3(0, 1, 0),
         ellipse_material)
     );
-    world.add(std::make_shared<ellipse>(
+    world.add(std::make_shared<Ellipse>(
         point3(2.5, 0, 0),
         direction3(1, 0, 0),
         direction3(0, 2, -1),
         ellipse_material)
     );
 
-    world.add(std::make_shared<disc>(
+    world.add(std::make_shared<Disc>(
         point3(-2.5, 0, 0),
         direction3(1, 1, 0),
         direction3(0, 1, 0),
@@ -379,7 +379,7 @@ scene simple_light(
     world.add(std::make_shared<sphere>(point3(0,2,0), 2, sphere_material));
 
     const auto light = std::make_shared<DiffuseLight>(Colour(4, 4, 4));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(3, 1, -2), direction3(2, 0, 0), direction3(0, 2, 0), light
     ));
     world.add(std::make_shared<sphere>(point3(0, 7, 0), 2, light));
@@ -414,25 +414,25 @@ scene cornell_box(
     const auto green = std::make_shared<Lambertian>(Colour(0.12, 0.45, 0.09));
     const auto light = std::make_shared<DiffuseLight>(Colour(25, 25, 25));
 
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(555, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), green
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), red
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(343, 554, 332),
         direction3(-130, 0, 0),
         direction3(0, 0, -105),
         light
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0, 0, 0), direction3(555, 0, 0), direction3(0, 0, 555), white
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(555,555,555), direction3(-555,0,0), direction3(0,0,-555), white
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0, 0, 555), direction3(555, 0, 0), direction3(0, 555, 0), white
     ));
 
@@ -451,7 +451,7 @@ scene cornell_box(
     world.add(box2);
 
     // Add light behind the camera
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0, 0, -1000), direction3(555, 0, 0), direction3(0, 555, 0), light
     ));
 
@@ -485,22 +485,22 @@ scene cornell_smoke(
     auto green = std::make_shared<Lambertian>(Colour(.12, .45, .15));
     auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
 
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(555,0,0), direction3(0,555,0), direction3(0,0,555), green
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0,0,0), direction3(0,555,0), direction3(0,0,555), red
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(113,554,127), direction3(330,0,0), direction3(0,0,305), light
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0,555,0), direction3(555,0,0), direction3(0,0,555), white
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0,0,0), direction3(555,0,0), direction3(0,0,555), white
     ));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(0,0,555), direction3(555,0,0), direction3(0,555,0), white
     ));
 
@@ -567,7 +567,7 @@ scene final_scene(
 
     // Light
     auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
-    world.add(std::make_shared<quad>(
+    world.add(std::make_shared<Quad>(
         point3(123,554,147), direction3(300,0,0), direction3(0,0,265), light
     ));
 

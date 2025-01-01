@@ -4,7 +4,7 @@
 #include "random.h"
 #include "vec3.h"
 
-class perlin {
+class Perlin {
     private:
         static const int point_count = 256;
         direction3 rand_vec[point_count];
@@ -51,7 +51,7 @@ class perlin {
         }
 
     public:
-        perlin() {
+        Perlin() {
             for (int i = 0; i < point_count; i++) {
                 rand_vec[i] = unit_vector(direction3::random(-1, 1));
             }

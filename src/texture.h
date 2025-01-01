@@ -94,7 +94,7 @@ class image_texture : public Texture {
 
 class noise_texture : public Texture {
     private:
-        perlin noise;
+        Perlin noise;
         double scale;
 
     public:

@@ -16,7 +16,7 @@ class ConstantMedium : public Hittable {
         ConstantMedium(
             std::shared_ptr<Hittable> boundary,
             double density,
-            std::shared_ptr<texture> tex
+            std::shared_ptr<Texture> tex
         )
             : boundary{ boundary }
             , neg_inv_density{ -1 / density }

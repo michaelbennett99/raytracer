@@ -27,11 +27,11 @@ class Material {
 
 class lambertian : public Material {
     private:
-        std::shared_ptr<texture> tex;
+        std::shared_ptr<Texture> tex;
 
     public:
         lambertian(const Colour& a) : tex(std::make_shared<solid_colour>(a)) {}
-        lambertian(std::shared_ptr<texture> tex) : tex(tex) {}
+        lambertian(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,
@@ -119,10 +119,10 @@ class dielectric : public Material {
 
 class diffuse_light : public Material {
     private:
-        std::shared_ptr<texture> tex;
+        std::shared_ptr<Texture> tex;
 
     public:
-        diffuse_light(std::shared_ptr<texture> tex) : tex(tex) {}
+        diffuse_light(std::shared_ptr<Texture> tex) : tex(tex) {}
         diffuse_light(const Colour& emit)
             : tex(std::make_shared<solid_colour>(emit)) {}
 
@@ -133,12 +133,12 @@ class diffuse_light : public Material {
 
 class isotropic : public Material {
     private:
-        std::shared_ptr<texture> tex;
+        std::shared_ptr<Texture> tex;
 
     public:
         isotropic(const Colour& albedo)
             : tex(std::make_shared<solid_colour>(albedo)) {}
-        isotropic(std::shared_ptr<texture> tex) : tex(tex) {}
+        isotropic(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,

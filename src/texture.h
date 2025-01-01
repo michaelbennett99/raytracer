@@ -8,14 +8,14 @@
 #include "rtw_stb_image.h"
 #include "perlin.h"
 
-class texture {
+class Texture {
     public:
-        virtual ~texture() = default;
+        virtual ~Texture() = default;
 
         virtual Colour value(double u, double v, const point3& p) const = 0;
 };
 
-class solid_colour : public texture {
+class solid_colour : public Texture {
     private:
         Colour albedo;
 
@@ -32,17 +32,17 @@ class solid_colour : public texture {
         }
 };
 
-class checker_texture : public texture {
+class checker_texture : public Texture {
     private:
         double inv_scale;
-        std::shared_ptr<texture> even;
-        std::shared_ptr<texture> odd;
+        std::shared_ptr<Texture> even;
+        std::shared_ptr<Texture> odd;
 
     public:
         checker_texture(
             double scale,
-            std::shared_ptr<texture> even,
-            std::shared_ptr<texture> odd
+            std::shared_ptr<Texture> even,
+            std::shared_ptr<Texture> odd
         )
             : inv_scale(1.0 / scale)
             , even(even)
@@ -66,7 +66,7 @@ class checker_texture : public texture {
         }
 };
 
-class image_texture : public texture {
+class image_texture : public Texture {
     private:
         rtw_image img;
 
@@ -92,7 +92,7 @@ class image_texture : public texture {
         }
 };
 
-class noise_texture : public texture {
+class noise_texture : public Texture {
     private:
         perlin noise;
         double scale;

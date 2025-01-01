@@ -9,7 +9,7 @@ class translate : public hittable {
     private:
         std::shared_ptr<hittable> object;
         direction3 offset;
-        aabb bbox;
+        AABB bbox;
 
     public:
         translate(std::shared_ptr<hittable> p, const direction3& displacement)
@@ -25,7 +25,7 @@ class translate : public hittable {
             return true;
         }
 
-        aabb bounding_box() const override {
+        AABB bounding_box() const override {
             return bbox;
         }
 };
@@ -35,7 +35,7 @@ class rotate_y : public hittable {
         std::shared_ptr<hittable> object;
         double sin_theta;
         double cos_theta;
-        aabb bbox;
+        AABB bbox;
 
         point3 rotate(const point3& p) const {
             return point3(
@@ -82,7 +82,7 @@ class rotate_y : public hittable {
                 }
             }
 
-            bbox = aabb(min, max);
+            bbox = AABB(min, max);
         }
 
     public:
@@ -112,7 +112,7 @@ class rotate_y : public hittable {
             return true;
         }
 
-        aabb bounding_box() const override {
+        AABB bounding_box() const override {
             return bbox;
         }
 };

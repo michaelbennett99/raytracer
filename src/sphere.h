@@ -14,7 +14,7 @@ class sphere : public hittable {
         ray cent;
         double rad;
         std::shared_ptr<material> mat;
-        aabb bbox;
+        AABB bbox;
 
         static void get_sphere_uv(const point3& p, double& u, double& v) {
             const auto theta = std::acos(-p.y());
@@ -34,7 +34,7 @@ class sphere : public hittable {
             rad{std::fmax(radius, 0)},
             mat{m} {
                 const auto radius_vec = direction3(radius, radius, radius);
-                bbox = aabb(center - radius_vec, center + radius_vec);
+                bbox = AABB(center - radius_vec, center + radius_vec);
             }
 
         // Moving sphere
@@ -45,9 +45,9 @@ class sphere : public hittable {
             std::shared_ptr<material> m
         ) : cent(c0, c1 - c0), rad{std::fmax(radius, 0)}, mat{m} {
             const auto radius_vec = direction3(radius, radius, radius);
-            aabb box0 = aabb(c0 - radius_vec, c0 + radius_vec);
-            aabb box1 = aabb(c1 - radius_vec, c1 + radius_vec);
-            bbox = aabb(box0, box1);
+            AABB box0 = AABB(c0 - radius_vec, c0 + radius_vec);
+            AABB box1 = AABB(c1 - radius_vec, c1 + radius_vec);
+            bbox = AABB(box0, box1);
         }
 
         const ray& center() const { return cent; }
@@ -91,7 +91,7 @@ class sphere : public hittable {
             return true;
         }
 
-        aabb bounding_box() const override { return bbox; }
+        AABB bounding_box() const override { return bbox; }
 };
 
 #endif

@@ -16,7 +16,7 @@ class surface : public hittable {
         direction3 u_, v_;
         direction3 w_;
         std::shared_ptr<material> mat_;
-        aabb bbox_;
+        AABB bbox_;
         direction3 normal_;
         double D_;
 
@@ -24,7 +24,7 @@ class surface : public hittable {
         virtual bool is_interior(double a, double b, hit_record& rec) const = 0;
 
     public:
-        aabb bounding_box() const override {
+        AABB bounding_box() const override {
             return bbox_;
         }
 
@@ -81,9 +81,9 @@ class simple_surface : public surface {
 class quad : public simple_surface {
     private:
         void set_bounding_box() override {
-            const auto box_0 = aabb(Q_, Q_ + u_ + v_);
-            const auto box_1 = aabb(Q_ + u_, Q_ + v_);
-            bbox_ = aabb(box_0, box_1);
+            const auto box_0 = AABB(Q_, Q_ + u_ + v_);
+            const auto box_1 = AABB(Q_ + u_, Q_ + v_);
+            bbox_ = AABB(box_0, box_1);
         }
 
         bool is_interior(double a, double b, hit_record& rec) const override {
@@ -108,9 +108,9 @@ class quad : public simple_surface {
 class triangle : public simple_surface {
     private:
         void set_bounding_box() override {
-            const auto box_0 = aabb(Q_, Q_ + u_);
-            const auto box_1 = aabb(Q_, Q_ + v_);
-            bbox_ = aabb(box_0, box_1);
+            const auto box_0 = AABB(Q_, Q_ + u_);
+            const auto box_1 = AABB(Q_, Q_ + v_);
+            bbox_ = AABB(box_0, box_1);
         }
 
         bool is_interior(double a, double b, hit_record& rec) const override {
@@ -137,9 +137,9 @@ class triangle : public simple_surface {
 class ellipse : public simple_surface {
     private:
         void set_bounding_box() override {
-            const auto box_0 = aabb(Q_ + u_ + v_, Q_ - u_ - v_);
-            const auto box_1 = aabb(Q_ + u_ - v_, Q_ - u_ + v_);
-            bbox_ = aabb(box_0, box_1);
+            const auto box_0 = AABB(Q_ + u_ + v_, Q_ - u_ - v_);
+            const auto box_1 = AABB(Q_ + u_ - v_, Q_ - u_ + v_);
+            bbox_ = AABB(box_0, box_1);
         }
 
         bool is_interior(double a, double b, hit_record& rec) const override {

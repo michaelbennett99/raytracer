@@ -20,7 +20,7 @@ class hittable {
             hit_record& rec
         ) const = 0;
 
-        virtual aabb bounding_box() const = 0;
+        virtual AABB bounding_box() const = 0;
 
         static bool is_front_face(
             const ray& r, const direction3& outward_normal

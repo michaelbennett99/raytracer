@@ -67,7 +67,7 @@ class constant_medium : public hittable {
             return true;
         }
 
-        aabb bounding_box() const override {
+        AABB bounding_box() const override {
             return boundary->bounding_box();
         }
 };

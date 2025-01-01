@@ -13,7 +13,7 @@ class bvh_node : public hittable {
     private:
         std::shared_ptr<hittable> left;
         std::shared_ptr<hittable> right;
-        aabb bbox;
+        AABB bbox;
 
         static bool box_compare(
             const std::shared_ptr<hittable> a,
@@ -34,9 +34,9 @@ class bvh_node : public hittable {
             size_t start,
             size_t end
         ) {
-            bbox = aabb::empty;
+            bbox = AABB::empty;
             for (const auto& object : objects) {
-                bbox = aabb(bbox, object->bounding_box());
+                bbox = AABB(bbox, object->bounding_box());
             }
 
             const int axis = bbox.longest_axis();
@@ -67,7 +67,7 @@ class bvh_node : public hittable {
                 right = std::make_shared<bvh_node>(objects, mid, end);
             }
 
-            bbox = aabb(left->bounding_box(), right->bounding_box());
+            bbox = AABB(left->bounding_box(), right->bounding_box());
         }
 
         bool hit(const ray& r, interval_d t, hit_record& rec) const override {
@@ -80,7 +80,7 @@ class bvh_node : public hittable {
             return hit_left || hit_right;
         }
 
-        aabb bounding_box() const override { return bbox; }
+        AABB bounding_box() const override { return bbox; }
 };
 
 #endif

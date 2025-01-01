@@ -5,10 +5,12 @@
 #include "ray.h"
 #include "vec3.h"
 
-class aabb {
+class AABB {
     private:
-        interval_d x_, y_, z_;
-        constexpr static const double delta = 0.0001;
+        interval_d x_ {};
+        interval_d y_ {};
+        interval_d z_ {};
+        constexpr static const double delta { 0.0001 };
 
     void pad_to_minimums() {
         if (x_.size() < delta) x_ = x_.expand(delta);
@@ -17,13 +19,13 @@ class aabb {
     }
 
     public:
-        aabb() {}
-        aabb(const interval_d& _x, const interval_d& _y, const interval_d& _z)
+        AABB() {}
+        AABB(const interval_d& _x, const interval_d& _y, const interval_d& _z)
             : x_{_x}, y_{_y}, z_{_z} {
                 pad_to_minimums();
             }
 
-        aabb(const point3& a, const point3& b) :
+        AABB(const point3& a, const point3& b) :
             x_{
                 a.x() <= b.x()
                 ? interval_d(a.x(), b.x()) : interval_d(b.x(), a.x())
@@ -38,7 +40,7 @@ class aabb {
             }
             {}
 
-        aabb(const aabb& a, const aabb& b) :
+        AABB(const AABB& a, const AABB& b) :
             x_{a.x(), b.x()},
             y_{a.y(), b.y()},
             z_{a.z(), b.z()}
@@ -53,15 +55,15 @@ class aabb {
         }
 
         bool hit(const ray& r, interval_d t) const {
-            const point3& ray_origin = r.origin();
-            const direction3& ray_direction = r.direction();
+            const auto& ray_origin { r.origin() };
+            const auto& ray_direction { r.direction() };
 
             for (int axis = 0; axis < 3; axis++) {
-                const interval_d& ax = operator[](axis);
-                const auto dir_inv = 1.0 / ray_direction[axis];
+                const auto& ax { operator[](axis) };
+                const auto dir_inv { 1.0 / ray_direction[axis] };
 
-                const auto t0 = (ax.min() - ray_origin[axis]) * dir_inv;
-                const auto t1 = (ax.max() - ray_origin[axis]) * dir_inv;
+                const auto t0 { (ax.min() - ray_origin[axis]) * dir_inv };
+                const auto t1 { (ax.max() - ray_origin[axis]) * dir_inv };
 
                 if (t0 < t1) {
                     if (t0 > t.min()) t = interval_d{t0, t.max()};
@@ -86,23 +88,23 @@ class aabb {
                     ? 1 : 2;
         }
 
-        static const aabb empty, universe;
+        static const AABB empty, universe;
 };
 
-inline aabb operator+(const aabb& a, const direction3& b) {
-    return aabb(a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
+inline AABB operator+(const AABB& a, const direction3& b) {
+    return AABB(a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
 }
 
-inline aabb operator+(const direction3& b, const aabb& a) {
+inline AABB operator+(const direction3& b, const AABB& a) {
     return a + b;
 }
 
-const aabb aabb::empty = aabb(
+const AABB AABB::empty {
     interval_d::empty, interval_d::empty, interval_d::empty
-);
+};
 
-const aabb aabb::universe = aabb(
+const AABB AABB::universe {
     interval_d::universe, interval_d::universe, interval_d::universe
-);
+};
 
 #endif

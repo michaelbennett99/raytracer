@@ -15,13 +15,13 @@ protected:
     std::shared_ptr<SamplerConfig> cfg;
     int i, j;
 
-    point3 get_pixel_point(const direction3& offset) const {
+    Point3 get_pixel_point(const Direction3& offset) const {
         return data->pixel00_loc
             + (i + offset.x()) * data->pixel_delta_u
             + (j + offset.y()) * data->pixel_delta_v;
     }
 
-    point3 sample_defocus_disk() const {
+    Point3 sample_defocus_disk() const {
         if (data->defocus_angle <= 0) {
             return data->origin;
         }
@@ -31,7 +31,7 @@ protected:
             + (p[1] * data->defocus_disk_v);
     }
 
-    virtual point3 sample_pixel() const = 0;
+    virtual Point3 sample_pixel() const = 0;
 
 public:
     PixelSampler() = default;
@@ -104,15 +104,15 @@ public:
 
 class RandomPixelSampler : public virtual PixelSampler {
 private:
-    static direction3 sample_square() {
-        return direction3(
+    static Direction3 sample_square() {
+        return Direction3(
             gen_rand::random_double(-0.5, 0.5),
             gen_rand::random_double(-0.5, 0.5),
             0
         );
     }
 
-    point3 sample_pixel() const override {
+    Point3 sample_pixel() const override {
         return get_pixel_point(sample_square());
     }
 
@@ -133,22 +133,22 @@ public:
 class AdaptiveRandomPixelSampler : public RandomPixelSampler {
 private:
     struct Data {
-        point3 s1{0,0,0};  // Sum for each channel
-        point3 s2{0,0,0};  // Sum of squares for each channel
+        Point3 s1{0,0,0};  // Sum for each channel
+        Point3 s2{0,0,0};  // Sum of squares for each channel
     };
 
     Data sampling_data;
 
-    point3 mean() const {
+    Point3 mean() const {
         if (samples() == 0) {
-            return point3(infinity_d, infinity_d, infinity_d);
+            return Point3(infinity_d, infinity_d, infinity_d);
         }
         return sampling_data.s1 / samples();
     }
 
-    point3 variance() const {
+    Point3 variance() const {
         if (samples() <= 1) {
-            return point3(infinity_d, infinity_d, infinity_d);
+            return Point3(infinity_d, infinity_d, infinity_d);
         }
         const auto s1_squared = sampling_data.s1 * sampling_data.s1;
         const auto n = static_cast<double>(samples());

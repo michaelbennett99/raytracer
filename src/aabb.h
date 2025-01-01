@@ -25,7 +25,7 @@ class AABB {
                 pad_to_minimums();
             }
 
-        AABB(const point3& a, const point3& b) :
+        AABB(const Point3& a, const Point3& b) :
             x_{
                 a.x() <= b.x()
                 ? interval_d(a.x(), b.x()) : interval_d(b.x(), a.x())
@@ -91,11 +91,11 @@ class AABB {
         static const AABB empty, universe;
 };
 
-inline AABB operator+(const AABB& a, const direction3& b) {
+inline AABB operator+(const AABB& a, const Direction3& b) {
     return AABB(a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
 }
 
-inline AABB operator+(const direction3& b, const AABB& a) {
+inline AABB operator+(const Direction3& b, const AABB& a) {
     return a + b;
 }
 

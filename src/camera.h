@@ -57,9 +57,9 @@ public:
         int image_width = 400,
         int max_depth = 10,
         double vfov = 90,
-        const point3& lookfrom = point3(0, 0, 0),
-        const point3& lookat = point3(0, 0, -1),
-        const direction3& vup = direction3(0, 1, 0),
+        const Point3& lookfrom = Point3(0, 0, 0),
+        const Point3& lookat = Point3(0, 0, -1),
+        const Direction3& vup = Direction3(0, 1, 0),
         double defocus_angle = 0,
         double focus_dist = 10
     ) :

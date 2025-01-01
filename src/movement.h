@@ -8,11 +8,11 @@
 class Translate : public Hittable {
     private:
         std::shared_ptr<Hittable> object;
-        direction3 offset;
+        Direction3 offset;
         AABB bbox;
 
     public:
-        Translate(std::shared_ptr<Hittable> p, const direction3& displacement)
+        Translate(std::shared_ptr<Hittable> p, const Direction3& displacement)
             : object{ p }, offset{ displacement } {
                 bbox = object->bounding_box() + offset;
             }
@@ -37,16 +37,16 @@ class RotateY : public Hittable {
         double cos_theta;
         AABB bbox;
 
-        point3 rotate(const point3& p) const {
-            return point3(
+        Point3 rotate(const Point3& p) const {
+            return Point3(
                 cos_theta * p.x() - sin_theta * p.z(),
                 p.y(),
                 sin_theta * p.x() + cos_theta * p.z()
             );
         }
 
-        point3 derotate(const point3& p) const {
-            return point3(
+        Point3 derotate(const Point3& p) const {
+            return Point3(
                 cos_theta * p.x() + sin_theta * p.z(),
                 p.y(),
                 -sin_theta * p.x() + cos_theta * p.z()
@@ -56,8 +56,8 @@ class RotateY : public Hittable {
         void set_bounding_box() {
             bbox = object->bounding_box();
 
-            point3 min(infinity_d, infinity_d, infinity_d);
-            point3 max(-infinity_d, -infinity_d, -infinity_d);
+            Point3 min(infinity_d, infinity_d, infinity_d);
+            Point3 max(-infinity_d, -infinity_d, -infinity_d);
 
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
@@ -72,7 +72,7 @@ class RotateY : public Hittable {
                         const auto newx = cos_theta * x + sin_theta * z;
                         const auto newz = -sin_theta * x + cos_theta * z;
 
-                        direction3 tester(newx, y, newz);
+                        Direction3 tester(newx, y, newz);
 
                         for (int c = 0; c < 3; c++) {
                             min[c] = std::min(min[c], tester[c]);

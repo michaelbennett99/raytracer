@@ -16,7 +16,7 @@ class Sphere : public Hittable {
         std::shared_ptr<Material> mat;
         AABB bbox;
 
-        static void get_sphere_uv(const point3& p, double& u, double& v) {
+        static void get_sphere_uv(const Point3& p, double& u, double& v) {
             const auto theta = std::acos(-p.y());
             const auto phi = std::atan2(-p.z(), p.x()) + pi;
 
@@ -27,24 +27,24 @@ class Sphere : public Hittable {
     public:
         // Stationary Sphere
         Sphere(
-            const point3& center,
+            const Point3& center,
             double radius,
             std::shared_ptr<Material> m
-        ) : cent(center, direction3(0, 0, 0)),
+        ) : cent(center, Direction3(0, 0, 0)),
             rad{std::fmax(radius, 0)},
             mat{m} {
-                const auto radius_vec = direction3(radius, radius, radius);
+                const auto radius_vec = Direction3(radius, radius, radius);
                 bbox = AABB(center - radius_vec, center + radius_vec);
             }
 
         // Moving Sphere
         Sphere(
-            const point3& c0,
-            const point3& c1,
+            const Point3& c0,
+            const Point3& c1,
             double radius,
             std::shared_ptr<Material> m
         ) : cent(c0, c1 - c0), rad{std::fmax(radius, 0)}, mat{m} {
-            const auto radius_vec = direction3(radius, radius, radius);
+            const auto radius_vec = Direction3(radius, radius, radius);
             AABB box0 = AABB(c0 - radius_vec, c0 + radius_vec);
             AABB box1 = AABB(c1 - radius_vec, c1 + radius_vec);
             bbox = AABB(box0, box1);
@@ -60,7 +60,7 @@ class Sphere : public Hittable {
         ) const override {
             const auto current_center = center().at(r.time());
             // Ray-Sphere interaction quantities
-            const direction3 oc = r.origin() - current_center;
+            const Direction3 oc = r.origin() - current_center;
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(), oc);
             auto c = oc.length_squared() - radius() * radius();

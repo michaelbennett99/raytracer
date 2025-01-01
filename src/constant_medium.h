@@ -60,7 +60,7 @@ class ConstantMedium : public Hittable {
             rec.t = rec1.t + hit_dist / ray_length;
             rec.p = r.at(rec.t);
 
-            rec.normal = direction3{1, 0, 0}; // arbitrary
+            rec.normal = Direction3{1, 0, 0}; // arbitrary
             rec.front_face = true; // also arbitrary
             rec.mat = phase_function;
 

@@ -23,13 +23,13 @@ class Hittable {
         virtual AABB bounding_box() const = 0;
 
         static bool is_front_face(
-            const Ray& r, const direction3& outward_normal
+            const Ray& r, const Direction3& outward_normal
         ) {
             return dot(r.direction(), outward_normal) < 0;
         }
 
-        static direction3 direct_normal(
-            bool front_face, const direction3& outward_normal
+        static Direction3 direct_normal(
+            bool front_face, const Direction3& outward_normal
         ) {
             return front_face ? outward_normal : -outward_normal;
         }
@@ -38,10 +38,10 @@ class Hittable {
 class Material;
 
 struct HitRecord {
-    point3 p;
+    Point3 p;
     double t;
     bool front_face;
-    direction3 normal;
+    Direction3 normal;
     std::shared_ptr<Material> mat;
     // Texture coordinates
     double u;
@@ -49,8 +49,8 @@ struct HitRecord {
 
     HitRecord(
         const Ray& r,
-        const point3& p,
-        const direction3& outward_normal,
+        const Point3& p,
+        const Direction3& outward_normal,
         double t
     )
         : p{ p }
@@ -62,7 +62,7 @@ struct HitRecord {
     // Add default constructor since we'll use it as an outparam
     HitRecord() = default;
 
-    void set_face_normal(const Ray& r, const direction3& outward_normal) {
+    void set_face_normal(const Ray& r, const Direction3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }

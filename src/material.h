@@ -20,7 +20,7 @@ class Material {
             return false;
         }
 
-        virtual Colour emitted(double u, double v, const point3& p) const {
+        virtual Colour emitted(double u, double v, const Point3& p) const {
             return Colour(0, 0, 0);
         }
 };
@@ -126,7 +126,7 @@ class DiffuseLight : public Material {
         DiffuseLight(const Colour& emit)
             : tex(std::make_shared<SolidColour>(emit)) {}
 
-        Colour emitted(double u, double v, const point3& p) const override {
+        Colour emitted(double u, double v, const Point3& p) const override {
             return tex->value(u, v, p);
         }
 };

@@ -23,9 +23,9 @@ public:
     Sampler(
         const SamplerConfig& cfg,
         const ImageData& image_data,
-        const point3& lookfrom,
-        const point3& lookat,
-        const direction3& vup,
+        const Point3& lookfrom,
+        const Point3& lookat,
+        const Direction3& vup,
         double vfov,
         double defocus_angle,
         double focus_dist

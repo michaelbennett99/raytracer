@@ -12,7 +12,7 @@ class Texture {
     public:
         virtual ~Texture() = default;
 
-        virtual Colour value(double u, double v, const point3& p) const = 0;
+        virtual Colour value(double u, double v, const Point3& p) const = 0;
 };
 
 class SolidColour : public Texture {
@@ -26,7 +26,7 @@ class SolidColour : public Texture {
             : SolidColour(Colour(red, green, blue)) {}
 
         virtual Colour value(
-            double u, double v, const point3& p
+            double u, double v, const Point3& p
         ) const override {
             return albedo;
         }
@@ -56,7 +56,7 @@ class checker_texture : public Texture {
                 std::make_shared<SolidColour>(c2)
             ) {}
 
-        Colour value(double u, double v, const point3& p) const override {
+        Colour value(double u, double v, const Point3& p) const override {
             const auto x = int(std::floor(inv_scale * p.x()));
             const auto y = int(std::floor(inv_scale * p.y()));
             const auto z = int(std::floor(inv_scale * p.z()));
@@ -73,7 +73,7 @@ class image_texture : public Texture {
     public:
         image_texture(const char* filename) : img(filename) {}
 
-        Colour value(double u, double v, const point3& p) const override {
+        Colour value(double u, double v, const Point3& p) const override {
             if (img.height() <= 0) return Colour(0, 1, 1);
 
             u = interval_d(0, 1).clamp(u);
@@ -100,7 +100,7 @@ class noise_texture : public Texture {
     public:
         noise_texture(double scale) : scale(scale) {}
 
-        Colour value(double u, double v, const point3& p) const override {
+        Colour value(double u, double v, const Point3& p) const override {
             return Colour(1, 1, 1)
                 * 0.5 * (1 + std::sin(scale * p.z() + 10 * noise.turb(p, 7)));
         }

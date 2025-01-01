@@ -44,19 +44,19 @@ Scene bouncing_spheres(
 
     auto ground_material = std::make_shared<Lambertian>(Colour(0.5, 0.5, 0.5));
     world.add(std::make_shared<Sphere>(
-        point3(0,-1000,0), 1000, ground_material
+        Point3(0,-1000,0), 1000, ground_material
     ));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
             auto choose_mat = gen_rand::random_double();
-            point3 center(
+            Point3 center(
                 a + 0.9*gen_rand::random_double(),
                 0.2,
                 b + 0.9*gen_rand::random_double()
             );
 
-            if ((center - point3(4, 0.2, 0)).length() > 0.9) {
+            if ((center - Point3(4, 0.2, 0)).length() > 0.9) {
                 std::shared_ptr<Material> sphere_material;
 
                 if (choose_mat < 0.8) {
@@ -64,7 +64,7 @@ Scene bouncing_spheres(
                     auto albedo = Colour::random() * Colour::random();
                     sphere_material = std::make_shared<Lambertian>(albedo);
                     auto center2 = center
-                        + direction3(0, gen_rand::random_double(0, 0.5), 0);
+                        + Direction3(0, gen_rand::random_double(0, 0.5), 0);
 
                     world.add(std::make_shared<Sphere>(
                             center, center2, 0.2, sphere_material
@@ -90,13 +90,13 @@ Scene bouncing_spheres(
     }
 
     auto material1 = std::make_shared<Dielectric>(1.5);
-    world.add(std::make_shared<Sphere>(point3(0, 1, 0), 1.0, material1));
+    world.add(std::make_shared<Sphere>(Point3(0, 1, 0), 1.0, material1));
 
     auto material2 = std::make_shared<Lambertian>(Colour(0.4, 0.2, 0.1));
-    world.add(std::make_shared<Sphere>(point3(-4, 1, 0), 1.0, material2));
+    world.add(std::make_shared<Sphere>(Point3(-4, 1, 0), 1.0, material2));
 
     auto material3 = std::make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0);
-    world.add(std::make_shared<Sphere>(point3(4, 1, 0), 1.0, material3));
+    world.add(std::make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
     world = HittableList(std::make_shared<BVHNode>(world));
 
@@ -107,9 +107,9 @@ Scene bouncing_spheres(
         image_width,
         50,
         20,
-        point3(13,2,3),
-        point3(0,0,0),
-        direction3(0,1,0),
+        Point3(13,2,3),
+        Point3(0,0,0),
+        Direction3(0,1,0),
         0.6,
         10.0
     );
@@ -136,8 +136,8 @@ Scene checkered_spheres(
 
     const auto sphere_material = std::make_shared<Lambertian>(checker);
 
-    world.add(std::make_shared<Sphere>(point3(0,-10,0), 10, sphere_material));
-    world.add(std::make_shared<Sphere>(point3(0,10,0), 10, sphere_material));
+    world.add(std::make_shared<Sphere>(Point3(0,-10,0), 10, sphere_material));
+    world.add(std::make_shared<Sphere>(Point3(0,10,0), 10, sphere_material));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -146,9 +146,9 @@ Scene checkered_spheres(
         image_width,
         50,
         20,
-        point3(13, 2, 3),
-        point3(0, 0, 0),
-        direction3(0, 1, 0)
+        Point3(13, 2, 3),
+        Point3(0, 0, 0),
+        Direction3(0, 1, 0)
     );
 
     return Scene(
@@ -168,7 +168,7 @@ Scene earth(
     const auto earth_texture = std::make_shared<image_texture>("map.jpg");
     const auto earth_material = std::make_shared<Lambertian>(earth_texture);
     const auto globe = std::make_shared<Sphere>(
-        point3(0, 0, 0), 2, earth_material
+        Point3(0, 0, 0), 2, earth_material
     );
 
     world.add(globe);
@@ -180,8 +180,8 @@ Scene earth(
         image_width,
         50,
         20,
-        point3(0, 0, 12),
-        point3(0, 0, 0)
+        Point3(0, 0, 12),
+        Point3(0, 0, 0)
     );
 
     return Scene(
@@ -202,10 +202,10 @@ Scene perlin_spheres(
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
 
     world.add(
-        std::make_shared<Sphere>(point3(0, -1000, 0), 1000, sphere_material)
+        std::make_shared<Sphere>(Point3(0, -1000, 0), 1000, sphere_material)
     );
     world.add(
-        std::make_shared<Sphere>(point3(0, 2, 0), 2, sphere_material)
+        std::make_shared<Sphere>(Point3(0, 2, 0), 2, sphere_material)
     );
 
     auto cam = std::make_shared<Camera>(
@@ -215,9 +215,9 @@ Scene perlin_spheres(
         image_width,
         50,
         20,
-        point3(13, 2, 3),
-        point3(0, 0, 0),
-        direction3(0, 1, 0)
+        Point3(13, 2, 3),
+        Point3(0, 0, 0),
+        Direction3(0, 1, 0)
     );
 
     return Scene(
@@ -243,19 +243,19 @@ Scene quads(
 
     // Quads
     world.add(std::make_shared<Quad>(
-        point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
+        Point3(-3, -2, 5), Direction3(0, 0, -4), Direction3(0, 4, 0), left_red
     ));
     world.add(std::make_shared<Quad>(
-        point3(-2, -2, 0), direction3(4, 0, 0), direction3(0, 4, 0), right_blue
+        Point3(-2, -2, 0), Direction3(4, 0, 0), Direction3(0, 4, 0), right_blue
     ));
     world.add(std::make_shared<Quad>(
-        point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
+        Point3(3, -2, 1), Direction3(0, 0, 4), Direction3(0, 4, 0), back_green
     ));
     world.add(std::make_shared<Quad>(
-        point3(-2, 3, 1), direction3(4, 0, 0), direction3(0, 0, 4), upper_orange
+        Point3(-2, 3, 1), Direction3(4, 0, 0), Direction3(0, 0, 4), upper_orange
     ));
     world.add(std::make_shared<Quad>(
-        point3(-2, -3, 1), direction3(4, 0, 0), direction3(0, 0, 4), lower_teal
+        Point3(-2, -3, 1), Direction3(4, 0, 0), Direction3(0, 0, 4), lower_teal
     ));
 
     auto cam = std::make_shared<Camera>(
@@ -265,8 +265,8 @@ Scene quads(
         image_width,
         50,
         80,
-        point3(0, 0, 9),
-        point3(0, 0, 0)
+        Point3(0, 0, 9),
+        Point3(0, 0, 0)
     );
 
     return Scene(
@@ -288,13 +288,13 @@ Scene triangles(
     const auto right_blue = std::make_shared<Lambertian>(Colour(0.2, 0.2, 1));
 
     world.add(std::make_shared<Triangle>(
-        point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
+        Point3(-3, -2, 5), Direction3(0, 0, -4), Direction3(0, 4, 0), left_red
     ));
     world.add(std::make_shared<Triangle>(
-        point3(-2, -2, 0), direction3(4, 0, 0), direction3(0, 4, 0), right_blue
+        Point3(-2, -2, 0), Direction3(4, 0, 0), Direction3(0, 4, 0), right_blue
     ));
     world.add(std::make_shared<Triangle>(
-        point3(3, -2, 1), direction3(0, 0, 4), direction3(0, 4, 0), back_green
+        Point3(3, -2, 1), Direction3(0, 0, 4), Direction3(0, 4, 0), back_green
     ));
 
     auto cam = std::make_shared<Camera>(
@@ -304,8 +304,8 @@ Scene triangles(
         image_width,
         50,
         80,
-        point3(0, 0, 9),
-        point3(0, 0, 0)
+        Point3(0, 0, 9),
+        Point3(0, 0, 0)
     );
 
     return Scene(
@@ -326,22 +326,22 @@ Scene ellipses(
         Colour(0.8, 0.8, 0.0)
     );
     world.add(std::make_shared<Ellipse>(
-        point3(0, 0, 0),
-        direction3(1, 0, 0),
-        direction3(0, 1, 0),
+        Point3(0, 0, 0),
+        Direction3(1, 0, 0),
+        Direction3(0, 1, 0),
         ellipse_material)
     );
     world.add(std::make_shared<Ellipse>(
-        point3(2.5, 0, 0),
-        direction3(1, 0, 0),
-        direction3(0, 2, -1),
+        Point3(2.5, 0, 0),
+        Direction3(1, 0, 0),
+        Direction3(0, 2, -1),
         ellipse_material)
     );
 
     world.add(std::make_shared<Disc>(
-        point3(-2.5, 0, 0),
-        direction3(1, 1, 0),
-        direction3(0, 1, 0),
+        Point3(-2.5, 0, 0),
+        Direction3(1, 1, 0),
+        Direction3(0, 1, 0),
         1.5,
         ellipse_material)
     );
@@ -353,8 +353,8 @@ Scene ellipses(
         image_width,
         50,
         80,
-        point3(0, 0, 5),
-        point3(0, 0, 0)
+        Point3(0, 0, 5),
+        Point3(0, 0, 0)
     );
 
     return Scene(
@@ -374,15 +374,15 @@ Scene simple_light(
     const auto pertext = std::make_shared<noise_texture>(4);
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
     world.add(
-        std::make_shared<Sphere>(point3(0,-1000,0), 1000, sphere_material)
+        std::make_shared<Sphere>(Point3(0,-1000,0), 1000, sphere_material)
     );
-    world.add(std::make_shared<Sphere>(point3(0,2,0), 2, sphere_material));
+    world.add(std::make_shared<Sphere>(Point3(0,2,0), 2, sphere_material));
 
     const auto light = std::make_shared<DiffuseLight>(Colour(4, 4, 4));
     world.add(std::make_shared<Quad>(
-        point3(3, 1, -2), direction3(2, 0, 0), direction3(0, 2, 0), light
+        Point3(3, 1, -2), Direction3(2, 0, 0), Direction3(0, 2, 0), light
     ));
-    world.add(std::make_shared<Sphere>(point3(0, 7, 0), 2, light));
+    world.add(std::make_shared<Sphere>(Point3(0, 7, 0), 2, light));
 
     auto cam = std::make_shared<Camera>(
         sampler_config,
@@ -391,8 +391,8 @@ Scene simple_light(
         image_width,
         50,
         20,
-        point3(26, 3, 6),
-        point3(0, 2, 0)
+        Point3(26, 3, 6),
+        Point3(0, 2, 0)
     );
 
     return Scene(
@@ -415,44 +415,44 @@ Scene cornell_box(
     const auto light = std::make_shared<DiffuseLight>(Colour(25, 25, 25));
 
     world.add(std::make_shared<Quad>(
-        point3(555, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), green
+        Point3(555, 0, 0), Direction3(0, 555, 0), Direction3(0, 0, 555), green
     ));
     world.add(std::make_shared<Quad>(
-        point3(0, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), red
+        Point3(0, 0, 0), Direction3(0, 555, 0), Direction3(0, 0, 555), red
     ));
     world.add(std::make_shared<Quad>(
-        point3(343, 554, 332),
-        direction3(-130, 0, 0),
-        direction3(0, 0, -105),
+        Point3(343, 554, 332),
+        Direction3(-130, 0, 0),
+        Direction3(0, 0, -105),
         light
     ));
     world.add(std::make_shared<Quad>(
-        point3(0, 0, 0), direction3(555, 0, 0), direction3(0, 0, 555), white
+        Point3(0, 0, 0), Direction3(555, 0, 0), Direction3(0, 0, 555), white
     ));
     world.add(std::make_shared<Quad>(
-        point3(555,555,555), direction3(-555,0,0), direction3(0,0,-555), white
+        Point3(555,555,555), Direction3(-555,0,0), Direction3(0,0,-555), white
     ));
     world.add(std::make_shared<Quad>(
-        point3(0, 0, 555), direction3(555, 0, 0), direction3(0, 555, 0), white
+        Point3(0, 0, 555), Direction3(555, 0, 0), Direction3(0, 555, 0), white
     ));
 
     std::shared_ptr<Hittable> box1 = box(
-        point3(0,0,0), point3(165,330,165), white
+        Point3(0,0,0), Point3(165,330,165), white
     );
     box1 = std::make_shared<RotateY>(box1, 15);
-    box1 = std::make_shared<Translate>(box1, direction3(265,0,295));
+    box1 = std::make_shared<Translate>(box1, Direction3(265,0,295));
     world.add(box1);
 
     std::shared_ptr<Hittable> box2 = box(
-        point3(0,0,0), point3(165,165,165), white
+        Point3(0,0,0), Point3(165,165,165), white
     );
     box2 = std::make_shared<RotateY>(box2, -18);
-    box2 = std::make_shared<Translate>(box2, direction3(130,0,65));
+    box2 = std::make_shared<Translate>(box2, Direction3(130,0,65));
     world.add(box2);
 
     // Add light behind the camera
     world.add(std::make_shared<Quad>(
-        point3(0, 0, -1000), direction3(555, 0, 0), direction3(0, 555, 0), light
+        Point3(0, 0, -1000), Direction3(555, 0, 0), Direction3(0, 555, 0), light
     ));
 
     auto cam = std::make_shared<Camera>(
@@ -462,8 +462,8 @@ Scene cornell_box(
         image_width,
         20,
         40,
-        point3(278, 278, -800),
-        point3(278, 278, 0)
+        Point3(278, 278, -800),
+        Point3(278, 278, 0)
     );
 
     return Scene(
@@ -486,35 +486,35 @@ Scene cornell_smoke(
     auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
 
     world.add(std::make_shared<Quad>(
-        point3(555,0,0), direction3(0,555,0), direction3(0,0,555), green
+        Point3(555,0,0), Direction3(0,555,0), Direction3(0,0,555), green
     ));
     world.add(std::make_shared<Quad>(
-        point3(0,0,0), direction3(0,555,0), direction3(0,0,555), red
+        Point3(0,0,0), Direction3(0,555,0), Direction3(0,0,555), red
     ));
     world.add(std::make_shared<Quad>(
-        point3(113,554,127), direction3(330,0,0), direction3(0,0,305), light
+        Point3(113,554,127), Direction3(330,0,0), Direction3(0,0,305), light
     ));
     world.add(std::make_shared<Quad>(
-        point3(0,555,0), direction3(555,0,0), direction3(0,0,555), white
+        Point3(0,555,0), Direction3(555,0,0), Direction3(0,0,555), white
     ));
     world.add(std::make_shared<Quad>(
-        point3(0,0,0), direction3(555,0,0), direction3(0,0,555), white
+        Point3(0,0,0), Direction3(555,0,0), Direction3(0,0,555), white
     ));
     world.add(std::make_shared<Quad>(
-        point3(0,0,555), direction3(555,0,0), direction3(0,555,0), white
+        Point3(0,0,555), Direction3(555,0,0), Direction3(0,555,0), white
     ));
 
     std::shared_ptr<Hittable> box1 = box(
-        point3(0,0,0), point3(165,330,165), white
+        Point3(0,0,0), Point3(165,330,165), white
     );
     box1 = std::make_shared<RotateY>(box1, 15);
-    box1 = std::make_shared<Translate>(box1, direction3(265,0,295));
+    box1 = std::make_shared<Translate>(box1, Direction3(265,0,295));
 
     std::shared_ptr<Hittable> box2 = box(
-        point3(0,0,0), point3(165,165,165), white
+        Point3(0,0,0), Point3(165,165,165), white
     );
     box2 = std::make_shared<RotateY>(box2, -18);
-    box2 = std::make_shared<Translate>(box2, direction3(130,0,65));
+    box2 = std::make_shared<Translate>(box2, Direction3(130,0,65));
 
     world.add(std::make_shared<ConstantMedium>(box1, 0.01, Colour(0,0,0)));
     world.add(std::make_shared<ConstantMedium>(box2, 0.01, Colour(1,1,1)));
@@ -526,8 +526,8 @@ Scene cornell_smoke(
         image_width,
         50,
         40,
-        point3(278, 278, -800),
-        point3(278, 278, 0)
+        Point3(278, 278, -800),
+        Point3(278, 278, 0)
     );
 
     return Scene(
@@ -556,7 +556,7 @@ Scene final_scene(
             auto y1 = gen_rand::random_double(1,101);
             auto z1 = z0 + w;
 
-            boxes1.add(box(point3(x0,y0,z0), point3(x1,y1,z1), ground));
+            boxes1.add(box(Point3(x0,y0,z0), Point3(x1,y1,z1), ground));
         }
     }
 
@@ -568,12 +568,12 @@ Scene final_scene(
     // Light
     auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
     world.add(std::make_shared<Quad>(
-        point3(123,554,147), direction3(300,0,0), direction3(0,0,265), light
+        Point3(123,554,147), Direction3(300,0,0), Direction3(0,0,265), light
     ));
 
     // Moving Sphere
-    auto center1 = point3(400, 400, 200);
-    auto center2 = center1 + direction3(30,0,0);
+    auto center1 = Point3(400, 400, 200);
+    auto center2 = center1 + Direction3(30,0,0);
     auto sphere_material = std::make_shared<Lambertian>(Colour(0.7, 0.3, 0.1));
     world.add(std::make_shared<Sphere>(center1, center2, 50, sphere_material));
 
@@ -583,22 +583,22 @@ Scene final_scene(
         Colour(0.8, 0.8, 0.9), 1.0
     );
     world.add(std::make_shared<Sphere>(
-        point3(260, 150, 45), 50, dielectric_material
+        Point3(260, 150, 45), 50, dielectric_material
     ));
     world.add(std::make_shared<Sphere>(
-        point3(0, 150, 145), 50, metal_material
+        Point3(0, 150, 145), 50, metal_material
     ));
 
     // SSR Sphere
     auto boundary = std::make_shared<Sphere>(
-        point3(360,150,145), 70, dielectric_material
+        Point3(360,150,145), 70, dielectric_material
     );
     world.add(boundary);
     world.add(std::make_shared<ConstantMedium>(
         boundary, 0.2, Colour(0.2, 0.4, 0.9)
     ));
     boundary = std::make_shared<Sphere>(
-        point3(0,0,0), 5000, dielectric_material
+        Point3(0,0,0), 5000, dielectric_material
     );
     world.add(std::make_shared<ConstantMedium>(
         boundary, .0001, Colour(1,1,1)
@@ -608,13 +608,13 @@ Scene final_scene(
     auto map = std::make_shared<Lambertian>(std::make_shared<image_texture>(
         "map.jpg"
     ));
-    world.add(std::make_shared<Sphere>(point3(400,200,400), 100, map));
+    world.add(std::make_shared<Sphere>(Point3(400,200,400), 100, map));
 
     // Perlin Sphere
     const auto pertext = std::make_shared<noise_texture>(0.2);
     const auto pertext_material = std::make_shared<Lambertian>(pertext);
     world.add(std::make_shared<Sphere>(
-        point3(220,280,300), 80, pertext_material
+        Point3(220,280,300), 80, pertext_material
     ));
 
     // Box of spheres
@@ -622,14 +622,14 @@ Scene final_scene(
     const auto white = std::make_shared<Lambertian>(Colour(.73, .73, .73));
     int ns = 1000;
     for (int j = 0; j < ns; j++) {
-        boxes2.add(std::make_shared<Sphere>(point3::random(0,165), 10, white));
+        boxes2.add(std::make_shared<Sphere>(Point3::random(0,165), 10, white));
     }
 
     // Bounding volume hierarchy for the box of spheres
     world.add(std::make_shared<Translate>(
         std::make_shared<RotateY>(
             std::make_shared<BVHNode>(boxes2), 15),
-            direction3(-100,270,395)
+            Direction3(-100,270,395)
         )
     );
 
@@ -640,8 +640,8 @@ Scene final_scene(
         image_width,
         50,
         40,
-        point3(478, 278, -600),
-        point3(278, 278, 0)
+        Point3(478, 278, -600),
+        Point3(278, 278, 0)
     );
 
     return Scene(

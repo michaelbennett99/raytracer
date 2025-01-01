@@ -9,61 +9,61 @@
 #include "raytracing.h"
 
 template <typename T>
-class vec3 {
+class Vec3 {
     private:
         T e[3];
 
     public:
-        vec3() : e{0, 0, 0} {}
-        vec3(T e0, T e1, T e2) : e{e0, e1, e2} {}
+        Vec3() : e{0, 0, 0} {}
+        Vec3(T e0, T e1, T e2) : e{e0, e1, e2} {}
 
         T x() const { return e[0]; }
         T y() const { return e[1]; }
         T z() const { return e[2]; }
 
-        vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
+        Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
         T operator[](int i) const { return e[i]; }
         T& operator[](int i) { return e[i]; }
 
-        vec3& operator+=(const vec3 v) {
+        Vec3& operator+=(const Vec3 v) {
             e[0] += v.e[0];
             e[1] += v.e[1];
             e[2] += v.e[2];
             return *this;
         }
 
-        vec3& operator*=(const T t) {
+        Vec3& operator*=(const T t) {
             e[0] *= t;
             e[1] *= t;
             e[2] *= t;
             return *this;
         }
 
-        vec3& operator/=(const T t) {
+        Vec3& operator/=(const T t) {
             return *this *= 1/t;
         }
 
-        bool operator==(const vec3& v) const {
+        bool operator==(const Vec3& v) const {
             return e[0] == v.e[0] && e[1] == v.e[1] && e[2] == v.e[2];
         }
 
-        bool operator!=(const vec3& v) const {
+        bool operator!=(const Vec3& v) const {
             return !(*this == v);
         }
 
-        bool operator<(const vec3& v) const {
+        bool operator<(const Vec3& v) const {
             return e[0] < v.e[0] && e[1] < v.e[1] && e[2] < v.e[2];
         }
 
-        bool operator>(const vec3& v) const {
+        bool operator>(const Vec3& v) const {
             return e[0] > v.e[0] && e[1] > v.e[1] && e[2] > v.e[2];
         }
 
-        bool operator<=(const vec3& v) const {
+        bool operator<=(const Vec3& v) const {
             return !(*this > v);
         }
 
-        bool operator>=(const vec3& v) const {
+        bool operator>=(const Vec3& v) const {
             return !(*this < v);
         }
 
@@ -84,16 +84,16 @@ class vec3 {
             return length_squared() < s;
         }
 
-        static vec3<T> random() {
-            return vec3<T>(
+        static Vec3<T> random() {
+            return Vec3<T>(
                 gen_rand::gen_rand<T>(),
                 gen_rand::gen_rand<T>(),
                 gen_rand::gen_rand<T>()
             );
         }
 
-        static vec3<T> random(T min, T max) {
-            return vec3<T>(
+        static Vec3<T> random(T min, T max) {
+            return Vec3<T>(
                 gen_rand::gen_rand<T>(min, max),
                 gen_rand::gen_rand<T>(min, max),
                 gen_rand::gen_rand<T>(min, max)
@@ -104,48 +104,48 @@ class vec3 {
 // Vector utility functions
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& out, const vec3<T>& v) {
+inline std::ostream& operator<<(std::ostream& out, const Vec3<T>& v) {
     return out << v[0] << ' ' << v[1] << ' ' << v[2];
 }
 
 template <Arithmetic T>
-inline vec3<T> operator+(const vec3<T>& u, const vec3<T>& v) {
-    return vec3<T>(u[0] + v[0], u[1] + v[1], u[2] + v[2]);
+inline Vec3<T> operator+(const Vec3<T>& u, const Vec3<T>& v) {
+    return Vec3<T>(u[0] + v[0], u[1] + v[1], u[2] + v[2]);
 }
 
 template <Arithmetic T>
-inline vec3<T> operator-(const vec3<T>& u, const vec3<T>& v) {
-    return vec3<T>(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
+inline Vec3<T> operator-(const Vec3<T>& u, const Vec3<T>& v) {
+    return Vec3<T>(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
 }
 
 template <Arithmetic T>
-inline vec3<T> operator*(const vec3<T>& v, const vec3<T>& t) {
-    return vec3<T>(v[0] * t[0], v[1] * t[1], v[2] * t[2]);
+inline Vec3<T> operator*(const Vec3<T>& v, const Vec3<T>& t) {
+    return Vec3<T>(v[0] * t[0], v[1] * t[1], v[2] * t[2]);
 }
 
 template <Arithmetic T, Arithmetic U>
-inline vec3<T> operator*(const vec3<T>& t, U v) {
-    return vec3<T>(t[0] * v, t[1] * v, t[2] * v);
+inline Vec3<T> operator*(const Vec3<T>& t, U v) {
+    return Vec3<T>(t[0] * v, t[1] * v, t[2] * v);
 }
 
 template <Arithmetic T, Arithmetic U>
-inline vec3<T> operator*(U t, const vec3<T>& v) {
+inline Vec3<T> operator*(U t, const Vec3<T>& v) {
     return v * t;
 }
 
 template <Arithmetic T, Arithmetic U>
-inline vec3<T> operator/(const vec3<T>& v, U t) {
+inline Vec3<T> operator/(const Vec3<T>& v, U t) {
     return v * (1/static_cast<T>(t));
 }
 
 template <Arithmetic T>
-inline T dot(const vec3<T>& u, const vec3<T>& v) {
+inline T dot(const Vec3<T>& u, const Vec3<T>& v) {
     return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 }
 
 template <Arithmetic T>
-inline vec3<T> cross(const vec3<T>& u, const vec3<T>& v) {
-    return vec3<T>(
+inline Vec3<T> cross(const Vec3<T>& u, const Vec3<T>& v) {
+    return Vec3<T>(
         u[1] * v[2] - u[2] * v[1],
         u[2] * v[0] - u[0] * v[2],
         u[0] * v[1] - u[1] * v[0]
@@ -153,43 +153,43 @@ inline vec3<T> cross(const vec3<T>& u, const vec3<T>& v) {
 }
 
 template <Arithmetic T>
-inline vec3<T> unit_vector(const vec3<T>& v) {
+inline Vec3<T> unit_vector(const Vec3<T>& v) {
     return v / v.length();
 }
 
-inline vec3<double> random_unit_vector() {
+inline Vec3<double> random_unit_vector() {
     const auto theta = gen_rand::random_double(0, pi);
     const auto phi = gen_rand::random_double(0, 2 * pi);
     const auto sin_theta = std::sin(theta);
     const auto x = sin_theta * std::cos(phi);
     const auto y = sin_theta * std::sin(phi);
     const auto z = std::cos(theta);
-    return vec3<double>(x, y, z);
+    return Vec3<double>(x, y, z);
 }
 
-inline vec3<double> random_on_hemisphere(const vec3<double>& normal) {
+inline Vec3<double> random_on_hemisphere(const Vec3<double>& normal) {
     const auto on_unit_sphere = random_unit_vector();
     return dot(on_unit_sphere, normal) > 0.0
         ? on_unit_sphere
         : -on_unit_sphere;
 }
 
-inline vec3<double> random_in_unit_disk() {
+inline Vec3<double> random_in_unit_disk() {
     const auto angle = gen_rand::random_double(0, 2 * pi);
     const auto r = gen_rand::random_double(0, 1);
     const auto x = r * std::cos(angle);
     const auto y = r * std::sin(angle);
-    return vec3<double>(x, y, 0);
+    return Vec3<double>(x, y, 0);
 }
 
 template <Arithmetic T>
-inline vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
+inline Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& n) {
     return v - 2 * dot(v, n) * n;
 }
 
 template <Arithmetic T>
-inline vec3<T> refract(
-    const vec3<T>& uv, const vec3<T>& n, double etai_over_etat
+inline Vec3<T> refract(
+    const Vec3<T>& uv, const Vec3<T>& n, double etai_over_etat
 ) {
     const auto cos_theta = std::fmin(dot(-uv, n), 1.0);
     const auto r_out_perp = etai_over_etat * (uv + cos_theta * n);
@@ -199,7 +199,7 @@ inline vec3<T> refract(
 }
 
 // Type aliases
-using point3 = vec3<double>;
-using direction3 = vec3<double>;
+using Point3 = Vec3<double>;
+using Direction3 = Vec3<double>;
 
 #endif

@@ -4,7 +4,7 @@
 #include "vec3.h"
 #include "interval.h"
 
-class Colour : public vec3<double> {
+class Colour : public Vec3<double> {
     private:
         static constexpr int colour_multiplier { 256 };
         static constexpr interval_d intensity { 0.0, 0.999 };
@@ -22,8 +22,8 @@ class Colour : public vec3<double> {
 
     public:
         Colour() = default;
-        Colour(double r, double g, double b) : vec3<double>(r, g, b) {}
-        Colour(const vec3<double>& v) : vec3<double>(v) {}
+        Colour(double r, double g, double b) : Vec3<double>(r, g, b) {}
+        Colour(const Vec3<double>& v) : Vec3<double>(v) {}
 
         Colour gamma_correct() const {
             return Colour{

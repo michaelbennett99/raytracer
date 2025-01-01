@@ -12,12 +12,12 @@
 // Abstract class for surfaces
 class Surface : public Hittable {
     protected:
-        point3 Q_;
-        direction3 u_, v_;
-        direction3 w_;
+        Point3 Q_;
+        Direction3 u_, v_;
+        Direction3 w_;
         std::shared_ptr<Material> mat_;
         AABB bbox_;
-        direction3 normal_;
+        Direction3 normal_;
         double D_;
 
         virtual void set_bounding_box() = 0;
@@ -59,9 +59,9 @@ class Surface : public Hittable {
 class SimpleSurface : public Surface {
     protected:
         void init_surface(
-            const point3& Q,
-            const direction3& u,
-            const direction3& v,
+            const Point3& Q,
+            const Direction3& u,
+            const Direction3& v,
             std::shared_ptr<Material> mat
         ) {
             Q_ = Q;
@@ -96,9 +96,9 @@ class Quad : public SimpleSurface {
 
     public:
         Quad(
-            const point3& Q,
-            const direction3& u,
-            const direction3& v,
+            const Point3& Q,
+            const Direction3& u,
+            const Direction3& v,
             std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
@@ -125,9 +125,9 @@ class Triangle : public SimpleSurface {
 
     public:
         Triangle(
-            const point3& Q,
-            const direction3& u,
-            const direction3& v,
+            const Point3& Q,
+            const Direction3& u,
+            const Direction3& v,
             std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
@@ -151,9 +151,9 @@ class Ellipse : public SimpleSurface {
 
     public:
         Ellipse(
-            const point3& Q,
-            const direction3& u,
-            const direction3& v,
+            const Point3& Q,
+            const Direction3& u,
+            const Direction3& v,
             std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
@@ -163,9 +163,9 @@ class Ellipse : public SimpleSurface {
 class Disc : public Ellipse {
     public:
         Disc(
-            const point3& Q,
-            const direction3& u,
-            const direction3& v,
+            const Point3& Q,
+            const Direction3& u,
+            const Direction3& v,
             double radius,
             std::shared_ptr<Material> mat
         ) : Ellipse(Q, u, v, mat) {
@@ -179,48 +179,48 @@ class Disc : public Ellipse {
 };
 
 inline std::shared_ptr<HittableList> box(
-    const point3& a, const point3& b, std::shared_ptr<Material> mat
+    const Point3& a, const Point3& b, std::shared_ptr<Material> mat
 ) {
     const auto sides = std::make_shared<HittableList>();
 
-    const auto min = point3(
+    const auto min = Point3(
         std::min(a.x(), b.x()),
         std::min(a.y(), b.y()),
         std::min(a.z(), b.z())
     );
-    const auto max = point3(
+    const auto max = Point3(
         std::max(a.x(), b.x()),
         std::max(a.y(), b.y()),
         std::max(a.z(), b.z())
     );
 
-    const auto dx = direction3(max.x() - min.x(), 0, 0);
-    const auto dy = direction3(0, max.y() - min.y(), 0);
-    const auto dz = direction3(0, 0, max.z() - min.z());
+    const auto dx = Direction3(max.x() - min.x(), 0, 0);
+    const auto dy = Direction3(0, max.y() - min.y(), 0);
+    const auto dz = Direction3(0, 0, max.z() - min.z());
 
     // Front face (z = max.z)
     sides->add(std::make_shared<Quad>(
-        point3(min.x(), min.y(), max.z()), dx, dy, mat
+        Point3(min.x(), min.y(), max.z()), dx, dy, mat
     ));
     // Right face (x = max.x)
     sides->add(std::make_shared<Quad>(
-        point3(max.x(), min.y(), max.z()), -dz, dy, mat
+        Point3(max.x(), min.y(), max.z()), -dz, dy, mat
     ));
     // Back face (z = min.z)
     sides->add(std::make_shared<Quad>(
-        point3(max.x(), min.y(), min.z()), -dx, dy, mat
+        Point3(max.x(), min.y(), min.z()), -dx, dy, mat
     ));
     // Left face (x = min.x)
     sides->add(std::make_shared<Quad>(
-        point3(min.x(), min.y(), min.z()), dz, dy, mat
+        Point3(min.x(), min.y(), min.z()), dz, dy, mat
     ));
     // Top face (y = max.y)
     sides->add(std::make_shared<Quad>(
-        point3(min.x(), max.y(), min.z()), dx, dz, mat
+        Point3(min.x(), max.y(), min.z()), dx, dz, mat
     ));
     // Bottom face (y = min.y)
     sides->add(std::make_shared<Quad>(
-        point3(min.x(), min.y(), min.z()), dx, dz, mat
+        Point3(min.x(), min.y(), min.z()), dx, dz, mat
     ));
 
     return sides;

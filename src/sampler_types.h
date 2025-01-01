@@ -69,20 +69,20 @@ std::ostream& operator<<(std::ostream& os, const SamplerConfig& cfg) {
 }
 
 struct SamplerData {
-    point3 origin;
-    point3 pixel00_loc;
-    direction3 pixel_delta_u;
-    direction3 pixel_delta_v;
+    Point3 origin;
+    Point3 pixel00_loc;
+    Direction3 pixel_delta_u;
+    Direction3 pixel_delta_v;
     double defocus_angle;
-    direction3 defocus_disk_u;
-    direction3 defocus_disk_v;
+    Direction3 defocus_disk_u;
+    Direction3 defocus_disk_v;
 
     SamplerData() = default;
     SamplerData(
         const ImageData& image_data,
-        const point3& lookfrom,
-        const point3& lookat,
-        const direction3& vup,
+        const Point3& lookfrom,
+        const Point3& lookat,
+        const Direction3& vup,
         double vfov,
         double defocus_angle,
         double focus_dist

@@ -72,7 +72,7 @@ class sphere : public Hittable {
             }
             const auto sqrtd = std::sqrt(discriminant);
 
-            // Determine which (if any) root is valid by the t-interval
+            // Determine which (if any) root is valid by the t-Interval
             auto root = (-h - sqrtd) / a;
             if (!t.surrounds(root)) {
                 root = (-h + sqrtd) / a;

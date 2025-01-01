@@ -3,22 +3,23 @@
 
 #include <limits>
 
+#include "concepts.h"
 #include "raytracing.h"
 
-template <typename T>
-class interval {
+template <Arithmetic T>
+class Interval {
     private:
         T min_;
         T max_;
 
     public:
 
-        // Default interval: empty
-        constexpr interval() : min_{infinity<T>}, max_{-infinity<T>} {}
+        // Default Interval: empty
+        constexpr Interval() : min_{infinity<T>}, max_{-infinity<T>} {}
 
-        constexpr interval(T _min, T _max) : min_{_min}, max_{_max} {}
+        constexpr Interval(T _min, T _max) : min_{_min}, max_{_max} {}
 
-        constexpr interval(const interval<T>& a, const interval<T>& b) {
+        constexpr Interval(const Interval<T>& a, const Interval<T>& b) {
             min_ = std::fmin(a.min(), b.min());
             max_ = std::fmax(a.max(), b.max());
         }
@@ -48,36 +49,36 @@ class interval {
             return x;
         }
 
-        constexpr interval<T> expand(T delta) const {
+        constexpr Interval<T> expand(T delta) const {
             const auto padding = delta / 2;
-            return interval<T>(min_ - padding, max_ + padding);
+            return Interval<T>(min_ - padding, max_ + padding);
         }
 
-        static const interval<T> empty;
-        static const interval<T> universe;
+        static const Interval<T> empty;
+        static const Interval<T> universe;
 
 };
 
-template <typename T>
-constexpr interval<T> operator+(const interval<T>& a, T b) {
-    return interval<T>(a.min() + b, a.max() + b);
+template <Arithmetic T>
+constexpr Interval<T> operator+(const Interval<T>& a, T b) {
+    return Interval<T>(a.min() + b, a.max() + b);
 }
 
-template <typename T>
-constexpr interval<T> operator+(T b, const interval<T>& a) {
-    return interval<T>(a.min() + b, a.max() + b);
+template <Arithmetic T>
+constexpr Interval<T> operator+(T b, const Interval<T>& a) {
+    return Interval<T>(a.min() + b, a.max() + b);
 }
 
-template <typename T>
-const interval<T> interval<T>::empty = interval<T>(
+template <Arithmetic T>
+const Interval<T> Interval<T>::empty = Interval<T>(
     infinity<T>, -infinity<T>
 );
 
-template <typename T>
-const interval<T> interval<T>::universe = interval<T>(
+template <Arithmetic T>
+const Interval<T> Interval<T>::universe = Interval<T>(
     -infinity<T>, infinity<T>
 );
 
-using interval_d = interval<double>;
+using interval_d = Interval<double>;
 
 #endif

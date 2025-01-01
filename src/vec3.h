@@ -4,11 +4,9 @@
 #include <cmath>
 #include <iostream>
 
+#include "concepts.h"
 #include "random.h"
 #include "raytracing.h"
-
-template <typename T>
-concept arithmetic = std::is_arithmetic_v<T>;
 
 template <typename T>
 class vec3 {
@@ -110,42 +108,42 @@ inline std::ostream& operator<<(std::ostream& out, const vec3<T>& v) {
     return out << v[0] << ' ' << v[1] << ' ' << v[2];
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> operator+(const vec3<T>& u, const vec3<T>& v) {
     return vec3<T>(u[0] + v[0], u[1] + v[1], u[2] + v[2]);
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> operator-(const vec3<T>& u, const vec3<T>& v) {
     return vec3<T>(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> operator*(const vec3<T>& v, const vec3<T>& t) {
     return vec3<T>(v[0] * t[0], v[1] * t[1], v[2] * t[2]);
 }
 
-template <arithmetic T, arithmetic U>
+template <Arithmetic T, Arithmetic U>
 inline vec3<T> operator*(const vec3<T>& t, U v) {
     return vec3<T>(t[0] * v, t[1] * v, t[2] * v);
 }
 
-template <arithmetic T, arithmetic U>
+template <Arithmetic T, Arithmetic U>
 inline vec3<T> operator*(U t, const vec3<T>& v) {
     return v * t;
 }
 
-template <arithmetic T, arithmetic U>
+template <Arithmetic T, Arithmetic U>
 inline vec3<T> operator/(const vec3<T>& v, U t) {
     return v * (1/static_cast<T>(t));
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline T dot(const vec3<T>& u, const vec3<T>& v) {
     return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> cross(const vec3<T>& u, const vec3<T>& v) {
     return vec3<T>(
         u[1] * v[2] - u[2] * v[1],
@@ -154,7 +152,7 @@ inline vec3<T> cross(const vec3<T>& u, const vec3<T>& v) {
     );
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> unit_vector(const vec3<T>& v) {
     return v / v.length();
 }
@@ -184,12 +182,12 @@ inline vec3<double> random_in_unit_disk() {
     return vec3<double>(x, y, 0);
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
     return v - 2 * dot(v, n) * n;
 }
 
-template <arithmetic T>
+template <Arithmetic T>
 inline vec3<T> refract(
     const vec3<T>& uv, const vec3<T>& n, double etai_over_etat
 ) {

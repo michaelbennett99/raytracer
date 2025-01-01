@@ -31,8 +31,8 @@ class HittableList : public Hittable {
             auto closest_so_far = t.max();
 
             for (const auto& object : objects) {
-                auto interval = interval_d{t.min(), closest_so_far};
-                if (object->hit(r, interval, temp_rec)) {
+                auto Interval = interval_d{t.min(), closest_so_far};
+                if (object->hit(r, Interval, temp_rec)) {
                     hit_anything = true;
                     closest_so_far = temp_rec.t;
                     rec = temp_rec;

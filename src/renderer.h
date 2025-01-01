@@ -40,6 +40,8 @@ public:
             return std::make_unique<DensityPixelRenderer>(
                 pixel_sampler, image_, i, j
             );
+        default:
+            throw std::runtime_error("Invalid renderer type");
         }
     }
 

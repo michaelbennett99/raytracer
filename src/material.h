@@ -30,7 +30,7 @@ class Lambertian : public Material {
         std::shared_ptr<Texture> tex;
 
     public:
-        Lambertian(const Colour& a) : tex(std::make_shared<solid_colour>(a)) {}
+        Lambertian(const Colour& a) : tex(std::make_shared<SolidColour>(a)) {}
         Lambertian(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
@@ -124,7 +124,7 @@ class DiffuseLight : public Material {
     public:
         DiffuseLight(std::shared_ptr<Texture> tex) : tex(tex) {}
         DiffuseLight(const Colour& emit)
-            : tex(std::make_shared<solid_colour>(emit)) {}
+            : tex(std::make_shared<SolidColour>(emit)) {}
 
         Colour emitted(double u, double v, const point3& p) const override {
             return tex->value(u, v, p);
@@ -137,7 +137,7 @@ class Isotropic : public Material {
 
     public:
         Isotropic(const Colour& albedo)
-            : tex(std::make_shared<solid_colour>(albedo)) {}
+            : tex(std::make_shared<SolidColour>(albedo)) {}
         Isotropic(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(

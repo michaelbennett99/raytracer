@@ -15,15 +15,15 @@ class Texture {
         virtual Colour value(double u, double v, const point3& p) const = 0;
 };
 
-class solid_colour : public Texture {
+class SolidColour : public Texture {
     private:
         Colour albedo;
 
     public:
-        solid_colour(const Colour& c) : albedo(c) {}
+        SolidColour(const Colour& c) : albedo(c) {}
 
-        solid_colour(double red, double green, double blue)
-            : solid_colour(Colour(red, green, blue)) {}
+        SolidColour(double red, double green, double blue)
+            : SolidColour(Colour(red, green, blue)) {}
 
         virtual Colour value(
             double u, double v, const point3& p
@@ -52,8 +52,8 @@ class checker_texture : public Texture {
         checker_texture(double scale, const Colour& c1, const Colour& c2)
             : checker_texture(
                 scale,
-                std::make_shared<solid_colour>(c1),
-                std::make_shared<solid_colour>(c2)
+                std::make_shared<SolidColour>(c1),
+                std::make_shared<SolidColour>(c2)
             ) {}
 
         Colour value(double u, double v, const point3& p) const override {

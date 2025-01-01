@@ -28,26 +28,31 @@ SamplerConfig create_sampler_config(const RenderOptions& options) {
     return config;
 }
 
+std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
+    std::vector<RendererType> renderer_types;
+    renderer_types.push_back(RendererType::Colour);
+    if (options.output_density && options.output_file) {
+        renderer_types.push_back(RendererType::Density);
+    }
+    return renderer_types;
+}
+
 int main(int argc, char* argv[]) {
     const auto options = cli::parse_args(argc, argv);
 
     OutputHandler output_handler(options.output_file);
 
     const auto sampler_config = create_sampler_config(options);
+    const auto renderer_types = create_renderer_config(options);
+    const auto scene_number = options.scene.value_or(1);
 
-    std::vector<RendererType> renderer_types;
-    renderer_types.push_back(RendererType::Colour);
-    if (options.output_density && options.output_file) {
-        renderer_types.push_back(RendererType::Density);
-    }
-
-    std::clog << "Scene: " << options.scene.value_or(12) << std::endl;
+    std::clog << "Scene: " << scene_number << std::endl;
 
     std::clog << "Sampler config: " << sampler_config << std::endl;
 
     scene scene;
 
-    switch (options.scene.value_or(1)) {
+    switch (scene_number) {
     case 1:
         scene = bouncing_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width

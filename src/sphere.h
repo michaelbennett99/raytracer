@@ -13,7 +13,7 @@ class sphere : public Hittable {
     private:
         ray cent;
         double rad;
-        std::shared_ptr<material> mat;
+        std::shared_ptr<Material> mat;
         AABB bbox;
 
         static void get_sphere_uv(const point3& p, double& u, double& v) {
@@ -29,7 +29,7 @@ class sphere : public Hittable {
         sphere(
             const point3& center,
             double radius,
-            std::shared_ptr<material> m
+            std::shared_ptr<Material> m
         ) : cent(center, direction3(0, 0, 0)),
             rad{std::fmax(radius, 0)},
             mat{m} {
@@ -42,7 +42,7 @@ class sphere : public Hittable {
             const point3& c0,
             const point3& c1,
             double radius,
-            std::shared_ptr<material> m
+            std::shared_ptr<Material> m
         ) : cent(c0, c1 - c0), rad{std::fmax(radius, 0)}, mat{m} {
             const auto radius_vec = direction3(radius, radius, radius);
             AABB box0 = AABB(c0 - radius_vec, c0 + radius_vec);

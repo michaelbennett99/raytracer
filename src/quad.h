@@ -15,7 +15,7 @@ class surface : public Hittable {
         point3 Q_;
         direction3 u_, v_;
         direction3 w_;
-        std::shared_ptr<material> mat_;
+        std::shared_ptr<Material> mat_;
         AABB bbox_;
         direction3 normal_;
         double D_;
@@ -62,7 +62,7 @@ class simple_surface : public surface {
             const point3& Q,
             const direction3& u,
             const direction3& v,
-            std::shared_ptr<material> mat
+            std::shared_ptr<Material> mat
         ) {
             Q_ = Q;
             u_ = u;
@@ -99,7 +99,7 @@ class quad : public simple_surface {
             const point3& Q,
             const direction3& u,
             const direction3& v,
-            std::shared_ptr<material> mat
+            std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
         }
@@ -128,7 +128,7 @@ class triangle : public simple_surface {
             const point3& Q,
             const direction3& u,
             const direction3& v,
-            std::shared_ptr<material> mat
+            std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
         }
@@ -154,7 +154,7 @@ class ellipse : public simple_surface {
             const point3& Q,
             const direction3& u,
             const direction3& v,
-            std::shared_ptr<material> mat
+            std::shared_ptr<Material> mat
         ) {
             init_surface(Q, u, v, mat);
         }
@@ -167,7 +167,7 @@ class disc : public ellipse {
             const direction3& u,
             const direction3& v,
             double radius,
-            std::shared_ptr<material> mat
+            std::shared_ptr<Material> mat
         ) : ellipse(Q, u, v, mat) {
             // Need to get the component of v_ perpendicular to u_
             const auto v_perp = v_ - dot(u_, v_) / dot(u_, u_) * u_;
@@ -179,7 +179,7 @@ class disc : public ellipse {
 };
 
 inline std::shared_ptr<hittable_list> box(
-    const point3& a, const point3& b, std::shared_ptr<material> mat
+    const point3& a, const point3& b, std::shared_ptr<Material> mat
 ) {
     const auto sides = std::make_shared<hittable_list>();
 

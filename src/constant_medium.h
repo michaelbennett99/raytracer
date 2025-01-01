@@ -10,7 +10,7 @@ class constant_medium : public Hittable {
     private:
         std::shared_ptr<Hittable> boundary;
         double neg_inv_density;
-        std::shared_ptr<material> phase_function;
+        std::shared_ptr<Material> phase_function;
 
     public:
         constant_medium(

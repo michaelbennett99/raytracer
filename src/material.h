@@ -7,9 +7,9 @@
 #include "hittable.h"
 #include "texture.h"
 
-class material {
+class Material {
     public:
-        virtual ~material() = default;
+        virtual ~Material() = default;
 
         virtual bool scatter(
             const ray& r_in,
@@ -25,7 +25,7 @@ class material {
         }
 };
 
-class lambertian : public material {
+class lambertian : public Material {
     private:
         std::shared_ptr<texture> tex;
 
@@ -49,7 +49,7 @@ class lambertian : public material {
         }
 };
 
-class metal : public material {
+class metal : public Material {
     private:
         Colour albedo;
         double fuzz;
@@ -75,7 +75,7 @@ class metal : public material {
         }
 };
 
-class dielectric : public material {
+class dielectric : public Material {
     private:
         double ir;
 
@@ -117,7 +117,7 @@ class dielectric : public material {
         }
 };
 
-class diffuse_light : public material {
+class diffuse_light : public Material {
     private:
         std::shared_ptr<texture> tex;
 
@@ -131,7 +131,7 @@ class diffuse_light : public material {
         }
 };
 
-class isotropic : public material {
+class isotropic : public Material {
     private:
         std::shared_ptr<texture> tex;
 

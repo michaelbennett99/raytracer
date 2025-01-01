@@ -35,14 +35,14 @@ class Hittable {
         }
 };
 
-class material;
+class Material;
 
 struct HitRecord {
     point3 p;
     double t;
     bool front_face;
     direction3 normal;
-    std::shared_ptr<material> mat;
+    std::shared_ptr<Material> mat;
     // Texture coordinates
     double u;
     double v;

@@ -57,7 +57,7 @@ scene bouncing_spheres(
             );
 
             if ((center - point3(4, 0.2, 0)).length() > 0.9) {
-                std::shared_ptr<material> sphere_material;
+                std::shared_ptr<Material> sphere_material;
 
                 if (choose_mat < 0.8) {
                     // diffuse

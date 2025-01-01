@@ -20,7 +20,7 @@ class ConstantMedium : public Hittable {
         )
             : boundary{ boundary }
             , neg_inv_density{ -1 / density }
-            , phase_function{ std::make_shared<isotropic>(tex) }
+            , phase_function{ std::make_shared<Isotropic>(tex) }
         {}
 
         ConstantMedium(
@@ -30,7 +30,7 @@ class ConstantMedium : public Hittable {
         )
             : boundary{ boundary }
             , neg_inv_density{ -1 / density }
-            , phase_function{ std::make_shared<isotropic>(albedo) }
+            , phase_function{ std::make_shared<Isotropic>(albedo) }
         {}
 
         bool hit(

@@ -42,7 +42,7 @@ scene bouncing_spheres(
 ) {
     HittableList world;
 
-    auto ground_material = std::make_shared<lambertian>(Colour(0.5, 0.5, 0.5));
+    auto ground_material = std::make_shared<Lambertian>(Colour(0.5, 0.5, 0.5));
     world.add(std::make_shared<sphere>(
         point3(0,-1000,0), 1000, ground_material
     ));
@@ -62,7 +62,7 @@ scene bouncing_spheres(
                 if (choose_mat < 0.8) {
                     // diffuse
                     auto albedo = Colour::random() * Colour::random();
-                    sphere_material = std::make_shared<lambertian>(albedo);
+                    sphere_material = std::make_shared<Lambertian>(albedo);
                     auto center2 = center
                         + direction3(0, gen_rand::random_double(0, 0.5), 0);
 
@@ -70,17 +70,17 @@ scene bouncing_spheres(
                             center, center2, 0.2, sphere_material
                     ));
                 } else if (choose_mat < 0.95) {
-                    // metal
+                    // Metal
                     auto albedo = Colour::random(0.5, 1);
                     auto fuzz = gen_rand::random_double(0, 0.5);
-                    sphere_material = std::make_shared<metal>(albedo, fuzz);
+                    sphere_material = std::make_shared<Metal>(albedo, fuzz);
 
                     world.add(std::make_shared<sphere>(
                         center, 0.2, sphere_material
                     ));
                 } else {
                     // glass
-                    sphere_material = std::make_shared<dielectric>(1.5);
+                    sphere_material = std::make_shared<Dielectric>(1.5);
                     world.add(std::make_shared<sphere>(
                         center, 0.2, sphere_material
                     ));
@@ -89,13 +89,13 @@ scene bouncing_spheres(
         }
     }
 
-    auto material1 = std::make_shared<dielectric>(1.5);
+    auto material1 = std::make_shared<Dielectric>(1.5);
     world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
 
-    auto material2 = std::make_shared<lambertian>(Colour(0.4, 0.2, 0.1));
+    auto material2 = std::make_shared<Lambertian>(Colour(0.4, 0.2, 0.1));
     world.add(std::make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
 
-    auto material3 = std::make_shared<metal>(Colour(0.7, 0.6, 0.5), 0.0);
+    auto material3 = std::make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
     world = HittableList(std::make_shared<BVHNode>(world));
@@ -134,7 +134,7 @@ scene checkered_spheres(
         Colour(0.9, 0.9, 0.9)
     );
 
-    const auto sphere_material = std::make_shared<lambertian>(checker);
+    const auto sphere_material = std::make_shared<Lambertian>(checker);
 
     world.add(std::make_shared<sphere>(point3(0,-10,0), 10, sphere_material));
     world.add(std::make_shared<sphere>(point3(0,10,0), 10, sphere_material));
@@ -166,7 +166,7 @@ scene earth(
     HittableList world;
 
     const auto earth_texture = std::make_shared<image_texture>("map.jpg");
-    const auto earth_material = std::make_shared<lambertian>(earth_texture);
+    const auto earth_material = std::make_shared<Lambertian>(earth_texture);
     const auto globe = std::make_shared<sphere>(
         point3(0, 0, 0), 2, earth_material
     );
@@ -199,7 +199,7 @@ scene perlin_spheres(
     HittableList world;
 
     const auto pertext = std::make_shared<noise_texture>(4);
-    const auto sphere_material = std::make_shared<lambertian>(pertext);
+    const auto sphere_material = std::make_shared<Lambertian>(pertext);
 
     world.add(
         std::make_shared<sphere>(point3(0, -1000, 0), 1000, sphere_material)
@@ -235,11 +235,11 @@ scene quads(
     HittableList world;
 
     // Materials
-    const auto left_red = std::make_shared<lambertian>(Colour(1, 0.2, 0.2));
-    const auto back_green = std::make_shared<lambertian>(Colour(0.2, 1, 0.2));
-    const auto right_blue = std::make_shared<lambertian>(Colour(0.2, 0.2, 1));
-    const auto upper_orange = std::make_shared<lambertian>(Colour(1, 0.5, 0));
-    const auto lower_teal = std::make_shared<lambertian>(Colour(0.2, 0.8, 0.8));
+    const auto left_red = std::make_shared<Lambertian>(Colour(1, 0.2, 0.2));
+    const auto back_green = std::make_shared<Lambertian>(Colour(0.2, 1, 0.2));
+    const auto right_blue = std::make_shared<Lambertian>(Colour(0.2, 0.2, 1));
+    const auto upper_orange = std::make_shared<Lambertian>(Colour(1, 0.5, 0));
+    const auto lower_teal = std::make_shared<Lambertian>(Colour(0.2, 0.8, 0.8));
 
     // Quads
     world.add(std::make_shared<quad>(
@@ -283,9 +283,9 @@ scene triangles(
 ) {
     HittableList world;
 
-    const auto left_red = std::make_shared<lambertian>(Colour(1, 0.2, 0.2));
-    const auto back_green = std::make_shared<lambertian>(Colour(0.2, 1, 0.2));
-    const auto right_blue = std::make_shared<lambertian>(Colour(0.2, 0.2, 1));
+    const auto left_red = std::make_shared<Lambertian>(Colour(1, 0.2, 0.2));
+    const auto back_green = std::make_shared<Lambertian>(Colour(0.2, 1, 0.2));
+    const auto right_blue = std::make_shared<Lambertian>(Colour(0.2, 0.2, 1));
 
     world.add(std::make_shared<triangle>(
         point3(-3, -2, 5), direction3(0, 0, -4), direction3(0, 4, 0), left_red
@@ -322,7 +322,7 @@ scene ellipses(
 ) {
     HittableList world;
 
-    const auto ellipse_material = std::make_shared<lambertian>(
+    const auto ellipse_material = std::make_shared<Lambertian>(
         Colour(0.8, 0.8, 0.0)
     );
     world.add(std::make_shared<ellipse>(
@@ -372,13 +372,13 @@ scene simple_light(
     HittableList world;
 
     const auto pertext = std::make_shared<noise_texture>(4);
-    const auto sphere_material = std::make_shared<lambertian>(pertext);
+    const auto sphere_material = std::make_shared<Lambertian>(pertext);
     world.add(
         std::make_shared<sphere>(point3(0,-1000,0), 1000, sphere_material)
     );
     world.add(std::make_shared<sphere>(point3(0,2,0), 2, sphere_material));
 
-    const auto light = std::make_shared<diffuse_light>(Colour(4, 4, 4));
+    const auto light = std::make_shared<DiffuseLight>(Colour(4, 4, 4));
     world.add(std::make_shared<quad>(
         point3(3, 1, -2), direction3(2, 0, 0), direction3(0, 2, 0), light
     ));
@@ -409,10 +409,10 @@ scene cornell_box(
 ) {
     HittableList world;
 
-    const auto red = std::make_shared<lambertian>(Colour(0.65, 0.05, 0.05));
-    const auto white = std::make_shared<lambertian>(Colour(0.73, 0.73, 0.73));
-    const auto green = std::make_shared<lambertian>(Colour(0.12, 0.45, 0.09));
-    const auto light = std::make_shared<diffuse_light>(Colour(25, 25, 25));
+    const auto red = std::make_shared<Lambertian>(Colour(0.65, 0.05, 0.05));
+    const auto white = std::make_shared<Lambertian>(Colour(0.73, 0.73, 0.73));
+    const auto green = std::make_shared<Lambertian>(Colour(0.12, 0.45, 0.09));
+    const auto light = std::make_shared<DiffuseLight>(Colour(25, 25, 25));
 
     world.add(std::make_shared<quad>(
         point3(555, 0, 0), direction3(0, 555, 0), direction3(0, 0, 555), green
@@ -480,10 +480,10 @@ scene cornell_smoke(
 ) {
     HittableList world;
 
-    auto red   = std::make_shared<lambertian>(Colour(.65, .05, .05));
-    auto white = std::make_shared<lambertian>(Colour(.73, .73, .73));
-    auto green = std::make_shared<lambertian>(Colour(.12, .45, .15));
-    auto light = std::make_shared<diffuse_light>(Colour(7, 7, 7));
+    auto red   = std::make_shared<Lambertian>(Colour(.65, .05, .05));
+    auto white = std::make_shared<Lambertian>(Colour(.73, .73, .73));
+    auto green = std::make_shared<Lambertian>(Colour(.12, .45, .15));
+    auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
 
     world.add(std::make_shared<quad>(
         point3(555,0,0), direction3(0,555,0), direction3(0,0,555), green
@@ -544,7 +544,7 @@ scene final_scene(
 ) {
     // Ground of boxes
     HittableList boxes1;
-    auto ground = std::make_shared<lambertian>(Colour(0.48, 0.83, 0.53));
+    auto ground = std::make_shared<Lambertian>(Colour(0.48, 0.83, 0.53));
     int boxes_per_side = 20;
     for (int i = 0; i < boxes_per_side; i++) {
         for (int j = 0; j < boxes_per_side; j++) {
@@ -566,7 +566,7 @@ scene final_scene(
     world.add(std::make_shared<BVHNode>(boxes1));
 
     // Light
-    auto light = std::make_shared<diffuse_light>(Colour(7, 7, 7));
+    auto light = std::make_shared<DiffuseLight>(Colour(7, 7, 7));
     world.add(std::make_shared<quad>(
         point3(123,554,147), direction3(300,0,0), direction3(0,0,265), light
     ));
@@ -574,12 +574,12 @@ scene final_scene(
     // Moving sphere
     auto center1 = point3(400, 400, 200);
     auto center2 = center1 + direction3(30,0,0);
-    auto sphere_material = std::make_shared<lambertian>(Colour(0.7, 0.3, 0.1));
+    auto sphere_material = std::make_shared<Lambertian>(Colour(0.7, 0.3, 0.1));
     world.add(std::make_shared<sphere>(center1, center2, 50, sphere_material));
 
     // Static spheres
-    const auto dielectric_material = std::make_shared<dielectric>(1.5);
-    const auto metal_material = std::make_shared<metal>(
+    const auto dielectric_material = std::make_shared<Dielectric>(1.5);
+    const auto metal_material = std::make_shared<Metal>(
         Colour(0.8, 0.8, 0.9), 1.0
     );
     world.add(std::make_shared<sphere>(
@@ -605,21 +605,21 @@ scene final_scene(
     ));
 
     // World sphere
-    auto map = std::make_shared<lambertian>(std::make_shared<image_texture>(
+    auto map = std::make_shared<Lambertian>(std::make_shared<image_texture>(
         "map.jpg"
     ));
     world.add(std::make_shared<sphere>(point3(400,200,400), 100, map));
 
     // Perlin sphere
     const auto pertext = std::make_shared<noise_texture>(0.2);
-    const auto pertext_material = std::make_shared<lambertian>(pertext);
+    const auto pertext_material = std::make_shared<Lambertian>(pertext);
     world.add(std::make_shared<sphere>(
         point3(220,280,300), 80, pertext_material
     ));
 
     // Box of spheres
     HittableList boxes2;
-    const auto white = std::make_shared<lambertian>(Colour(.73, .73, .73));
+    const auto white = std::make_shared<Lambertian>(Colour(.73, .73, .73));
     int ns = 1000;
     for (int j = 0; j < ns; j++) {
         boxes2.add(std::make_shared<sphere>(point3::random(0,165), 10, white));

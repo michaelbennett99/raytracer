@@ -25,13 +25,13 @@ class Material {
         }
 };
 
-class lambertian : public Material {
+class Lambertian : public Material {
     private:
         std::shared_ptr<Texture> tex;
 
     public:
-        lambertian(const Colour& a) : tex(std::make_shared<solid_colour>(a)) {}
-        lambertian(std::shared_ptr<Texture> tex) : tex(tex) {}
+        Lambertian(const Colour& a) : tex(std::make_shared<solid_colour>(a)) {}
+        Lambertian(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,
@@ -49,13 +49,13 @@ class lambertian : public Material {
         }
 };
 
-class metal : public Material {
+class Metal : public Material {
     private:
         Colour albedo;
         double fuzz;
 
     public:
-        metal(const Colour& a, double f) : albedo(a), fuzz(f) {}
+        Metal(const Colour& a, double f) : albedo(a), fuzz(f) {}
 
         bool scatter(
             const ray& r_in,
@@ -75,7 +75,7 @@ class metal : public Material {
         }
 };
 
-class dielectric : public Material {
+class Dielectric : public Material {
     private:
         double ir;
 
@@ -87,7 +87,7 @@ class dielectric : public Material {
         }
 
     public:
-        dielectric(double index_of_refraction) : ir(index_of_refraction) {}
+        Dielectric(double index_of_refraction) : ir(index_of_refraction) {}
 
         bool scatter(
             const ray& r_in,
@@ -117,13 +117,13 @@ class dielectric : public Material {
         }
 };
 
-class diffuse_light : public Material {
+class DiffuseLight : public Material {
     private:
         std::shared_ptr<Texture> tex;
 
     public:
-        diffuse_light(std::shared_ptr<Texture> tex) : tex(tex) {}
-        diffuse_light(const Colour& emit)
+        DiffuseLight(std::shared_ptr<Texture> tex) : tex(tex) {}
+        DiffuseLight(const Colour& emit)
             : tex(std::make_shared<solid_colour>(emit)) {}
 
         Colour emitted(double u, double v, const point3& p) const override {
@@ -131,14 +131,14 @@ class diffuse_light : public Material {
         }
 };
 
-class isotropic : public Material {
+class Isotropic : public Material {
     private:
         std::shared_ptr<Texture> tex;
 
     public:
-        isotropic(const Colour& albedo)
+        Isotropic(const Colour& albedo)
             : tex(std::make_shared<solid_colour>(albedo)) {}
-        isotropic(std::shared_ptr<Texture> tex) : tex(tex) {}
+        Isotropic(std::shared_ptr<Texture> tex) : tex(tex) {}
 
         bool scatter(
             const ray& r_in,

@@ -5,14 +5,14 @@
 #include "ray.h"
 #include "hittable.h"
 
-class translate : public Hittable {
+class Translate : public Hittable {
     private:
         std::shared_ptr<Hittable> object;
         direction3 offset;
         AABB bbox;
 
     public:
-        translate(std::shared_ptr<Hittable> p, const direction3& displacement)
+        Translate(std::shared_ptr<Hittable> p, const direction3& displacement)
             : object{ p }, offset{ displacement } {
                 bbox = object->bounding_box() + offset;
             }
@@ -30,7 +30,7 @@ class translate : public Hittable {
         }
 };
 
-class rotate_y : public Hittable {
+class RotateY : public Hittable {
     private:
         std::shared_ptr<Hittable> object;
         double sin_theta;
@@ -86,7 +86,7 @@ class rotate_y : public Hittable {
         }
 
     public:
-        rotate_y(std::shared_ptr<Hittable> object, double angle) : object{ object } {
+        RotateY(std::shared_ptr<Hittable> object, double angle) : object{ object } {
             const auto radians = degrees_to_radians(angle);
             sin_theta = std::sin(radians);
             cos_theta = std::cos(radians);

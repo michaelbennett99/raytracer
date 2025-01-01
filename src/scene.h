@@ -439,15 +439,15 @@ scene cornell_box(
     std::shared_ptr<Hittable> box1 = box(
         point3(0,0,0), point3(165,330,165), white
     );
-    box1 = std::make_shared<rotate_y>(box1, 15);
-    box1 = std::make_shared<translate>(box1, direction3(265,0,295));
+    box1 = std::make_shared<RotateY>(box1, 15);
+    box1 = std::make_shared<Translate>(box1, direction3(265,0,295));
     world.add(box1);
 
     std::shared_ptr<Hittable> box2 = box(
         point3(0,0,0), point3(165,165,165), white
     );
-    box2 = std::make_shared<rotate_y>(box2, -18);
-    box2 = std::make_shared<translate>(box2, direction3(130,0,65));
+    box2 = std::make_shared<RotateY>(box2, -18);
+    box2 = std::make_shared<Translate>(box2, direction3(130,0,65));
     world.add(box2);
 
     // Add light behind the camera
@@ -507,14 +507,14 @@ scene cornell_smoke(
     std::shared_ptr<Hittable> box1 = box(
         point3(0,0,0), point3(165,330,165), white
     );
-    box1 = std::make_shared<rotate_y>(box1, 15);
-    box1 = std::make_shared<translate>(box1, direction3(265,0,295));
+    box1 = std::make_shared<RotateY>(box1, 15);
+    box1 = std::make_shared<Translate>(box1, direction3(265,0,295));
 
     std::shared_ptr<Hittable> box2 = box(
         point3(0,0,0), point3(165,165,165), white
     );
-    box2 = std::make_shared<rotate_y>(box2, -18);
-    box2 = std::make_shared<translate>(box2, direction3(130,0,65));
+    box2 = std::make_shared<RotateY>(box2, -18);
+    box2 = std::make_shared<Translate>(box2, direction3(130,0,65));
 
     world.add(std::make_shared<ConstantMedium>(box1, 0.01, Colour(0,0,0)));
     world.add(std::make_shared<ConstantMedium>(box2, 0.01, Colour(1,1,1)));
@@ -626,8 +626,8 @@ scene final_scene(
     }
 
     // Bounding volume hierarchy for the box of spheres
-    world.add(std::make_shared<translate>(
-        std::make_shared<rotate_y>(
+    world.add(std::make_shared<Translate>(
+        std::make_shared<RotateY>(
             std::make_shared<BVHNode>(boxes2), 15),
             direction3(-100,270,395)
         )

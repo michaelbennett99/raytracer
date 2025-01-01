@@ -38,7 +38,7 @@ std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
 }
 
 int main(int argc, char* argv[]) {
-    const auto options = cli::parse_args(argc, argv);
+    const auto options = CLI::parse_args(argc, argv);
 
     OutputHandler output_handler(options.output_file);
 

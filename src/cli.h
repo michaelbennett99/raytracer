@@ -7,20 +7,20 @@
 #include <optional>
 
 struct RenderOptions {
-    std::optional<int> scene;
-    bool adaptive_sampling = false;
-    int image_width = 400;
-    double aspect_ratio = 16.0 / 9.0;
-    int samples_per_pixel = 100;
-    int burn_in = 64;
-    int check_every = 64;
-    double tolerance = 0.01;
-    std::optional<std::string> output_file;
-    bool output_density = false;
+    std::optional<int> scene {};
+    bool adaptive_sampling {false};
+    int image_width {400};
+    double aspect_ratio {16.0 / 9.0};
+    int samples_per_pixel {100};
+    int burn_in {64};
+    int check_every {64};
+    double tolerance {0.01};
+    std::optional<std::string> output_file {};
+    bool output_density {false};
 };
 
-namespace cli {
-    static const RenderOptions DEFAULT_OPTIONS;
+namespace CLI {
+    static const RenderOptions DEFAULT_OPTIONS {};
 
     static void usage(const char* argv0) {
         std::cerr << "Usage: " << argv0 << " [options] <scene>" << std::endl
@@ -96,7 +96,7 @@ namespace cli {
 
     int parse_int_field(int& i, int argc, char* argv[]) {
         check_next_arg(i, argc, argv);
-        int value;
+        int value {};
         // Consume the next argument, exiting if it's not a valid integer
         if (!parse_int(argv[++i], value)) {
             std::cerr << "Error: Invalid value for -" << argv[i] << std::endl;
@@ -108,7 +108,7 @@ namespace cli {
 
     double parse_double_field(int& i, int argc, char* argv[]) {
         check_next_arg(i, argc, argv);
-        double value;
+        double value {};
         // Consume the next argument, exiting if it's not a valid double
         if (!parse_double(argv[++i], value)) {
             std::cerr << "Error: Invalid value for -" << argv[i] << std::endl;
@@ -120,7 +120,7 @@ namespace cli {
 
     static std::string parse_string_field(int& i, int argc, char* argv[]) {
         check_next_arg(i, argc, argv);
-        const char* arg = argv[++i];
+        const auto arg { argv[++i] };
 
         if (!arg) {
             std::cerr
@@ -130,7 +130,7 @@ namespace cli {
             exit(1);
         }
 
-        size_t len = strlen(arg);
+        const auto len { std::strlen(arg) };
         if (len == 0) {
             std::cerr
                 << "Error: -" << argv[i - 1] << " requires a value"
@@ -150,7 +150,7 @@ namespace cli {
     }
 
     RenderOptions parse_args(int argc, char* argv[]) {
-        RenderOptions options;
+        RenderOptions options {};
 
         for (int i = 1; i < argc; i++) {
             if (isint(argv[i])) {

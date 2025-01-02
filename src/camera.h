@@ -81,13 +81,29 @@ public:
         progress{ image_data.height } {}
 
     void render(const World& world) {
-        for (int j = 0; j < image_data.height; ++j) {
-            for (int i = 0; i < image_data.width; ++i) {
-                process_pixel(i, j, world);
+        // Parallel rendering
+        const int num_threads = std::thread::hardware_concurrency();
+        std::vector<std::thread> threads;
+
+        auto process_chunk = [&](int start_row, int end_row) {
+            for (int j = start_row; j < end_row; ++j) {
+                for (int i = 0; i < image_data.width; ++i) {
+                    process_pixel(i, j, world);
+                }
+                progress.update();
+                progress.print();
             }
-            progress.update();
-            progress.print();
+        };
+
+        int chunk_size = image_data.height / num_threads;
+        for (int i = 0; i < num_threads; ++i) {
+            threads.emplace_back(process_chunk, i * chunk_size, (i + 1) * chunk_size);
         }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
+
         progress.done();
     }
 

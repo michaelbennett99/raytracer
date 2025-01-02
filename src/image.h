@@ -11,8 +11,8 @@ enum class ImageFormat {
 };
 
 struct ImageData {
-    int width;
-    int height;
+    int width {};
+    int height {};
 
     double aspect_ratio() const {
         return static_cast<double>(width) / height;
@@ -23,11 +23,11 @@ struct ImageData {
 
 class Image {
     private:
-        ImageData data_;
-        int max_colour_value_;
-        std::vector<std::vector<Colour>> image_;
+        ImageData data_ {};
+        int max_colour_value_ { default_max_colour_value };
+        std::vector<std::vector<Colour>> image_ {};
 
-        static constexpr int default_max_colour_value = 255;
+        static constexpr int default_max_colour_value { 255 };
 
         void write_ppm(std::ostream& output) const {
             output << "P3\n"
@@ -101,7 +101,7 @@ class Image {
             }
         }
 
-        static int calc_image_height(int width, double aspect_ratio) {
+        static constexpr int calc_image_height(int width, double aspect_ratio) {
             const auto h = static_cast<int>(width / aspect_ratio);
             return (h < 1) ? 1 : h;
         }

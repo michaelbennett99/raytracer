@@ -10,7 +10,7 @@
 #include "renderer.h"
 
 SamplerConfig create_sampler_config(const RenderOptions& options) {
-    SamplerConfig config;
+    SamplerConfig config {};
     config.random.enabled = true;
     config.adaptive.enabled = options.adaptive_sampling;
     if (options.samples_per_pixel) {
@@ -29,7 +29,7 @@ SamplerConfig create_sampler_config(const RenderOptions& options) {
 }
 
 std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
-    std::vector<RendererType> renderer_types;
+    std::vector<RendererType> renderer_types {};
     renderer_types.push_back(RendererType::Colour);
     if (options.output_density && options.output_file) {
         renderer_types.push_back(RendererType::Density);
@@ -40,7 +40,7 @@ std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
 int main(int argc, char* argv[]) {
     const auto options = CLI::parse_args(argc, argv);
 
-    OutputHandler output_handler(options.output_file);
+    OutputHandler output_handler { options.output_file };
 
     const auto sampler_config = create_sampler_config(options);
     const auto renderer_types = create_renderer_config(options);
@@ -50,51 +50,51 @@ int main(int argc, char* argv[]) {
 
     std::clog << "Sampler config: " << sampler_config << std::endl;
 
-    Scene Scene;
+    Scene scene {};
 
     switch (scene_number) {
     case 1:
-        Scene = bouncing_spheres(
+        scene = bouncing_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 2:
-        Scene = checkered_spheres(
+        scene = checkered_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 3:
-        Scene = earth(
+        scene = earth(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 4:
-        Scene = perlin_spheres(
+        scene = perlin_spheres(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 5:
-        Scene = quads(
+        scene = quads(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 6:
-        Scene = triangles(
+        scene = triangles(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 7:
-        Scene = ellipses(
+        scene = ellipses(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 8:
-        Scene = simple_light(
+        scene = simple_light(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 9:
-        Scene = cornell_box(
+        scene = cornell_box(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 10:
-        Scene = cornell_smoke(
+        scene = cornell_smoke(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     case 11:
-        Scene = final_scene(
+        scene = final_scene(
             sampler_config, renderer_types, options.aspect_ratio, options.image_width
         ); break;
     default:
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    const auto results = Scene.render();
+    const auto results { scene.render() };
 
     output_handler.write_main_image(
         results.at(RendererType::Colour), ImageFormat::PPM

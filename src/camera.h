@@ -95,9 +95,14 @@ public:
             }
         };
 
-        int chunk_size = image_data.height / num_threads;
+        const int chunk_size = (image_data.height + num_threads - 1)
+            / num_threads;
         for (int i = 0; i < num_threads; ++i) {
-            threads.emplace_back(process_chunk, i * chunk_size, (i + 1) * chunk_size);
+            const int start_row = i * chunk_size;
+            const int end_row = std::min(
+                start_row + chunk_size, image_data.height
+            );
+            threads.emplace_back(process_chunk, start_row, end_row);
         }
 
         for (auto& thread : threads) {

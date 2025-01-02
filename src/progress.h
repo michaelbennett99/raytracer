@@ -20,15 +20,15 @@ public:
     }
 
     void print() const {
-        const double progress = static_cast<double>(current) / total;
-        const int progress_width = static_cast<int>(progress * width);
+        const double progress { static_cast<double>(current) / total };
+        const int progress_width { static_cast<int>(progress * width) };
         std::stringstream ss;
         ss << "\rProgress: [";
-        for (int i = 0; i < progress_width; ++i) {
+        for (int i { 0 }; i < progress_width; ++i) {
             ss << "=";
         }
         ss << ">";
-        for (int i = progress_width + 1; i < width; ++i) {
+        for (int i { progress_width + 1 }; i < width; ++i) {
             ss << "-";
         }
         ss << "] " << current << "/" << total << " Scanlines" << std::flush;

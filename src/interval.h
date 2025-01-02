@@ -68,6 +68,16 @@ constexpr Interval<T> operator+(T b, const Interval<T>& a) {
 }
 
 template <Arithmetic T>
+constexpr bool operator==(const Interval<T>& a, const Interval<T>& b) {
+    return a.min() == b.min() && a.max() == b.max();
+}
+
+template <Arithmetic T>
+constexpr bool operator!=(const Interval<T>& a, const Interval<T>& b) {
+    return !(a == b);
+}
+
+template <Arithmetic T>
 const Interval<T> Interval<T>::empty = Interval<T>(
     infinity<T>, -infinity<T>
 );

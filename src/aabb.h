@@ -99,6 +99,14 @@ inline AABB operator+(const Direction3& b, const AABB& a) {
     return a + b;
 }
 
+inline bool operator==(const AABB& a, const AABB& b) {
+    return a.x() == b.x() && a.y() == b.y() && a.z() == b.z();
+}
+
+inline bool operator!=(const AABB& a, const AABB& b) {
+    return !(a == b);
+}
+
 const AABB AABB::empty {
     IntervalD::empty, IntervalD::empty, IntervalD::empty
 };

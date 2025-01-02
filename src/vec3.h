@@ -21,7 +21,7 @@ class Vec3 {
         T y() const { return e[1]; }
         T z() const { return e[2]; }
 
-        Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
+        Vec3 operator-() const { return Vec3{-e[0], -e[1], -e[2]}; }
         T operator[](int i) const { return e[i]; }
         T& operator[](int i) { return e[i]; }
 
@@ -39,8 +39,9 @@ class Vec3 {
             return *this;
         }
 
-        Vec3& operator/=(const T t) {
-            return *this *= 1/t;
+        template <Arithmetic U>
+        Vec3& operator/=(const U t) {
+            return *this *= 1/static_cast<T>(t);
         }
 
         bool operator==(const Vec3& v) const {
@@ -110,22 +111,38 @@ inline std::ostream& operator<<(std::ostream& out, const Vec3<T>& v) {
 
 template <Arithmetic T>
 inline Vec3<T> operator+(const Vec3<T>& u, const Vec3<T>& v) {
-    return Vec3<T>(u[0] + v[0], u[1] + v[1], u[2] + v[2]);
+    return Vec3<T> {
+        u[0] + v[0],
+        u[1] + v[1],
+        u[2] + v[2]
+    };
 }
 
 template <Arithmetic T>
 inline Vec3<T> operator-(const Vec3<T>& u, const Vec3<T>& v) {
-    return Vec3<T>(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
+    return Vec3<T> {
+        u[0] - v[0],
+        u[1] - v[1],
+        u[2] - v[2]
+    };
 }
 
 template <Arithmetic T>
 inline Vec3<T> operator*(const Vec3<T>& v, const Vec3<T>& t) {
-    return Vec3<T>(v[0] * t[0], v[1] * t[1], v[2] * t[2]);
+    return Vec3<T> {
+        v[0] * t[0],
+        v[1] * t[1],
+        v[2] * t[2]
+    };
 }
 
 template <Arithmetic T, Arithmetic U>
 inline Vec3<T> operator*(const Vec3<T>& t, U v) {
-    return Vec3<T>(t[0] * v, t[1] * v, t[2] * v);
+    return Vec3<T> {
+        t[0] * v,
+        t[1] * v,
+        t[2] * v
+    };
 }
 
 template <Arithmetic T, Arithmetic U>
@@ -145,11 +162,11 @@ inline T dot(const Vec3<T>& u, const Vec3<T>& v) {
 
 template <Arithmetic T>
 inline Vec3<T> cross(const Vec3<T>& u, const Vec3<T>& v) {
-    return Vec3<T>(
+    return Vec3<T> {
         u[1] * v[2] - u[2] * v[1],
         u[2] * v[0] - u[0] * v[2],
         u[0] * v[1] - u[1] * v[0]
-    );
+    };
 }
 
 template <Arithmetic T>
@@ -158,28 +175,28 @@ inline Vec3<T> unit_vector(const Vec3<T>& v) {
 }
 
 inline Vec3<double> random_unit_vector() {
-    const auto theta = gen_rand::random_double(0, pi);
-    const auto phi = gen_rand::random_double(0, 2 * pi);
-    const auto sin_theta = std::sin(theta);
-    const auto x = sin_theta * std::cos(phi);
-    const auto y = sin_theta * std::sin(phi);
-    const auto z = std::cos(theta);
-    return Vec3<double>(x, y, z);
+    const auto theta { gen_rand::random_double(0, pi) };
+    const auto phi { gen_rand::random_double(0, 2 * pi) };
+    const auto sin_theta { std::sin(theta) };
+    const auto x { sin_theta * std::cos(phi) };
+    const auto y { sin_theta * std::sin(phi) };
+    const auto z { std::cos(theta) };
+    return Vec3<double> { x, y, z };
 }
 
 inline Vec3<double> random_on_hemisphere(const Vec3<double>& normal) {
-    const auto on_unit_sphere = random_unit_vector();
+    const auto on_unit_sphere { random_unit_vector() };
     return dot(on_unit_sphere, normal) > 0.0
         ? on_unit_sphere
         : -on_unit_sphere;
 }
 
 inline Vec3<double> random_in_unit_disk() {
-    const auto angle = gen_rand::random_double(0, 2 * pi);
-    const auto r = gen_rand::random_double(0, 1);
-    const auto x = r * std::cos(angle);
-    const auto y = r * std::sin(angle);
-    return Vec3<double>(x, y, 0);
+    const auto angle { gen_rand::random_double(0, 2 * pi) };
+    const auto r { gen_rand::random_double(0, 1) };
+    const auto x { r * std::cos(angle) };
+    const auto y { r * std::sin(angle) };
+    return Vec3<double> { x, y, 0 };
 }
 
 template <Arithmetic T>
@@ -191,10 +208,11 @@ template <Arithmetic T>
 inline Vec3<T> refract(
     const Vec3<T>& uv, const Vec3<T>& n, double etai_over_etat
 ) {
-    const auto cos_theta = std::fmin(dot(-uv, n), 1.0);
-    const auto r_out_perp = etai_over_etat * (uv + cos_theta * n);
-    const auto r_out_parallel = -std::sqrt(1.0 - r_out_perp.length_squared())
-        * n;
+    const auto cos_theta { std::fmin(dot(-uv, n), 1.0) };
+    const auto r_out_perp { etai_over_etat * (uv + cos_theta * n) };
+    const auto r_out_parallel {
+        -std::sqrt(1.0 - r_out_perp.length_squared()) * n
+    };
     return r_out_perp + r_out_parallel;
 }
 

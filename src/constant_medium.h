@@ -34,13 +34,13 @@ class ConstantMedium : public Hittable {
         {}
 
         bool hit(
-            const Ray& r, interval_d t, HitRecord& rec
+            const Ray& r, IntervalD t, HitRecord& rec
         ) const override {
             HitRecord rec1, rec2;
 
-            if (!boundary->hit(r, interval_d::universe, rec1))
+            if (!boundary->hit(r, IntervalD::universe, rec1))
                 return false;
-            if (!boundary->hit(r, interval_d{rec1.t+0.0001, infinity_d}, rec2))
+            if (!boundary->hit(r, IntervalD{rec1.t+0.0001, infinity_d}, rec2))
                 return false;
 
             if (rec1.t < t.min()) rec1.t = t.min();

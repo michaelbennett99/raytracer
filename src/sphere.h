@@ -55,7 +55,7 @@ class Sphere : public Hittable {
 
         bool hit(
             const Ray& r,
-            interval_d t,
+            IntervalD t,
             HitRecord& rec
         ) const override {
             const auto current_center = center().at(r.time());

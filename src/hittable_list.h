@@ -23,7 +23,7 @@ class HittableList : public Hittable {
 
         bool hit(
             const Ray& r,
-            interval_d t,
+            IntervalD t,
             HitRecord& rec
         ) const override {
             HitRecord temp_rec;
@@ -31,7 +31,7 @@ class HittableList : public Hittable {
             auto closest_so_far = t.max();
 
             for (const auto& object : objects) {
-                auto Interval = interval_d{t.min(), closest_so_far};
+                auto Interval = IntervalD{t.min(), closest_so_far};
                 if (object->hit(r, Interval, temp_rec)) {
                     hit_anything = true;
                     closest_so_far = temp_rec.t;

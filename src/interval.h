@@ -79,6 +79,6 @@ const Interval<T> Interval<T>::universe = Interval<T>(
     -infinity<T>, infinity<T>
 );
 
-using interval_d = Interval<double>;
+using IntervalD = Interval<double>;
 
 #endif

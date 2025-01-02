@@ -26,7 +26,7 @@ class World {
 
             HitRecord rec;
 
-            if (!world_->hit(r, interval_d{0.001, infinity_d}, rec)) {
+            if (!world_->hit(r, IntervalD{0.001, infinity_d}, rec)) {
                 return background_;
             }
 

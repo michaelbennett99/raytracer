@@ -16,7 +16,7 @@ class Hittable {
 
         virtual bool hit(
             const Ray& r,
-            interval_d t,
+            IntervalD t,
             HitRecord& rec
         ) const = 0;
 

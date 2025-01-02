@@ -76,8 +76,8 @@ class image_texture : public Texture {
         Colour value(double u, double v, const Point3& p) const override {
             if (img.height() <= 0) return Colour(0, 1, 1);
 
-            u = interval_d(0, 1).clamp(u);
-            v = 1.0 - interval_d(0, 1).clamp(v); // Flip V to image coordinates
+            u = IntervalD(0, 1).clamp(u);
+            v = 1.0 - IntervalD(0, 1).clamp(v); // Flip V to image coordinates
 
             const auto i = int(u * img.width());
             const auto j = int(v * img.height());

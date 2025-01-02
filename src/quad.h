@@ -30,7 +30,7 @@ class Surface : public Hittable {
 
         bool hit(
             const Ray& r,
-            interval_d ray_t,
+            IntervalD ray_t,
             HitRecord& rec
         ) const override {
             const auto denom = dot(normal_, r.direction());
@@ -87,7 +87,7 @@ class Quad : public SimpleSurface {
         }
 
         bool is_interior(double a, double b, HitRecord& rec) const override {
-            interval_d unit {0, 1};
+            IntervalD unit {0, 1};
             if (!unit.contains(a) || !unit.contains(b)) return false;
             rec.u = a;
             rec.v = b;
@@ -114,7 +114,7 @@ class Triangle : public SimpleSurface {
         }
 
         bool is_interior(double a, double b, HitRecord& rec) const override {
-            interval_d unit {0, 1};
+            IntervalD unit {0, 1};
             if (!unit.contains(a) || !unit.contains(b)) return false;
             if (a + b > 1) return false;
 

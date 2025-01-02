@@ -7,9 +7,9 @@
 
 class AABB {
     private:
-        interval_d x_ {};
-        interval_d y_ {};
-        interval_d z_ {};
+        IntervalD x_ {};
+        IntervalD y_ {};
+        IntervalD z_ {};
         constexpr static const double delta { 0.0001 };
 
     void pad_to_minimums() {
@@ -20,7 +20,7 @@ class AABB {
 
     public:
         AABB() {}
-        AABB(const interval_d& _x, const interval_d& _y, const interval_d& _z)
+        AABB(const IntervalD& _x, const IntervalD& _y, const IntervalD& _z)
             : x_{_x}, y_{_y}, z_{_z} {
                 pad_to_minimums();
             }
@@ -28,15 +28,15 @@ class AABB {
         AABB(const Point3& a, const Point3& b) :
             x_{
                 a.x() <= b.x()
-                ? interval_d(a.x(), b.x()) : interval_d(b.x(), a.x())
+                ? IntervalD(a.x(), b.x()) : IntervalD(b.x(), a.x())
             },
             y_{
                 a.y() <= b.y()
-                ? interval_d(a.y(), b.y()) : interval_d(b.y(), a.y())
+                ? IntervalD(a.y(), b.y()) : IntervalD(b.y(), a.y())
             },
             z_{
                 a.z() <= b.z()
-                ? interval_d(a.z(), b.z()) : interval_d(b.z(), a.z())
+                ? IntervalD(a.z(), b.z()) : IntervalD(b.z(), a.z())
             }
             {}
 
@@ -46,15 +46,15 @@ class AABB {
             z_{a.z(), b.z()}
             {}
 
-        const interval_d& x() const { return x_; }
-        const interval_d& y() const { return y_; }
-        const interval_d& z() const { return z_; }
+        const IntervalD& x() const { return x_; }
+        const IntervalD& y() const { return y_; }
+        const IntervalD& z() const { return z_; }
 
-        const interval_d& operator[](int i) const {
+        const IntervalD& operator[](int i) const {
             return (i == 0) ? x_ : (i == 1) ? y_ : z_;
         }
 
-        bool hit(const Ray& r, interval_d t) const {
+        bool hit(const Ray& r, IntervalD t) const {
             const auto& ray_origin { r.origin() };
             const auto& ray_direction { r.direction() };
 
@@ -66,11 +66,11 @@ class AABB {
                 const auto t1 { (ax.max() - ray_origin[axis]) * dir_inv };
 
                 if (t0 < t1) {
-                    if (t0 > t.min()) t = interval_d{t0, t.max()};
-                    if (t1 < t.max()) t = interval_d{t.min(), t1};
+                    if (t0 > t.min()) t = IntervalD{t0, t.max()};
+                    if (t1 < t.max()) t = IntervalD{t.min(), t1};
                 } else {
-                    if (t1 > t.min()) t = interval_d{t1, t.max()};
-                    if (t0 < t.max()) t = interval_d{t.min(), t0};
+                    if (t1 > t.min()) t = IntervalD{t1, t.max()};
+                    if (t0 < t.max()) t = IntervalD{t.min(), t0};
                 }
 
                 if (t.max() <= t.min()) {
@@ -100,11 +100,11 @@ inline AABB operator+(const Direction3& b, const AABB& a) {
 }
 
 const AABB AABB::empty {
-    interval_d::empty, interval_d::empty, interval_d::empty
+    IntervalD::empty, IntervalD::empty, IntervalD::empty
 };
 
 const AABB AABB::universe {
-    interval_d::universe, interval_d::universe, interval_d::universe
+    IntervalD::universe, IntervalD::universe, IntervalD::universe
 };
 
 #endif

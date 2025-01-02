@@ -7,7 +7,7 @@
 class Colour : public Vec3<double> {
     private:
         static constexpr int colour_multiplier { 256 };
-        static constexpr interval_d intensity { 0.0, 0.999 };
+        static constexpr IntervalD intensity { 0.0, 0.999 };
 
         static constexpr double linear_to_gamma(double linear) {
             if (linear > 0) {

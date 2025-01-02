@@ -19,14 +19,15 @@ enum class RendererType {
 // A renderer is a class that is directed by the camera to render an image
 class Renderer {
 protected:
-    Image image_;
+    Image image_ {};
     const RendererType type_;
 
 public:
+    Renderer() = delete;
     Renderer(
         const ImageData& image_data,
         RendererType type = RendererType::Colour
-    ) : image_(image_data.width, image_data.height), type_(type) {}
+    ) : image_ { image_data.width, image_data.height }, type_ { type } {}
 
     std::unique_ptr<PixelRenderer> create_pixel_renderer(
         int i, int j, const PixelSampler& pixel_sampler
@@ -69,7 +70,7 @@ public:
     std::vector<std::unique_ptr<PixelRenderer>> create_pixel_renderers(
         int i, int j, const PixelSampler& pixel_sampler
     ) {
-        std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs;
+        std::vector<std::unique_ptr<PixelRenderer>> pixel_renderer_ptrs {};
         for (auto& renderer : *this) {
             pixel_renderer_ptrs.emplace_back(
                 renderer.create_pixel_renderer(i, j, pixel_sampler)

@@ -12,6 +12,7 @@ protected:
     Image& image_;
     const int i_, j_;
 public:
+    PixelRenderer() = delete;
     PixelRenderer(const PixelSampler& pixel_sampler, Image& image, int i, int j)
         : pixel_sampler_(pixel_sampler), image_(image), i_(i), j_(j) {}
 
@@ -21,13 +22,12 @@ public:
 
 class ColourPixelRenderer : public PixelRenderer {
 private:
-    Colour current_colour_;
+    Colour current_colour_ { 0, 0, 0 };
 
 public:
     ColourPixelRenderer(
         const PixelSampler& pixel_sampler, Image& image, int i, int j
-    ) : PixelRenderer(pixel_sampler, image, i, j),
-        current_colour_(0, 0, 0) {}
+    ) : PixelRenderer(pixel_sampler, image, i, j) {}
 
     void process_sample(const Ray& r, const Colour& pixel_colour) override {
         current_colour_ += pixel_colour;

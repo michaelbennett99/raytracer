@@ -10,7 +10,7 @@
 // Pixel sampler class
 class PixelSampler {
 protected:
-    int samples_ = 0;
+    int samples_ { 0 };
     std::shared_ptr<SamplerData> data;
     std::shared_ptr<SamplerConfig> cfg;
     int i, j;
@@ -25,7 +25,7 @@ protected:
         if (data->defocus_angle <= 0) {
             return data->origin;
         }
-        const auto p = random_in_unit_disk();
+        const auto p { random_in_unit_disk() };
         return data->origin
             + (p[0] * data->defocus_disk_u)
             + (p[1] * data->defocus_disk_v);
@@ -34,24 +34,24 @@ protected:
     virtual Point3 sample_pixel() const = 0;
 
 public:
-    PixelSampler() = default;
+    PixelSampler() = delete;
     PixelSampler(
         std::shared_ptr<SamplerData> data,
         std::shared_ptr<SamplerConfig> cfg,
         int i,
         int j
-    ) : data(data), cfg(cfg), i(i), j(j) {}
+    ) : data { data }, cfg { cfg }, i { i }, j { j } {}
     virtual ~PixelSampler() = default;
 
     virtual bool has_next_sample() const = 0;
     virtual void add_sample(const Colour& sample) {}
     virtual Ray sample() {
-        const auto pixel_sample = sample_pixel();
-        const auto ray_origin = sample_defocus_disk();
-        const auto ray_direction = pixel_sample - ray_origin;
-        const auto ray_time = gen_rand::random_double(0, 1);
+        const auto pixel_sample { sample_pixel() };
+        const auto ray_origin { sample_defocus_disk() };
+        const auto ray_direction { pixel_sample - ray_origin };
+        const auto ray_time { gen_rand::random_double(0, 1) };
         samples_++;
-        return Ray(ray_origin, ray_direction, ray_time);
+        return Ray { ray_origin, ray_direction, ray_time };
     };
 
     int samples() const { return samples_; }
@@ -63,12 +63,13 @@ public:
     class Iterator {
     private:
         PixelSampler* pixel_sampler;
-        Ray current_ray;
+        Ray current_ray {};
 
     public:
+        Iterator() = delete;
         explicit Iterator(
             PixelSampler* pixel_sampler = nullptr
-        ) : pixel_sampler(pixel_sampler) {
+        ) : pixel_sampler { pixel_sampler } {
             if (pixel_sampler) {
                 current_ray = pixel_sampler->sample();
             }
@@ -102,14 +103,14 @@ public:
     }
 };
 
-class RandomPixelSampler : public virtual PixelSampler {
+class RandomPixelSampler : public PixelSampler {
 private:
     static Direction3 sample_square() {
-        return Direction3(
+        return Direction3 {
             gen_rand::random_double(-0.5, 0.5),
             gen_rand::random_double(-0.5, 0.5),
             0
-        );
+        };
     }
 
     Point3 sample_pixel() const override {
@@ -117,13 +118,13 @@ private:
     }
 
 public:
-    RandomPixelSampler() = default;
+    RandomPixelSampler() = delete;
     RandomPixelSampler(
         std::shared_ptr<SamplerData> data,
         std::shared_ptr<SamplerConfig> cfg,
         int i,
         int j
-    ) : PixelSampler(data, cfg, i, j) {};
+    ) : PixelSampler { data, cfg, i, j } {}
 
     bool has_next_sample() const override {
         return samples() < cfg->samples_per_pixel;
@@ -137,22 +138,22 @@ private:
         Point3 s2{0,0,0};  // Sum of squares for each channel
     };
 
-    Data sampling_data;
+    Data sampling_data {};
 
     Point3 mean() const {
         if (samples() == 0) {
-            return Point3(infinity_d, infinity_d, infinity_d);
+            return Point3 { infinity_d, infinity_d, infinity_d };
         }
         return sampling_data.s1 / samples();
     }
 
     Point3 variance() const {
         if (samples() <= 1) {
-            return Point3(infinity_d, infinity_d, infinity_d);
+            return Point3 { infinity_d, infinity_d, infinity_d };
         }
-        const auto s1_squared = sampling_data.s1 * sampling_data.s1;
-        const auto n = static_cast<double>(samples());
-        const auto factor = 1.0 / (n - 1);
+        const auto s1_squared { sampling_data.s1 * sampling_data.s1 };
+        const auto n { static_cast<double>(samples()) };
+        const auto factor { 1.0 / (n - 1) };
         return factor * (sampling_data.s2 - (s1_squared / n));
     }
 
@@ -161,15 +162,17 @@ private:
             samples() < cfg->adaptive.burn_in
             || samples() % cfg->adaptive.check_every != 0
         ) return true;
-        const auto mu = mean();
-        const auto var = variance();
+        const auto mu { mean() };
+        const auto var { variance() };
 
         // Check convergence for each channel
         for (int i = 0; i < 3; i++) {
             if (mu[i] < cfg->adaptive.epsilon) continue;
 
-            const auto relative_error = std::sqrt(var[i] / samples())
-                * cfg->adaptive.critical_value / mu[i];
+            const auto relative_error {
+                std::sqrt(var[i] / samples())
+                * cfg->adaptive.critical_value / mu[i]
+            };
 
             if (relative_error >= cfg->adaptive.tolerance) {
                 return true;
@@ -184,7 +187,7 @@ public:
         std::shared_ptr<SamplerConfig> cfg,
         int i,
         int j
-    ) : PixelSampler(data, cfg, i, j) {};
+    ) : RandomPixelSampler { data, cfg, i, j } {}
 
     void add_sample(const Colour& sample) override {
         sampling_data.s1 += sample;
@@ -202,7 +205,7 @@ private:
     const SamplerType type_;
 
 public:
-    explicit PixelSamplerFactory(SamplerType type) : type_(type) {}
+    explicit PixelSamplerFactory(SamplerType type) : type_ { type } {}
 
     std::unique_ptr<PixelSampler> operator()(
         std::shared_ptr<SamplerData> data,
@@ -214,7 +217,9 @@ public:
         case SamplerType::Random:
             return std::make_unique<RandomPixelSampler>(data, cfg, i, j);
         case SamplerType::AdaptiveRandom:
-            return std::make_unique<AdaptiveRandomPixelSampler>(data, cfg, i, j);
+            return std::make_unique<AdaptiveRandomPixelSampler>(
+                data, cfg, i, j
+            );
         default:
             throw std::runtime_error("Unknown sampler type");
         }

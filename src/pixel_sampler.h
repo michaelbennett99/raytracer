@@ -11,8 +11,8 @@
 class PixelSampler {
 protected:
     int samples_ { 0 };
-    std::shared_ptr<SamplerData> data;
-    std::shared_ptr<SamplerConfig> cfg;
+    SamplerDataPtr data;
+    SamplerConfigPtr cfg;
     int i, j;
 
     Point3 get_pixel_point(const Direction3& offset) const {
@@ -36,8 +36,8 @@ protected:
 public:
     PixelSampler() = delete;
     PixelSampler(
-        std::shared_ptr<SamplerData> data,
-        std::shared_ptr<SamplerConfig> cfg,
+        SamplerDataPtr data,
+        SamplerConfigPtr cfg,
         int i,
         int j
     ) : data { data }, cfg { cfg }, i { i }, j { j } {}
@@ -120,8 +120,8 @@ private:
 public:
     RandomPixelSampler() = delete;
     RandomPixelSampler(
-        std::shared_ptr<SamplerData> data,
-        std::shared_ptr<SamplerConfig> cfg,
+        SamplerDataPtr data,
+        SamplerConfigPtr cfg,
         int i,
         int j
     ) : PixelSampler { data, cfg, i, j } {}
@@ -183,8 +183,8 @@ private:
 
 public:
     AdaptiveRandomPixelSampler(
-        std::shared_ptr<SamplerData> data,
-        std::shared_ptr<SamplerConfig> cfg,
+        SamplerDataPtr data,
+        SamplerConfigPtr cfg,
         int i,
         int j
     ) : RandomPixelSampler { data, cfg, i, j } {}
@@ -208,8 +208,8 @@ public:
     explicit PixelSamplerFactory(SamplerType type) : type_ { type } {}
 
     std::unique_ptr<PixelSampler> operator()(
-        std::shared_ptr<SamplerData> data,
-        std::shared_ptr<SamplerConfig> cfg,
+        SamplerDataPtr data,
+        SamplerConfigPtr cfg,
         int i,
         int j
     ) const {

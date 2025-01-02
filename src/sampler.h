@@ -9,14 +9,15 @@
 
 class Sampler {
 private:
-    std::shared_ptr<SamplerConfig> cfg;
-    std::shared_ptr<SamplerData> data;
+    SamplerConfigPtr cfg;
+    SamplerDataPtr data;
     PixelSamplerFactory sampler_factory;
 
 public:
+    Sampler() = delete;
     Sampler(const SamplerConfig& cfg, const SamplerData& data) :
-        cfg(std::make_shared<SamplerConfig>(cfg)),
-        data(std::make_shared<SamplerData>(data)),
+        cfg(std::make_shared<SamplerConfigType>(cfg)),
+        data(std::make_shared<SamplerDataType>(data)),
         sampler_factory(cfg.type())
     {}
 
@@ -29,8 +30,8 @@ public:
         double vfov,
         double defocus_angle,
         double focus_dist
-    ) : cfg(std::make_shared<SamplerConfig>(cfg)),
-        data(std::make_shared<SamplerData>(
+    ) : cfg(std::make_shared<SamplerConfigType>(cfg)),
+        data(std::make_shared<SamplerDataType>(
             image_data,
             lookfrom,
             lookat,

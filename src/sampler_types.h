@@ -40,6 +40,9 @@ struct SamplerConfig {
     }
 };
 
+using SamplerConfigType = const SamplerConfig;
+using SamplerConfigPtr = std::shared_ptr<SamplerConfigType>;
+
 std::ostream& operator<<(std::ostream& os, const SamplerConfig::Random& r) {
     os << "Random(\n"
         << "\t\tenabled=" << r.enabled << "\n"
@@ -123,5 +126,8 @@ struct SamplerData {
         defocus_disk_v = v * defocus_radius;
     }
 };
+
+using SamplerDataType = const SamplerData;
+using SamplerDataPtr = std::shared_ptr<SamplerDataType>;
 
 #endif // SAMPLER_TYPES_H

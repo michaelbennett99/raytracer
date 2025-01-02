@@ -82,26 +82,31 @@ public:
 
     void render(const World& world) {
         // Parallel rendering
-        const int num_threads = std::thread::hardware_concurrency();
+        const int num_threads {
+            static_cast<int>(std::thread::hardware_concurrency())
+        };
         std::vector<std::thread> threads;
 
-        auto process_chunk = [&](int start_row, int end_row) {
-            for (int j = start_row; j < end_row; ++j) {
-                for (int i = 0; i < image_data.width; ++i) {
-                    process_pixel(i, j, world);
+        auto process_chunk {
+            [&](int start_row, int end_row) {
+                for (int j = start_row; j < end_row; ++j) {
+                    for (int i = 0; i < image_data.width; ++i) {
+                        process_pixel(i, j, world);
+                    }
+                    progress.update();
+                    progress.print();
                 }
-                progress.update();
-                progress.print();
             }
         };
 
-        const int chunk_size = (image_data.height + num_threads - 1)
-            / num_threads;
+        const int chunk_size {
+            (image_data.height + num_threads - 1) / num_threads
+        };
         for (int i = 0; i < num_threads; ++i) {
-            const int start_row = i * chunk_size;
-            const int end_row = std::min(
+            const int start_row { i * chunk_size };
+            const int end_row { std::min(
                 start_row + chunk_size, image_data.height
-            );
+            ) };
             threads.emplace_back(process_chunk, start_row, end_row);
         }
 
@@ -113,7 +118,7 @@ public:
     }
 
     std::map<RendererType, Image> get_results() const {
-        std::map<RendererType, Image> results;
+        std::map<RendererType, Image> results {};
         for (const auto& renderer : renderers) {
             results[renderer.type()] = renderer.image();
         }

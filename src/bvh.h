@@ -39,16 +39,18 @@ class BVHNode : public Hittable {
                 bbox = AABB(bbox, object->bounding_box());
             }
 
-            const int axis = bbox.longest_axis();
+            const int axis { bbox.longest_axis() };
 
-            const auto comparator = [&axis](
-                const std::shared_ptr<Hittable> a,
-                const std::shared_ptr<Hittable> b
-            ) -> bool {
-                return box_compare(a, b, axis);
+            const auto comparator {
+                [&axis](
+                    const std::shared_ptr<Hittable> a,
+                    const std::shared_ptr<Hittable> b
+                ) -> bool {
+                    return box_compare(a, b, axis);
+                }
             };
 
-            const size_t object_span = end - start;
+            const size_t object_span { end - start };
 
             if (object_span == 1) {
                 left = right = objects[start];
@@ -62,12 +64,12 @@ class BVHNode : public Hittable {
                     comparator
                 );
 
-                const auto mid = start + object_span / 2;
+                const auto mid { start + object_span / 2 };
                 left = std::make_shared<BVHNode>(objects, start, mid);
                 right = std::make_shared<BVHNode>(objects, mid, end);
             }
 
-            bbox = AABB(left->bounding_box(), right->bounding_box());
+            bbox = AABB { left->bounding_box(), right->bounding_box() };
         }
 
         bool hit(const Ray& r, IntervalD t, HitRecord& rec) const override {

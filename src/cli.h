@@ -7,7 +7,7 @@
 #include <optional>
 
 struct RenderOptions {
-    std::optional<int> Scene {};
+    std::optional<int> scene {};
     bool adaptive_sampling {false};
     int image_width {400};
     double aspect_ratio {16.0 / 9.0};
@@ -154,7 +154,7 @@ namespace CLI {
 
         for (int i = 1; i < argc; i++) {
             if (isint(argv[i])) {
-                options.Scene = std::stoi(argv[i]);
+                options.scene = std::stoi(argv[i]);
             } else if (strcmp(argv[i], "-a") == 0) {
                 options.adaptive_sampling = true;
             } else if (strcmp(argv[i], "-w") == 0) {

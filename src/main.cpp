@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     const auto sampler_config = create_sampler_config(options);
     const auto renderer_types = create_renderer_config(options);
-    const auto scene_number = options.Scene.value_or(1);
+    const auto scene_number = options.scene.value_or(1);
 
     std::clog << "Scene: " << scene_number << std::endl;
 

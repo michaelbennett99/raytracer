@@ -7,42 +7,42 @@
 #include <vector>
 
 class HittableList : public Hittable {
-    private:
-        AABB bbox;
-    public:
-        std::vector<std::shared_ptr<Hittable>> objects;
+private:
+    AABB bbox {};
+public:
+    std::vector<std::shared_ptr<Hittable>> objects {};
 
-        HittableList() {}
-        HittableList(std::shared_ptr<Hittable> object) { add(object); }
+    HittableList() = default;
+    HittableList(std::shared_ptr<Hittable> object) { add(object); }
 
-        void clear() { objects.clear(); }
-        void add(std::shared_ptr<Hittable> object) {
-            objects.push_back(object);
-            bbox = AABB(bbox, object->bounding_box());
-        }
+    void clear() { objects.clear(); }
+    void add(std::shared_ptr<Hittable> object) {
+        objects.push_back(object);
+        bbox = AABB { bbox, object->bounding_box() };
+    }
 
-        bool hit(
-            const Ray& r,
-            IntervalD t,
-            HitRecord& rec
-        ) const override {
-            HitRecord temp_rec;
-            bool hit_anything = false;
-            auto closest_so_far = t.max();
+    bool hit(
+        const Ray& r,
+        IntervalD t,
+        HitRecord& rec
+    ) const override {
+        HitRecord temp_rec {};
+        bool hit_anything { false };
+        auto closest_so_far { t.max() };
 
-            for (const auto& object : objects) {
-                auto Interval = IntervalD{t.min(), closest_so_far};
-                if (object->hit(r, Interval, temp_rec)) {
-                    hit_anything = true;
-                    closest_so_far = temp_rec.t;
-                    rec = temp_rec;
-                }
+        for (const auto& object : objects) {
+            auto Interval { IntervalD{t.min(), closest_so_far} };
+            if (object->hit(r, Interval, temp_rec)) {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                rec = temp_rec;
             }
-
-            return hit_anything;
         }
 
-        AABB bounding_box() const override { return bbox; }
+        return hit_anything;
+    }
+
+    AABB bounding_box() const override { return bbox; }
 };
 
 #endif

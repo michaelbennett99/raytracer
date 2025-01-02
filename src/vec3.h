@@ -118,13 +118,33 @@ inline Vec3<T> operator+(const Vec3<T>& u, const Vec3<T>& v) {
     };
 }
 
+template <Arithmetic T, Arithmetic U>
+inline Vec3<T> operator+(const Vec3<T>& u, U v) {
+    return Vec3<T> {
+        u[0] + static_cast<T>(v),
+        u[1] + static_cast<T>(v),
+        u[2] + static_cast<T>(v)
+    };
+}
+
+template <Arithmetic T, Arithmetic U>
+inline Vec3<T> operator+(U u, const Vec3<T>& v) {
+    return v + u;
+}
+
 template <Arithmetic T>
 inline Vec3<T> operator-(const Vec3<T>& u, const Vec3<T>& v) {
-    return Vec3<T> {
-        u[0] - v[0],
-        u[1] - v[1],
-        u[2] - v[2]
-    };
+    return u + (-v);
+}
+
+template <Arithmetic T, Arithmetic U>
+inline Vec3<T> operator-(const Vec3<T>& u, U v) {
+    return u + (-v);
+}
+
+template <Arithmetic T, Arithmetic U>
+inline Vec3<T> operator-(U u, const Vec3<T>& v) {
+    return v - u;
 }
 
 template <Arithmetic T>

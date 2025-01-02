@@ -128,7 +128,7 @@ Scene checkered_spheres(
 ) {
     HittableList world;
 
-    const auto checker = std::make_shared<checker_texture>(
+    const auto checker = std::make_shared<CheckerTexture>(
         0.32,
         Colour(0.2, 0.3, 0.1),
         Colour(0.9, 0.9, 0.9)
@@ -165,7 +165,7 @@ Scene earth(
 ) {
     HittableList world;
 
-    const auto earth_texture = std::make_shared<image_texture>("map.jpg");
+    const auto earth_texture = std::make_shared<ImageTexture>("map.jpg");
     const auto earth_material = std::make_shared<Lambertian>(earth_texture);
     const auto globe = std::make_shared<Sphere>(
         Point3(0, 0, 0), 2, earth_material
@@ -198,7 +198,7 @@ Scene perlin_spheres(
 ) {
     HittableList world;
 
-    const auto pertext = std::make_shared<noise_texture>(4);
+    const auto pertext = std::make_shared<NoiseTexture>(4);
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
 
     world.add(
@@ -371,7 +371,7 @@ Scene simple_light(
 ) {
     HittableList world;
 
-    const auto pertext = std::make_shared<noise_texture>(4);
+    const auto pertext = std::make_shared<NoiseTexture>(4);
     const auto sphere_material = std::make_shared<Lambertian>(pertext);
     world.add(
         std::make_shared<Sphere>(Point3(0,-1000,0), 1000, sphere_material)
@@ -605,13 +605,13 @@ Scene final_scene(
     ));
 
     // World Sphere
-    auto map = std::make_shared<Lambertian>(std::make_shared<image_texture>(
+    auto map = std::make_shared<Lambertian>(std::make_shared<ImageTexture>(
         "map.jpg"
     ));
     world.add(std::make_shared<Sphere>(Point3(400,200,400), 100, map));
 
     // Perlin Sphere
-    const auto pertext = std::make_shared<noise_texture>(0.2);
+    const auto pertext = std::make_shared<NoiseTexture>(0.2);
     const auto pertext_material = std::make_shared<Lambertian>(pertext);
     world.add(std::make_shared<Sphere>(
         Point3(220,280,300), 80, pertext_material

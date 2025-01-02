@@ -12,23 +12,23 @@ enum class SamplerType {
 };
 
 struct SamplerConfig {
-    int samples_per_pixel = 100;
+    int samples_per_pixel { 100 };
 
     struct Random {
-        bool enabled = false;
+        bool enabled { false };
     } random;
 
     struct Adaptive {
-        bool enabled = false;
-        int burn_in = 64;
-        int check_every = 64;
-        double tolerance = 0.05;
-        double critical_value = 1.96;
-        double epsilon = 1e-16;
+        bool enabled { false };
+        int burn_in { 64 };
+        int check_every { 64 };
+        double tolerance { 0.05 };
+        double critical_value { 1.96 };
+        double epsilon { 1e-16 };
     } adaptive;
 
     SamplerType type() const {
-        const auto settings_mask = (adaptive.enabled << 1) | random.enabled;
+        const auto settings_mask { (adaptive.enabled << 1) | random.enabled };
         switch (settings_mask) {
         case 0b01:
             return SamplerType::Random;
@@ -77,7 +77,7 @@ struct SamplerData {
     Direction3 defocus_disk_u;
     Direction3 defocus_disk_v;
 
-    SamplerData() = default;
+    SamplerData() = delete;
     SamplerData(
         const ImageData& image_data,
         const Point3& lookfrom,

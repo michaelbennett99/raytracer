@@ -9,13 +9,11 @@
 template <Arithmetic T>
 class Interval {
     private:
-        T min_;
-        T max_;
+        T min_ { infinity<T> };
+        T max_ { -infinity<T> };
 
     public:
-
-        // Default Interval: empty
-        constexpr Interval() : min_{infinity<T>}, max_{-infinity<T>} {}
+        constexpr Interval() = default;
 
         constexpr Interval(T _min, T _max) : min_{_min}, max_{_max} {}
 

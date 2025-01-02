@@ -24,15 +24,15 @@ class World {
         ) const {
             if (depth <= 0) return background_;
 
-            HitRecord rec;
+            HitRecord rec {};
 
             if (!world_->hit(r, IntervalD{0.001, infinity_d}, rec)) {
                 return background_;
             }
 
-            Ray scattered;
-            Colour attenuation;
-            Colour emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
+            Ray scattered {};
+            Colour attenuation {};
+            Colour emitted { rec.mat->emitted(rec.u, rec.v, rec.p) };
 
             if (!rec.mat->scatter(r, rec, attenuation, scattered)) {
                 return emitted;

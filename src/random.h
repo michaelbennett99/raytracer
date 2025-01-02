@@ -3,15 +3,17 @@
 
 #include <random>
 
+#include "concepts.h"
+
 namespace gen_rand {
-    template <typename T>
+    template <Arithmetic T>
     inline T gen_rand() {
         static std::uniform_real_distribution<T> distribution(T(0), T(1));
         static std::mt19937 generator;
         return distribution(generator);
     }
 
-    template <typename T>
+    template <Arithmetic T>
     inline T gen_rand(T min, T max) {
         return min + (max - min) * gen_rand<T>();
     }

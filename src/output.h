@@ -11,17 +11,19 @@
 class OutputHandler {
 private:
     std::optional<std::string> base_filename {};
+    ImageFormat format {};
     std::unique_ptr<std::ofstream> file_stream_ {};
 
     static std::unique_ptr<std::ofstream> open_file(
-        const std::optional<std::string>& filename
+        const std::optional<std::string>& filename,
+        ImageFormat format
     ) {
         if (!filename) {
             return nullptr;
         }
 
         auto file_stream { std::make_unique<std::ofstream>(
-            filename.value() + ".ppm",
+            filename.value() + "." + to_extension(format),
             std::ios_base::out | std::ios_base::trunc
         ) };
 
@@ -34,9 +36,13 @@ private:
 
 public:
     OutputHandler() = delete;
-    explicit OutputHandler(const std::optional<std::string>& filename)
+    OutputHandler(
+        const std::optional<std::string>& filename,
+        ImageFormat format
+    )
         : base_filename { filename }
-        , file_stream_ { open_file(base_filename) }
+        , format { format }
+        , file_stream_ { open_file(base_filename, format) }
     {}
 
     std::ostream& stream() {
@@ -44,8 +50,7 @@ public:
     }
 
     void write_main_image(
-        const Image& image,
-        ImageFormat format
+        const Image& image
     ) {
         image.write(stream(), format);
     }
@@ -57,7 +62,9 @@ public:
             return;  // Do nothing if density tracking was disabled
         }
 
-        std::ofstream density_output(base_filename.value() + ".density.ppm");
+        std::ofstream density_output(
+            base_filename.value() + ".density." + to_extension(format)
+        );
         if (!density_output) {
             std::cerr
                 << "Error: Failed to open density output stream: "
@@ -66,7 +73,22 @@ public:
             return;
         }
 
-        density_image->write(density_output, ImageFormat::PPM);
+        density_image->write(density_output, format);
+    }
+
+    void write(
+        const std::map<RendererType, Image>& images
+    ) {
+        for (const auto& [renderer, image] : images) {
+            switch (renderer) {
+                case RendererType::Colour:
+                    write_main_image(image);
+                    break;
+                case RendererType::Density:
+                    write_density_image(image);
+                    break;
+            }
+        }
     }
 };
 

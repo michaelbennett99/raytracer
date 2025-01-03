@@ -6,6 +6,8 @@
 #include <cstring>
 #include <optional>
 
+#include "image.h"
+
 struct RenderOptions {
     std::optional<int> scene {};
     bool adaptive_sampling {false};
@@ -16,6 +18,7 @@ struct RenderOptions {
     int check_every {64};
     double tolerance {0.01};
     std::optional<std::string> output_file {};
+    ImageFormat output_format {ImageFormat::PPM};
     bool output_density {false};
 };
 
@@ -23,36 +26,36 @@ namespace CLI {
     static const RenderOptions DEFAULT_OPTIONS {};
 
     static void usage(const char* argv0) {
-        std::cerr << "Usage: " << argv0 << " [options] <Scene>" << std::endl
-            << "Options:" << std::endl
-            << "  -h              Show this help message"
-            << std::endl
-            << "  -o <file>       Send output to <file> instead of stdout. "
-            << "Don't provide an extension, it will be added automatically."
-            << std::endl
-            << "  -w <width>      Image width in pixels "
-            << "(default: " << DEFAULT_OPTIONS.image_width << ")"
-            << std::endl
-            << "  -r <ratio>      Aspect ratio (width/height) "
-            << "(default: " << DEFAULT_OPTIONS.aspect_ratio << ")"
-            << std::endl
-            << "  -s <samples>    Samples per pixel "
-            << "(default: " << DEFAULT_OPTIONS.samples_per_pixel << ")"
-            << std::endl
-            << "  -a              Enable adaptive sampling"
-            << std::endl
-            << "    -b <samples>  Burn-in samples "
-            << "(default: " << DEFAULT_OPTIONS.burn_in << ")"
-            << std::endl
-            << "    -c <samples>  Check every <samples> samples "
-            << "(default: " << DEFAULT_OPTIONS.check_every << ")"
-            << std::endl
-            << "    -t <tol>      Tolerance for adaptive sampling "
-            << "(default: " << DEFAULT_OPTIONS.tolerance << ")"
-            << std::endl
-            << "    -d      Output sampling density image. "
-            << "Only works if -a and -o are also specified."
-            << std::endl;
+        std::cerr << "Usage: " << argv0 << " [options] <scene>" << std::endl
+<< "Options:" << std::endl
+<< "  -h              Show this help message" << std::endl
+<< "  -o <file>       Send output to <file>.ext instead of stdout."
+<< std::endl
+<< "  -f <format>     Output format (PPM or PNG) (default: "
+<< DEFAULT_OPTIONS.output_format << ")"
+<< std::endl
+<< "  -w <width>      Image width in pixels (default: "
+<< DEFAULT_OPTIONS.image_width << ")"
+<< std::endl
+<< "  -r <ratio>      Aspect ratio (width/height) (default: "
+<< DEFAULT_OPTIONS.aspect_ratio << ")"
+<< std::endl
+<< "  -s <samples>    Samples per pixel (default: "
+<< DEFAULT_OPTIONS.samples_per_pixel << ")"
+<< std::endl
+<< "  -a              Enable adaptive sampling"
+<< std::endl
+<< "    -b <samples>  Burn-in samples (default: "
+<< DEFAULT_OPTIONS.burn_in << ")"
+<< std::endl
+<< "    -c <samples>  Check every <samples> samples (default: "
+<< DEFAULT_OPTIONS.check_every << ")"
+<< std::endl
+<< "    -t <tol>      Tolerance for adaptive sampling (default: "
+<< DEFAULT_OPTIONS.tolerance << ")"
+<< std::endl
+<< "    -d            Output sampling density image. -o must be specified."
+<< std::endl;
     }
 
     static bool isdigit(char c) {
@@ -84,6 +87,17 @@ namespace CLI {
         } catch (...) {
             return false;
         }
+    }
+
+    static bool parse_image_format(const char* str, ImageFormat& format) {
+        if (strcmp(str, "PPM") == 0 || strcmp(str, "ppm") == 0) {
+            format = ImageFormat::PPM;
+            return true;
+        } else if (strcmp(str, "PNG") == 0 || strcmp(str, "png") == 0) {
+            format = ImageFormat::PNG;
+            return true;
+        }
+        return false;
     }
 
     void check_next_arg(int i, int argc, char* argv[]) {
@@ -149,6 +163,17 @@ namespace CLI {
         return std::string(arg);
     }
 
+    static ImageFormat parse_image_format_field(int& i, int argc, char* argv[]) {
+        check_next_arg(i, argc, argv);
+        ImageFormat format {};
+        if (!parse_image_format(argv[++i], format)) {
+            std::cerr << "Error: Invalid value for -" << argv[i] << std::endl;
+            usage(argv[0]);
+            exit(1);
+        }
+        return format;
+    }
+
     RenderOptions parse_args(int argc, char* argv[]) {
         RenderOptions options {};
 
@@ -171,6 +196,8 @@ namespace CLI {
                 options.tolerance = parse_double_field(i, argc, argv);
             } else if (strcmp(argv[i], "-o") == 0) {
                 options.output_file = parse_string_field(i, argc, argv);
+            } else if (strcmp(argv[i], "-f") == 0) {
+                options.output_format = parse_image_format_field(i, argc, argv);
             } else if (strcmp(argv[i], "-h") == 0) {
                 usage(argv[0]);
                 exit(0);

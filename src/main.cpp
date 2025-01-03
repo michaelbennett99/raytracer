@@ -31,7 +31,11 @@ SamplerConfig create_sampler_config(const RenderOptions& options) {
 std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
     std::vector<RendererType> renderer_types {};
     renderer_types.push_back(RendererType::Colour);
-    if (options.output_density && options.output_file) {
+    if (
+        options.adaptive_sampling
+        && options.output_density
+        && options.output_file
+    ) {
         renderer_types.push_back(RendererType::Density);
     }
     return renderer_types;
@@ -40,7 +44,7 @@ std::vector<RendererType> create_renderer_config(const RenderOptions& options) {
 int main(int argc, char* argv[]) {
     const auto options = CLI::parse_args(argc, argv);
 
-    OutputHandler output_handler { options.output_file };
+    OutputHandler output_handler { options.output_file, options.output_format };
 
     const auto sampler_config = create_sampler_config(options);
     const auto renderer_types = create_renderer_config(options);
@@ -104,15 +108,7 @@ int main(int argc, char* argv[]) {
 
     const auto results { scene.render() };
 
-    output_handler.write_main_image(
-        results.at(RendererType::Colour), ImageFormat::PPM
-    );
-
-    if (results.find(RendererType::Density) != results.end()) {
-        output_handler.write_density_image(
-            results.at(RendererType::Density)
-        );
-    }
+    output_handler.write(results);
 
     return 0;
 }

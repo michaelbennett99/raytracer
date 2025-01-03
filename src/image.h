@@ -11,13 +11,17 @@
 
 enum class ImageFormat {
     PPM,
-    PNG
+    PNG,
+    BMP,
+    JPG
 };
 
 inline std::string to_string(ImageFormat format) {
     switch (format) {
         case ImageFormat::PPM: return "PPM";
         case ImageFormat::PNG: return "PNG";
+        case ImageFormat::BMP: return "BMP";
+        case ImageFormat::JPG: return "JPG";
     }
 }
 
@@ -29,6 +33,8 @@ inline std::string to_extension(ImageFormat format) {
     switch (format) {
         case ImageFormat::PPM: return "ppm";
         case ImageFormat::PNG: return "png";
+        case ImageFormat::BMP: return "bmp";
+        case ImageFormat::JPG: return "jpg";
     }
 }
 
@@ -49,6 +55,13 @@ private:
 
     static constexpr int default_max_colour_value { 255 };
 
+    static constexpr void write_to_stream(
+        void* context, void* data, int size
+    ) {
+        std::ostream& output { *static_cast<std::ostream*>(context) };
+        output.write(static_cast<char*>(data), size);
+    }
+
     void write_ppm(std::ostream& output) const {
         output << "P3\n"
             << data_.width << " " << data_.height << "\n"
@@ -65,7 +78,7 @@ private:
         }
     }
 
-    void write_png(std::ostream& output) const {
+    std::vector<unsigned char> to_stb_bytes() const {
         std::vector<unsigned char> bytes {};
         bytes.reserve(data_.width * data_.height * 3);
 
@@ -83,18 +96,47 @@ private:
                 ));
             }
         }
+        return bytes;
+    }
+
+    void write_png(std::ostream& output) const {
+        std::vector<unsigned char> bytes { to_stb_bytes() };
 
         stbi_write_png_to_func(
-            [](void* context, void* data, int size) {
-                std::ostream& output { *static_cast<std::ostream*>(context) };
-                output.write(static_cast<char*>(data), size);
-            },
+            write_to_stream,
             &output,
             data_.width,
             data_.height,
             3,
             bytes.data(),
             data_.width * 3
+        );
+    }
+
+    void write_bmp(std::ostream& output) const {
+        std::vector<unsigned char> bytes { to_stb_bytes() };
+
+        stbi_write_bmp_to_func(
+            write_to_stream,
+            &output,
+            data_.width,
+            data_.height,
+            3,
+            bytes.data()
+        );
+    }
+
+    void write_jpg(std::ostream& output) const {
+        std::vector<unsigned char> bytes { to_stb_bytes() };
+
+        stbi_write_jpg_to_func(
+            write_to_stream,
+            &output,
+            data_.width,
+            data_.height,
+            3,
+            bytes.data(),
+            100
         );
     }
 
@@ -152,6 +194,8 @@ public:
         switch (format) {
             case ImageFormat::PPM: write_ppm(output); break;
             case ImageFormat::PNG: write_png(output); break;
+            case ImageFormat::BMP: write_bmp(output); break;
+            case ImageFormat::JPG: write_jpg(output); break;
         }
     }
 

@@ -96,6 +96,12 @@ namespace CLI {
         } else if (strcmp(str, "PNG") == 0 || strcmp(str, "png") == 0) {
             format = ImageFormat::PNG;
             return true;
+        } else if (strcmp(str, "BMP") == 0 || strcmp(str, "bmp") == 0) {
+            format = ImageFormat::BMP;
+            return true;
+        } else if (strcmp(str, "JPG") == 0 || strcmp(str, "jpg") == 0) {
+            format = ImageFormat::JPG;
+            return true;
         }
         return false;
     }

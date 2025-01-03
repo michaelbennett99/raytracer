@@ -140,21 +140,12 @@ private:
 
     Data sampling_data {};
 
-    Point3 mean() const {
-        if (samples() == 0) {
-            return Point3 { infinity_d, infinity_d, infinity_d };
-        }
-        return sampling_data.s1 / samples();
-    }
-
-    Point3 variance() const {
+    Point3 nvariance() const {
         if (samples() <= 1) {
             return Point3 { infinity_d, infinity_d, infinity_d };
         }
         const auto s1_squared { sampling_data.s1 * sampling_data.s1 };
-        const auto n { static_cast<double>(samples()) };
-        const auto factor { 1.0 / (n - 1) };
-        return factor * (sampling_data.s2 - (s1_squared / n));
+        return (sampling_data.s2 - (s1_squared / samples()));
     }
 
     bool should_continue() const {
@@ -162,16 +153,15 @@ private:
             samples() < cfg->adaptive.burn_in
             || samples() % cfg->adaptive.check_every != 0
         ) return true;
-        const auto mu { mean() };
-        const auto var { variance() };
+        const auto nvar { nvariance() };
 
         // Check convergence for each channel
         for (int i = 0; i < 3; i++) {
-            if (mu[i] < cfg->adaptive.epsilon) continue;
-
+            // Relative error comes from rearranging normal CI formula,
+            // assuming (n-1) approximates n and using the sample variance.
             const auto relative_error {
-                std::sqrt(var[i] / samples())
-                * cfg->adaptive.critical_value / mu[i]
+                std::sqrt(nvar[i])
+                * cfg->adaptive.critical_value / sampling_data.s1[i]
             };
 
             if (relative_error >= cfg->adaptive.tolerance) {

@@ -156,7 +156,7 @@ public:
     }
 
     static constexpr int calc_image_height(int width, double aspect_ratio) {
-        const auto h = static_cast<int>(width / aspect_ratio);
+        const auto h { static_cast<int>(width / aspect_ratio) };
         return (h < 1) ? 1 : h;
     }
 };

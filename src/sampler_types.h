@@ -28,7 +28,10 @@ struct SamplerConfig {
     } adaptive;
 
     SamplerType type() const {
-        const auto settings_mask { (adaptive.enabled << 1) | random.enabled };
+        const auto settings_mask {
+            (static_cast<int>(adaptive.enabled) << 1)
+            | static_cast<int>(random.enabled)
+        };
         switch (settings_mask) {
         case 0b01:
             return SamplerType::Random;

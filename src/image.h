@@ -55,7 +55,7 @@ private:
 
     static constexpr int default_max_colour_value { 255 };
 
-    static constexpr void write_to_stream(
+    static void write_to_stream(
         void* context, void* data, int size
     ) {
         std::ostream& output { *static_cast<std::ostream*>(context) };

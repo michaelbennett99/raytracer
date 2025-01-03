@@ -38,8 +38,31 @@ In the following examples, the scene is rendered with 10000 samples per pixel, a
 
 ## Building
 
+Using CMake:
+
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+```
+
+and then run the executable from the build directory:
+
+```bash
+./build/raytracer
+```
+
+Or using Makefile:
+
 ```bash
 make
+```
+
+and then run the executable from the build directory:
+
+```bash
+./build/release/raytracer
 ```
 
 You might have to change the CXX variable in the Makefile to your compiler.
@@ -47,8 +70,8 @@ You might have to change the CXX variable in the Makefile to your compiler.
 ## Running
 
 ```bash
-% ./build/release/raytracer -h
-Usage: ./build/release/raytracer [options] <scene>
+% ./raytracer -h
+Usage: .raytracer [options] <scene>
 Options:
   -h              Show this help message
   -o <file>       Send output to <file>.ext instead of stdout.

@@ -450,11 +450,6 @@ Scene cornell_box(
     box2 = std::make_shared<Translate>(box2, Direction3(130,0,65));
     world.add(box2);
 
-    // Add light behind the camera
-    world.add(std::make_shared<Quad>(
-        Point3(0, 0, -1000), Direction3(555, 0, 0), Direction3(0, 555, 0), light
-    ));
-
     auto cam = std::make_shared<Camera>(
         sampler_config,
         renderer_types,

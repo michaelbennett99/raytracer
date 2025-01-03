@@ -33,6 +33,7 @@
 
 # Images
 images/
+!src/images/
 
 # Build files
 build/

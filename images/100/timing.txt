@@ -1,0 +1,12 @@
+
+Scene 1: 18.00 seconds
+Scene 2: 20.00 seconds
+Scene 3: 6.00 seconds
+Scene 4: 11.00 seconds
+Scene 5: 5.00 seconds
+Scene 6: 2.00 seconds
+Scene 7: 3.00 seconds
+Scene 8: 5.00 seconds
+Scene 9: 31.00 seconds
+Scene 10: 43.00 seconds
+Scene 11: 69.00 seconds
